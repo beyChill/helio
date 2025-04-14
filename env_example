@@ -1,0 +1,5 @@
+#example for .env
+DIR_VIDEO_REVIEW= "sites/review"
+DIR_VIDEO_SHORT= "sites/short_video"
+DIR_PROCESS_CONTACTSHEET = "sites/contactsheet"
+SSD_PATH='/home/ssd'
