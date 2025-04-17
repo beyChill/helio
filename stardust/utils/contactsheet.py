@@ -5,11 +5,11 @@ from itertools import groupby
 from os.path import dirname
 
 from stardust.config.constants import ContactSheetModel
-from stardust.utils.applogging import AppLogger, loglvl
+from stardust.utils.applogging import HelioLogger, loglvl
 from stardust.config.settings import get_setting
 from stardust.utils.timer import AppTimerSync
 
-log = AppLogger()
+log = HelioLogger()
 
 
 def get_folders():
@@ -50,9 +50,7 @@ def get_video_duration(video_path: list[list[Path]]):
             # auto remove files less than 10 Mib
             if file_size < 10:
                 shutil.move(path_, new_location)
-                log.app(
-                    loglvl.MOVED, f"Tiny file: {path_.name} to {str(new_dir)}"
-                )
+                log.app(loglvl.MOVED, f"Tiny file: {path_.name} to {str(new_dir)}")
 
                 continue
 
@@ -77,7 +75,7 @@ def get_video_duration(video_path: list[list[Path]]):
             ]
 
             try:
-                video_seconds: str = subprocess.check_output(ffmpeg_args).decode("utf8")  
+                video_seconds: str = subprocess.check_output(ffmpeg_args).decode("utf8")
                 video_duration_seconds: int = round(float(video_seconds))
 
                 # short video is <= 300 seconds (5 min)
@@ -192,7 +190,6 @@ def manage_contactsheet():
     log.app(loglvl.CREATED, "Generating contact sheet(s)")
     videos = get_videos()
     video_data = get_video_duration(videos)
-    # print(*video_data,sep='\n')
     loop_contactsheet_list(video_data)
 
 
