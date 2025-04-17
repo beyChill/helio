@@ -1,8 +1,9 @@
 from datetime import datetime
 from stardust.database.db_base import write_cb_many, write_db
-from stardust.utils.applogging import AppLogger
+from stardust.utils.applogging import HelioLogger
 
-log = AppLogger()
+log = HelioLogger()
+
 
 def write_db_streamers(value: list):
     sql = """
@@ -25,8 +26,8 @@ def write_db_streamers(value: list):
         """
     write_cb_many(sql, value)
 
+
 def write_cb_url(value: list[tuple[str, str]]):
-    
     sql = """
         UPDATE chaturbate
         SET url_= ?
@@ -52,8 +53,9 @@ def write_cb_api_data(value: list):
     """
     write_cb_many(sql, value)
 
-def write_pid(arg: tuple[int,str]):
-    pid,name_ =arg
+
+def write_pid(arg: tuple[int, str]):
+    pid, name_ = arg
     today = datetime.now().replace(microsecond=0)
     # SET recorded=recorded+1,
     sql = "Update chaturbate SET pid=?, last_capture=?, last_broadcast=? WHERE streamer_name=?"
@@ -61,6 +63,7 @@ def write_pid(arg: tuple[int,str]):
 
     if not write_db(sql, args):
         log.error(f"Failed to update {name_}'s pid")
+
 
 def write_remove_pid(value: int):
     sql = "UPDATE chaturbate SET pid=? WHERE pid=?"

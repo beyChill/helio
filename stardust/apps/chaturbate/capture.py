@@ -10,10 +10,10 @@ from stardust.apps.chaturbate.handleurls import CbUrls
 from stardust.apps.chaturbate.set_streamer_data import FFmpegData
 from stardust.config.constants import DataFFmpeg
 from stardust.config.settings import get_setting
-from stardust.utils.applogging import AppLogger, loglvl
+from stardust.utils.applogging import HelioLogger, loglvl
 from stardust.utils.general import process_hls
 
-log = AppLogger()
+log = HelioLogger()
 config = get_setting()
 
 

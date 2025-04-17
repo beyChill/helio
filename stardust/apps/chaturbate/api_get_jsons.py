@@ -7,11 +7,11 @@ from sqlite3 import Date
 
 from stardust.apps.chaturbate.handleurls import CbUrls
 from stardust.apps.chaturbate.db_write import write_db_streamers
-from stardust.utils.applogging import AppLogger
+from stardust.utils.applogging import HelioLogger
 from stardust.utils.timer import AppTimer
 from stardust.config.constants import CBRoom, cb_param
 
-log = AppLogger(debug=True)
+log = HelioLogger(debug=True)
 
 
 def url_param(category=cb_param.FEMALE, tag=cb_param.TAG.NONE):

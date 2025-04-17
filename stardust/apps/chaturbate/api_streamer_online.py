@@ -7,10 +7,10 @@ from stardust.apps.chaturbate.db_query import query_capture_status
 from stardust.apps.chaturbate.handleurls import CbUrls
 from stardust.apps.chaturbate.manage_capture import start_capture
 from stardust.utils.timer import AppTimer
-from stardust.utils.applogging import AppLogger
+from stardust.utils.applogging import HelioLogger
 from stardust.utils.general import process_hls, script_delay
 
-log = AppLogger()
+log = HelioLogger()
 cb_api = CbUrls()
 
 
@@ -100,4 +100,3 @@ def run_cb_streamers():
 
 if __name__ == "__main__":
     run_cb_streamers()
-
