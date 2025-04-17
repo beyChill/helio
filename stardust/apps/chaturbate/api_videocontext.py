@@ -6,7 +6,6 @@ from stardust.apps.chaturbate.handleurls import CbUrls
 from stardust.apps.chaturbate.db_query import query_bio
 from stardust.apps.chaturbate.db_write import write_cb_api_data, write_cb_url
 from stardust.config.constants import ChatVideoContext
-from stardust.config.settings import get_setting
 from stardust.utils.applogging import HelioLogger, loglvl
 from stardust.utils.general import process_hls
 from stardust.utils.timer import AppTimer
