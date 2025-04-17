@@ -12,6 +12,7 @@ from enum import Enum
 
 from stardust.config.settings import get_setting
 
+
 class loglvl(Enum):
     NOTSET = 0
     CREATED = 1
@@ -25,6 +26,7 @@ class loglvl(Enum):
     WARNING = 40
     ERROR = 50
     FAILURE = 51
+
 
 _levelToName = {
     loglvl.NOTSET: "NOTSET",
@@ -87,7 +89,7 @@ LOG_COLORS = {
 }
 
 
-class AppLoggerBase(ABC):
+class HelioLoggerBase(ABC):
     @abstractmethod
     def debug(self, msg: str, **kwargs):
         pass
@@ -101,7 +103,7 @@ class AppLoggerBase(ABC):
         pass
 
     @abstractmethod
-    def error(self, msg: str, **kwargs):
+    def error(self, msg: str | Exception, **kwargs):
         pass
 
     @abstractmethod
@@ -110,7 +112,7 @@ class AppLoggerBase(ABC):
 
 
 @dataclass(slots=True)
-class AppLogger(AppLoggerBase):
+class HelioLogger(HelioLoggerBase):
     """
     Custom logger for custom event formating and printing
         - low budget logger not replacement for builtin
@@ -146,14 +148,13 @@ class AppLogger(AppLoggerBase):
         custom_level = [name for name, value in locals().items() if value is True]
 
         if len(custom_level) > 1:
-            last_level_entry =self._msg_level(custom_level[-1].upper())
+            last_level_entry = self._msg_level(custom_level[-1].upper())
             return last_level_entry
-
 
         if custom_level:
             new_level = self._msg_level(custom_level[0].upper())
             return new_level
-        
+
         return loglvl.NOTSET
 
     def _tag(self, tag: str) -> str:
@@ -180,7 +181,9 @@ class AppLogger(AppLoggerBase):
             print(self._tag(self._level_value(level)), msg)
             return None
 
-        print(strftime("%H:%M:%S"), self._tag(self._level_value(level)), msg, flush=True)
+        print(
+            strftime("%H:%M:%S"), self._tag(self._level_value(level)), msg, flush=True
+        )
 
     def app(self, lvl: loglvl, msg: str, **kwargs):
         lvl = _msgToLevel[lvl.name]
@@ -198,8 +201,9 @@ class AppLogger(AppLoggerBase):
         level = loglvl.WARNING
         self._log(level.value, self._msg(self._level_name(level), msg), **kwargs)
 
-    def error(self, msg: str, **kwargs):
+    def error(self, msg: str | Exception, **kwargs):
         level = loglvl.ERROR
+        msg = str(msg)
         self._log(level.value, self._msg(self._level_name(level), msg), **kwargs)
 
     def data_format(self, level: loglvl, msg: str):
@@ -207,7 +211,7 @@ class AppLogger(AppLoggerBase):
 
 
 def test():
-    log = AppLogger(warning=True)
+    log = HelioLogger(warning=True)
     log.app(loglvl.CREATED, "created")
     log.app(loglvl.STOPPED, "stopped")
     log.app(loglvl.MAXTIME, "maxtime")
