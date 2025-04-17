@@ -2,9 +2,9 @@ from pathlib import Path
 import sqlite3
 from contextlib import contextmanager
 from stardust.config.settings import get_setting
-from stardust.utils.applogging import AppLogger, loglvl
+from stardust.utils.applogging import HelioLogger, loglvl
 
-log = AppLogger()
+log = HelioLogger()
 
 config = get_setting()
 
