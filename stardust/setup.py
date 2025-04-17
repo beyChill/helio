@@ -2,9 +2,9 @@ from pathlib import Path
 
 # from database.dbconnections import db_init
 from config.settings import get_setting
-from utils.applogging import  AppLogger, loglvl
+from utils.applogging import HelioLogger, loglvl
 
-log = AppLogger()
+log = HelioLogger()
 
 
 def create_init_folders():
