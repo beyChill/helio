@@ -1,87 +1,98 @@
-
+import argparse
+import asyncio
 import sys
-from cmd2 import Cmd
-from stardust.apps import __apps__ as apps_module
-from stardust.apps.chaturbate.argpar import get_parser
 
-APP_MAPPINGS = {}
-for attr in dir(apps_module):
-    if attr.startswith("_") and not attr.startswith("__"):
-        app_data = getattr(apps_module, attr)
-        APP_MAPPINGS[app_data[0]] = app_data[1]
+from cmd2 import Cmd, Cmd2ArgumentParser, with_argparser, with_category
 
-REVERSE_APP_MAPPINGS = {v: k for k, v in APP_MAPPINGS.items()}
+from stardust.apps.chaturbate.cli import Chaturbate
+from stardust.apps.stripchat.cli import StripChat
+from stardust.config.chroma import rgb
+from stardust.utils.applogging import HelioLogger
+from stardust.utils.general import check_helio_github_version, get_app_name
+from stardust.utils.handlesignal import SignalManager
 
-print(APP_MAPPINGS)
-
-class CLI(Cmd):
-    file = None
-    intro = "Type help or ? for command infomation.\n"
-    user_prompt = "$"
-    prompt = f"{user_prompt}-> "
-
-    cb_get = get_parser()
-
-# def settings_ns_provider(self) -> Namespace:
-#     """Populate an argparse Namespace with current settings"""
-#     ns = Namespace()
-#     ns.app_settings = self.settings
-#     return ns
+log = HelioLogger()
 
 
-    # @with_argparser(cb_get)
-    # def do_get(self,args):
-    #     print('capture',args.capture)
+def run_async_in_thread(coro):
+    """Run asynchronous tasks in separate threads"""
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(coro)
+    loop.close()
 
-    #     if args.capture:
-    #         self.poutput(f"capture:{args.streamer}")
-    #         return None
 
-    #     if args.data:
-    #         self.poutput(f"{args.data}, run query")
-    #         return None
+class HelioCli(Cmd):
+    """
+    AppGroup dynamically runs the app's cli.
+    """
 
-    #     print("************")
+    app_prompt = ""
+    prompt = rgb("Helio--> ", "green")
 
-    #     self.poutput(args)
+    def __init__(self, *args, **kwargs):
+        # gotta have this or neither the plugin or cmd2 will initialize
+        super().__init__(*args, auto_load_commands=False, **kwargs)
 
-    #     return None
-    
+        self._chaturbate = Chaturbate()
+        self._stripchat = StripChat()
 
-    # def do_get(self, args) -> None:
+    load_parser = Cmd2ArgumentParser()
+    load_parser.add_argument("app", choices=["cb", "sc"])
 
-    #     if not all(data := CliValidations().check_input(line, self.user_prompt)):
-    #         return None
+    def _new_prompt(self, prompt_):
+        self.prompt = rgb(f"{prompt_}--> ", "green")
 
-    #     # remove possiblity for None
-    #     streamer_name = str(data.name_)
-    #     streamer: HlsQueryResults = self.get_url(streamer_name)
+    @with_category("Helio Commands")
+    @with_argparser(load_parser)
+    def do_app(self, ns: argparse.Namespace):
+        """Access the cli for a given site"""
+        slug, name_ = get_app_name(ns.app)
 
-    #     db_add_streamer(streamer.name_, streamer.domain)
+        self.app_prompt = slug
+        if name_ == "chaturbate":
+            self.register_command_set(self._chaturbate)
 
-    #     if not all(streamer):
-    #         # log.info(f"{streamer.name_} is {streamer.room_status}")
-    #         return None
+        if name_ == "stripchat":
+            self.register_command_set(self._stripchat)
 
-    #     # if recent_api_call():
-    #     #     log.info(colored("Awaiting api rest cmd get", "yellow"))
-    #     #     sleep(60)
-    #     #     log.debug("resuming api call")
+        try:
+            app_slug = slug.upper()
+            self.poutput(f"{name_} active")
+            self._new_prompt(app_slug)
 
-    #     if not None in (db_get_pid(streamer.name_)):
-    #         log.info(
-    #             f"Already capturing {colored(streamer.name_,"yellow")} ({data.site})"
-    #         )
-    #         return None
+        except Exception as e:
+            log.error(e)
+            self.poutput(f"{name_} already loaded")
 
-    #     if not all(streamer_data := CreateStreamer(*streamer).return_data):
-    #         print(streamer_data)
-    #         return None
+    @with_category("Helio Commands")
+    @with_argparser(load_parser)
+    def do_unapp(self, ns: argparse.Namespace):
+        slug, name_ = get_app_name(ns.app)
+        if not name_:
+            return None
 
-    #     CaptureStreamer(streamer_data)
+        if ns.app == slug:
+            self.unregister_command_set(self._chaturbate)
 
-    #     return None
+        if ns.app == slug:
+            self.unregister_command_set(self._stripchat)
 
-if __name__=="__main__":
-    c=CLI()
-    sys.exit(c.cmdloop())
+        if ns.app != self.app_prompt:
+            print(ns.app)
+            return None
+
+        self.poutput("Helio active")
+        self.prompt = rgb("Helio--> ", "green")
+
+    def do_version(self, _) -> None:
+        asyncio.run(check_helio_github_version())
+
+
+def app_cli_main(**kwargs):
+    SignalManager().register_signals()
+    sys.exit(HelioCli().cmdloop())
+
+
+if __name__ == "__main__":
+    app_cli_main()
