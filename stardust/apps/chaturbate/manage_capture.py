@@ -1,5 +1,5 @@
-from stardust.apps.chaturbate.capture import CaptureStreamer
-from stardust.apps.chaturbate.set_streamer_data import FFmpegData
+from stardust.capture.ffmpeg_config import FFmpegData
+from stardust.capture.ffmpeg_saver import CaptureStreamer
 
 
 def start_capture(list: list):

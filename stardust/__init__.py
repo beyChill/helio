@@ -1,1 +1,6 @@
-__version__ = "0.0.1.0"
+__version__ = "0.1.1"
+__author__ = "beyChill"
+__description__ = "Capture streams"
+__repo_name__ = "helio"
+__repo_url__ = "https://github.com/beyChill/helio"
+__repo_path__="beyChill/helio"

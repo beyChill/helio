@@ -1,11 +1,11 @@
 [project]
 name = "helio"
 version = "0.1.0"
-description = "Add your description here"
+description = "Capture video streams"
 readme = "README.md"
 requires-python = ">=3.13"
+
 dependencies = [
-    "click>=8.1.8",
     "cmd2>=2.5.11",
     "curl-cffi>=0.10.0",
     "m3u8>=6.0.0",

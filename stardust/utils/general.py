@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta
 from random import uniform
 from typing import Any
-from stardust.apps import __apps__ as helio_apps
 
 import m3u8
 from rnet import Client, Response
+
 import stardust
-from stardust.apps.chaturbate.db_write import write_cb_url
+from stardust.apps import __apps__ as helio_apps
+from stardust.apps.chaturbate.db_write import write_m3u8
 from stardust.utils.applogging import HelioLogger, loglvl
 
 log = HelioLogger()
@@ -53,7 +54,7 @@ def process_hls(results: list[Any]):
         streamer_name = new_url.split("amlst:")[-1].split("-sd-")[0]
         streamer_url.append((streamer_name, new_url))
         write_data = [(v, k) for k, v in streamer_url]
-        write_cb_url(write_data)
+        write_m3u8(write_data)
 
     return streamer_url
 

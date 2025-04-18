@@ -1,10 +1,10 @@
 import asyncio
-from datetime import datetime
 import re
+from datetime import datetime
 
-from stardust.apps.chaturbate.handleurls import CbUrls
 from stardust.apps.chaturbate.db_query import query_bio
-from stardust.apps.chaturbate.db_write import write_cb_api_data, write_cb_url
+from stardust.apps.chaturbate.db_write import write_cb_api_data, write_m3u8
+from stardust.apps.chaturbate.handleurls import NetActions
 from stardust.config.constants import ChatVideoContext
 from stardust.utils.applogging import HelioLogger, loglvl
 from stardust.utils.general import process_hls
@@ -15,7 +15,7 @@ log = HelioLogger()
 
 @AppTimer
 async def manage_api_videocontext(streamers: list[str]):
-    cb_api = CbUrls()
+    cb_api = NetActions()
     results = await cb_api.get_all_bio(streamers)
 
     full_json, has_hls = process_response(results)
@@ -28,7 +28,7 @@ async def manage_api_videocontext(streamers: list[str]):
 
     hls_urls = await cb_api.get_all_m3u8(has_hls)
     streamer_url = process_hls(hls_urls)
-    write_cb_url(streamer_url)
+    write_m3u8(streamer_url)
 
     log.app(
         loglvl.SUCCESS, f"Completed {len(streamer_url)} of {len(streamers)} queries"

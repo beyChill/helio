@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     DB_PATH: Path = DB_FOLDER / DB_NAME
     DIR_SSD: Path = Path(f"{env.get('SSD_PATH', f'{APP_DIR}/videos')}")
     DIR_IMG_PATH: Path = Path(f"{env.get('SSD_PATH', f'{APP_DIR}/images')}")
-    DIR_VIDEO_PATH: Path = Path(DIR_IMG_PATH / "videos")
+    DIR_VIDEO_PATH: Path = Path(DIR_SSD / "videos")
     DIR_VIDEO_REVIEW: Path = Path(
         f"{env.get('DIR_VIDEO_REVIEW', f'{APP_DIR}/video_review')}"
     )
@@ -41,7 +41,7 @@ class Settings(BaseSettings):
     )
     FFMPEG_DEGUB:bool = False
     VIDEO_EXT:str='mkv'
-    VIDEO_LENGTH_SECONDS: int = 120
+    VIDEO_LENGTH_SECONDS: int = 30
 
 
 

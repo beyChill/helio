@@ -1,15 +1,15 @@
 from __future__ import annotations
+
+import asyncio
 from datetime import datetime, timedelta
 from random import uniform
-import asyncio
 from sqlite3 import Date
 
-
-from stardust.apps.chaturbate.handleurls import CbUrls
 from stardust.apps.chaturbate.db_write import write_db_streamers
+from stardust.apps.chaturbate.handleurls import NetActions
+from stardust.config.constants import CBRoom, cb_param
 from stardust.utils.applogging import HelioLogger
 from stardust.utils.timer import AppTimer
-from stardust.config.constants import CBRoom, cb_param
 
 log = HelioLogger(debug=True)
 
@@ -31,7 +31,7 @@ def url_param(category=cb_param.FEMALE, tag=cb_param.TAG.NONE):
 @AppTimer
 async def get_streamers_online():
     """download and process json files for a predefined category (url_params) of streamers"""
-    cb_url = CbUrls()
+    iNet = NetActions()
 
     params = url_param(cb_param.FEMALE, cb_param.TAG.NONE)
 
@@ -39,13 +39,13 @@ async def get_streamers_online():
     # The total is used to calculate max urls to generate.
     # Each url has a max capacity of 90 streamers. App generates urls until the
     # all online streamers are accounted for.
-    req = await cb_url.get_all_jsons(params)
+    req = await iNet.get_all_jsons(params)
     initial = req[0]
 
     streamers_online = initial.total_count
     # streamers_online = 180
 
-    results = await cb_url.get_all_jsons(params, streamers_online)
+    results = await iNet.get_all_jsons(params, streamers_online)
     results.append(initial)
 
     json_data: list[CBRoom] = [
@@ -61,7 +61,7 @@ def prep_db_entries(json_data: list[CBRoom]):
 
     for val in json_data:
         if val.current_show != "public":
-            print(val.current_show)
+            log.warning(val.current_show)
         name_ = val.username
         age = None if val.display_age == "" else val.display_age
         last = today_

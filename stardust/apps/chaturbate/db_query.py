@@ -15,7 +15,7 @@ def query_bio(*, date_: date = date.today(), limit: int = 180):
         """,
         (date_, limit),
     )
-    data = query_db(sql)
+    data = query_db(sql, "all")
 
     return data
 
@@ -29,7 +29,7 @@ def query_capture_status():
         AND pid IS NULL
         ORDER BY RANDOM()
         """
-    data = query_db(sql)
+    data = query_db(sql, "all")
 
     return data
 

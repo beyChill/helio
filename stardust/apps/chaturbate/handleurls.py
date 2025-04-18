@@ -1,12 +1,12 @@
 import asyncio
 from random import choice
-# from curl_cffi import AsyncSession, Response as cResponse
+
 from rnet import Client, Impersonate, ImpersonateOS, Response
 
 from stardust.config.constants import CBModel, ChatVideoContext
 
 
-class CbUrls:
+class NetActions:
     browser = [Impersonate.Firefox136, Impersonate.Chrome134, Impersonate.Edge131]
     os = [ImpersonateOS.Windows, ImpersonateOS.MacOS, ImpersonateOS.Linux]
     client = Client()
@@ -76,7 +76,6 @@ class CbUrls:
         return await asyncio.gather(*tasks)
 
     async def get_jpg(self, url: str):
-
         resp: Response = await self.client.get(url)
         if resp.status != 200:
             return (resp, bytes())
@@ -85,16 +84,14 @@ class CbUrls:
         return (resp, image)
 
     async def get_ajax_url(self, streamers: list[str]):
-        results=[]
-        tasks = [[("room_slug", name_),("bandwidth", "high")] for name_ in streamers]
+        results = []
+        tasks = [[("room_slug", name_), ("bandwidth", "high")] for name_ in streamers]
 
         async with asyncio.TaskGroup() as group:
             for task in tasks:
                 task = group.create_task(self.get_ajax(task))
                 task.add_done_callback(lambda t: results.append(t.result()))
 
-        # results = await asyncio.gather(*tasks)
-        
         return results
 
     async def get_ajax(self, params):
@@ -106,6 +103,6 @@ class CbUrls:
             headers=headers,
         )
 
-        url = await resp.json()
+        data = await resp.json()
 
-        return url
+        return data

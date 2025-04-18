@@ -1,17 +1,17 @@
 import asyncio
 from pathlib import Path
-from threading import Thread
+
 from rnet import Response
 
 from stardust.apps.chaturbate.db_query import query_capture_status
-from stardust.apps.chaturbate.handleurls import CbUrls
+from stardust.apps.chaturbate.handleurls import NetActions
 from stardust.apps.chaturbate.manage_capture import start_capture
-from stardust.utils.timer import AppTimer
 from stardust.utils.applogging import HelioLogger
 from stardust.utils.general import process_hls, script_delay
+from stardust.utils.timer import AppTimer
 
 log = HelioLogger()
-cb_api = CbUrls()
+cb_api = NetActions()
 
 
 @AppTimer
@@ -33,12 +33,9 @@ async def get_streamers():
 
     urls_ = [url["url"] for url in urls]
     hls_urls = await cb_api.get_all_m3u8(urls_)
-    # print(cb_urls)
 
     streamer_url = process_hls(hls_urls)
 
-    # log.debug(f"{len(online)} of {len(data)} streamers online")
-    # start_capture(streamer_url)
     return streamer_url
 
 

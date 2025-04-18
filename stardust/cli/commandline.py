@@ -9,7 +9,7 @@ from stardust.apps.stripchat.cli import StripChat
 from stardust.config.chroma import rgb
 from stardust.utils.applogging import HelioLogger
 from stardust.utils.general import check_helio_github_version, get_app_name
-from stardust.utils.handlesignal import SignalManager
+from stardust.aexper.handlesignal import SignalManager
 
 log = HelioLogger()
 
@@ -90,8 +90,8 @@ class HelioCli(Cmd):
 
 
 def app_cli_main(**kwargs):
-    SignalManager().register_signals()
     sys.exit(HelioCli().cmdloop())
+    # SignalManager()._setup_signal_handlers()
 
 
 if __name__ == "__main__":
