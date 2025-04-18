@@ -27,7 +27,7 @@ def write_db_streamers(value: list):
     write_cb_many(sql, value)
 
 
-def write_cb_url(value: list[tuple[str, str]]):
+def write_m3u8(value: list[tuple[str, str]]):
     sql = """
         UPDATE chaturbate
         SET url_= ?
@@ -54,8 +54,8 @@ def write_cb_api_data(value: list):
     write_cb_many(sql, value)
 
 
-def write_pid(arg: tuple[int, str]):
-    pid, name_ = arg
+def write_pid(value: tuple[int, str]):
+    pid, name_ = value
     today = datetime.now().replace(microsecond=0)
     # SET recorded=recorded+1,
     sql = "Update chaturbate SET pid=?, last_capture=?, last_broadcast=? WHERE streamer_name=?"
@@ -68,3 +68,24 @@ def write_pid(arg: tuple[int, str]):
 def write_remove_pid(value: int):
     sql = "UPDATE chaturbate SET pid=? WHERE pid=?"
     write_db(sql, (None, value))
+
+
+def write_get_streamer(value: str):
+    name_ = value
+    today = datetime.now().replace(microsecond=0)
+    sql = """
+        INSERT INTO chaturbate (streamer_name, seek_capture) 
+        VALUES (?, ?) 
+        ON CONFLICT (streamer_name) 
+        DO UPDATE SET 
+        seek_capture=EXCLUDED.seek_capture
+        WHERE seek_capture IS NULL
+        """
+    args = (
+        name_,
+        today,
+    )
+    write = write_db(sql, args)
+
+    if not write:
+        log.error(f"Failed to add: {name_}")

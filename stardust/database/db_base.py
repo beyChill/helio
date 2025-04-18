@@ -102,11 +102,11 @@ def query_db(sql: str | tuple, action: str = "one"):
             if not isinstance(sql, tuple):
                 cursor.execute(sql)
 
-            # if action == "one":
-            #     data = cursor.fetchone()
+            if action == "one":
+                data = cursor.fetchone()
 
-            # if action == "all":
-            data = cursor.fetchall()
+            if action == "all":
+                data = cursor.fetchall()
             return data
 
     except sqlite3.Error as e:
