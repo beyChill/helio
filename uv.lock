@@ -169,6 +169,7 @@ dependencies = [
     { name = "pygithub" },
     { name = "python-dotenv" },
     { name = "rnet" },
+    { name = "tabulate" },
 ]
 
 [package.metadata]
@@ -180,6 +181,7 @@ requires-dist = [
     { name = "pygithub", specifier = ">=2.6.1" },
     { name = "python-dotenv", specifier = ">=1.1.0" },
     { name = "rnet", specifier = ">=2.2.1" },
+    { name = "tabulate", specifier = ">=0.9.0" },
 ]
 
 [[package]]
@@ -387,6 +389,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/b5/fc/309be94dde8093553e8b1457c5a48ccc359008d8abb728edfc19ef9ffd27/rnet-2.2.1-cp313-cp313t-win32.whl", hash = "sha256:575b07fe06d27d5f180f3ec3142cf1954d817fb8f921d3c562145de14d1c725c", size = 3196909 },
     { url = "https://files.pythonhosted.org/packages/8e/71/d004ce35eb7b799f452e1b827b3f37e4b01066577ba274851b543000ade3/rnet-2.2.1-cp313-cp313t-win_amd64.whl", hash = "sha256:eb5635f6c9670f5d3f1b3247cfd644e1a8a878f44db71a330d7a13f5d938c55a", size = 3527734 },
     { url = "https://files.pythonhosted.org/packages/da/81/e75d42fd95d4d1fa306d150cad71f6a70f1841c15cf1b0ad07c8a275b37f/rnet-2.2.1-cp313-cp313t-win_arm64.whl", hash = "sha256:7a0604d4ae63e547b53ed90abef56ab355146b8db70438fd0c5596db5c391af7", size = 3178502 },
+]
+
+[[package]]
+name = "tabulate"
+version = "0.9.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ec/fe/802052aecb21e3797b8f7902564ab6ea0d60ff8ca23952079064155d1ae1/tabulate-0.9.0.tar.gz", hash = "sha256:0095b12bf5966de529c0feb1fa08671671b3368eec77d7ef7ab114be2c068b3c", size = 81090 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/40/44/4a5f08c96eb108af5cb50b41f76142f0afa346dfa99d5296fe7202a11854/tabulate-0.9.0-py3-none-any.whl", hash = "sha256:024ca478df22e9340661486f85298cff5f6dcdba14f3813e8830015b9ed1948f", size = 35252 },
 ]
 
 [[package]]
