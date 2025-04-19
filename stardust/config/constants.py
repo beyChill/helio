@@ -7,8 +7,6 @@ from curl_cffi.requests.impersonate import BrowserTypeLiteral
 from pydantic import BaseModel
 
 
-
-
 class _auto_null:
     def __repr__(self):
         return "_auto_null"
@@ -317,16 +315,27 @@ class ChatVideoContext(BaseModel):
     premium_private_min_minutes: int
     premium_show_running: bool
     quality: Quality
+    code: Optional[int]
 
 
 class DataFFmpeg(BaseModel):
     """Data for capturing live stream"""
-    name_: str 
-    url_: str 
-    file_: Path 
+
+    name_: str
+    url_: str
+    file_: Path
     # parameters require for ffmpeg capture
-    args: list 
-    
+    args: list
+
+
 class StreamerWithPid(BaseModel):
     pid: int
+    name_: str
+
+
+class FailVideoContext(BaseModel):
+    status: int
+    detail: str
+    code: str
+    ts_context: str | None
     name_: str

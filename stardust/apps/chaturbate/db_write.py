@@ -1,5 +1,6 @@
-from datetime import datetime
+from datetime import date, datetime
 
+from stardust.config.constants import FailVideoContext
 from stardust.database.db_base import write_cb_many, write_db
 from stardust.utils.applogging import HelioLogger
 
@@ -38,7 +39,7 @@ def write_m3u8(value: list[tuple[str, str]]):
     return status
 
 
-def write_cb_api_data(value: list):
+def write_api_data(value: list):
     sql = """
         INSERT INTO chaturbate (
         streamer_name, age, last_broadcast, viewers, tags)
@@ -52,6 +53,7 @@ def write_cb_api_data(value: list):
         tags=EXCLUDED.tags,
         bio_chk_date=DATE('now', 'localtime')
     """
+
     write_cb_many(sql, value)
 
 
@@ -90,3 +92,41 @@ def write_get_streamer(value: str):
 
     if not write:
         log.error(f"Failed to add: {name_}")
+
+
+def write_remove_seek(name_):
+    sql = "UPDATE chaturbate SET seek_capture=?, pid=? WHERE streamer_name=?"
+    args = (None, None, name_)
+
+    if not write_db(sql, args):
+        log.error(f"Unable to stop capture for {name_} [CB]")
+
+
+def write_block_info(data):
+    name_, *reason = data
+    reason = " ".join(reason)
+
+    sql = """
+        UPDATE chaturbate 
+        SET block_date=?, seek_capture=?, notes=IFNULL(notes, '')||?
+        WHERE streamer_name=?
+        """
+    arg = (date.today(), None, f"{reason}", name_)
+    if not write_db(sql, arg):
+        log.error(f"Block command failed for {name_} [CB]")
+
+def write_videocontext_fail(values:list[FailVideoContext]):
+    new_values=[]
+    for value in values:
+        new_values.append((value.status,value.detail,value.code,value.name_))
+    sql="""
+        UPDATE chaturbate
+        SET bio_chk_date=DATETIME('now', 'localtime'),
+        bio_fail_date=DATETIME('now', 'localtime'),
+        bio_fail_status=?,
+        bio_fail_detail=?,
+        bio_fail_code=?
+        WHERE streamer_name=?
+        """
+    
+    write_cb_many(sql, new_values)
