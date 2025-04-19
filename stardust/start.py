@@ -11,11 +11,13 @@ threads = [
     Thread(target=loop_cb_room_list, daemon=True),
 ]
 
-
-if __name__ == "__main__":
+def main():
     db_init()
     for thread in threads:
         thread.start()
 
     cli = HelioCli()
     sys.exit(cli.cmdloop())
+    
+if __name__ == "__main__":
+    main()
