@@ -99,9 +99,11 @@ def query_db(sql: str | tuple, action: str = "one"):
                 sql_query, args = sql
                 cursor.execute(sql_query, args)
 
-            if not isinstance(sql, tuple):
-                cursor.execute(sql)
-
+            try:
+                if not isinstance(sql, tuple):
+                    cursor.execute(sql)
+            except Exception as e:
+                print(e)
             if action == "one":
                 data = cursor.fetchone()
 

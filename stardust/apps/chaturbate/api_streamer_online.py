@@ -3,7 +3,7 @@ from pathlib import Path
 
 from rnet import Response
 
-from stardust.apps.chaturbate.db_query import query_capture_status
+from stardust.apps.chaturbate.db_query import query_seek_status
 from stardust.apps.chaturbate.handleurls import NetActions
 from stardust.apps.chaturbate.manage_capture import start_capture
 from stardust.utils.applogging import HelioLogger
@@ -16,7 +16,7 @@ cb_api = NetActions()
 
 @AppTimer
 async def get_streamers():
-    data = query_capture_status()
+    data = query_seek_status()
 
     if not data:
         log.warning("Zero Chaturbate streams to capture")

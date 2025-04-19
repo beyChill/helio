@@ -41,7 +41,7 @@ class Settings(BaseSettings):
     )
     FFMPEG_DEGUB:bool = False
     VIDEO_EXT:str='mkv'
-    VIDEO_LENGTH_SECONDS: int = 30
+    VIDEO_LENGTH_SECONDS: int = 1800
 
 
 
