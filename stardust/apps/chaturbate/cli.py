@@ -131,10 +131,20 @@ class Chaturbate(CommandSet):
         head = ["Streamers", "Recent Stream", "Data"]
         self._print_table(query, head)
 
-    def do_long(self, _):
-        streamers = query_long_offline()
+    long_parser = Cmd2ArgumentParser()
+    long_parser.add_argument(
+        "days",
+        type=int,
+        choices=[0, 7, 14, 31, 60, 90, 120, 180, 365, 730],
+        help="Use one option",
+    )
+
+    @with_argparser(long_parser)
+    def do_long(self, num: Namespace):
+        streamers = query_long_offline(num.days)
+        print(len(streamers))
         if len(streamers) == 0:
-            print("Zero streamers meet long offline criterion")
+            log.warning("Query return zero streamers")
             return
 
         self.update_last_broadcast(streamers)

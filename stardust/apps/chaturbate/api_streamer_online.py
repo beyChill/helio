@@ -11,7 +11,7 @@ from stardust.utils.general import process_hls, script_delay
 from stardust.utils.timer import AppTimer
 
 log = HelioLogger()
-cb_api = NetActions()
+iNet = NetActions()
 
 
 @AppTimer
@@ -29,10 +29,10 @@ async def get_streamers():
         return []
 
     online = process_results(results)
-    urls = await cb_api.get_ajax_url(online)
+    urls = await iNet.get_ajax_url(online)
 
     urls_ = [url["url"] for url in urls]
-    hls_urls = await cb_api.get_all_m3u8(urls_)
+    hls_urls = await iNet.get_all_m3u8(urls_)
 
     streamer_url = process_hls(hls_urls)
 
@@ -40,7 +40,7 @@ async def get_streamers():
 
 
 async def check_online_status(streamers: list[str]):
-    data = await cb_api.get_all_jpg(streamers)
+    data = await iNet.get_all_jpg(streamers)
 
     results = [(response, image) for response, image in data if image]
 

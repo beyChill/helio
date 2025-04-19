@@ -20,15 +20,15 @@ processed: list[str] = []
 
 @AppTimer
 async def manage_api_videocontext(streamers: list[str]):
-    cb_api = NetActions()
-    results = await cb_api.get_all_bio(streamers)
+    iNet = NetActions()
+    results = await iNet.get_all_bio(streamers)
 
     accessible = [data for data in results if isinstance(data, ChatVideoContext)]
     fail = [data for data in results if isinstance(data, FailVideoContext)]
 
     if accessible:
         has_hls = handle_response(accessible)
-        hls_urls = await cb_api.get_all_m3u8(has_hls)
+        hls_urls = await iNet.get_all_m3u8(has_hls)
         streamer_url = process_hls(hls_urls)
         write_m3u8(streamer_url)
 

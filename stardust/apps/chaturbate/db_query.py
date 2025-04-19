@@ -12,7 +12,7 @@ def query_bio(*, date_: date = date.today(), limit: int = 180):
         AND category IS NOT NULL
         AND IFNULL(bio_chk_date,'1970-01-01') <> ? 
         LIMIT ?
-        """,git
+        """,
         (date_, limit),
     )
     data = query_db(sql, "all")
