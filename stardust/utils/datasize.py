@@ -1,7 +1,9 @@
 import os
 from itertools import groupby
 from operator import itemgetter
+from pathlib import Path
 
+from stardust.apps.chaturbate.db_write import write_data_keep, write_data_review
 from stardust.config.settings import get_setting
 from stardust.utils.timer import AppTimerSync
 
@@ -38,6 +40,7 @@ def calculations(data):
             total_size.append(os.stat(video).st_size)
 
         gigabyte = calc_size(total_size)
+        total_size=[]
         results.append((streamer, gigabyte))
     return results
 
@@ -53,6 +56,8 @@ def calc_size(file_data: list[int]):
 def get_video_sizes():
     storage_ = size_storage()
     keep = size_keep()
+    write_data_review(storage_)
+    write_data_keep(keep)
 
 
 if __name__ == "__main__":
