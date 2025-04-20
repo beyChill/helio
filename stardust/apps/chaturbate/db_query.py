@@ -59,7 +59,7 @@ def query_pid(_name: str):
         "SELECT pid FROM chaturbate WHERE streamer_name=?",
         (_name,),
     )
-    result = query_db(sql)
+    (result,) = query_db(sql)
     return result
 
 
