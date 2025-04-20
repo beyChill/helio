@@ -2,16 +2,22 @@
 <meta property="og:title" content="Helio: Python Web interactions" />
 <meta property="og:description" content="Fast, easy, and reliable CLI/UI" />
 <meta property="og:keywords" content="Python, stream, ffmpeg, download, record, video, chaturbate, adult, cmd2, stripchat, curl_cffi, screenshots, jpgs, images">
-<!-- <style>
-hr {
+<link rel="stylesheet" href="github-markdown.css">
+<style>
+hr { 
+  display: block;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  margin-left: auto;
+  margin-right: auto;
+  border-style: inset;
+  border-width: 100px;
+} 
+h5 {
     color: red;
+    animation: myanimation 2s infinite;
 }
-h1 {
-    color: blue;
-    font-weight:700;
-    font-size: 30px;
-}
-</style> -->
+</style>
 <p id="top" align="center"><b><h1 align="center">Helio</h1></b></p>
 
 <p align="center">An educational app for testing and comprehending python's<br/> capabilities to interact, monitor, stream data <br/>for specific internet sites</p>
