@@ -22,6 +22,10 @@ from stardust.apps.chaturbate.manage_capture import start_capture
 from stardust.utils.applogging import HelioLogger
 from stardust.utils.general import process_hls
 
+"""
+It appears single argparse, nargs=1, creates a list.
+select first in list for streamer.name inputs ie. [0]
+"""
 
 log = HelioLogger()
 
@@ -40,7 +44,7 @@ class Chaturbate(CommandSet):
         del Cmd.do_alias
         del Cmd.do_edit
         del Cmd.do_set
-        del Cmd.do_quit
+        # del Cmd.do_quit
         del Cmd.do_run_script
 
     get_parser = Cmd2ArgumentParser()
@@ -48,7 +52,8 @@ class Chaturbate(CommandSet):
 
     @with_argparser(get_parser)
     def do_get(self, streamer: Namespace):
-        name_ = streamer.name
+        name_ = streamer.name[0]
+        print(name_,type(name_),len(name_))
         if not check_streamer_name(name_):
             return None
 
@@ -72,7 +77,7 @@ class Chaturbate(CommandSet):
 
     @with_argparser(get_parser)
     def do_stop(self, streamer: Namespace) -> None:
-        name_ = streamer.name
+        name_ = streamer.name[0]
         if not check_streamer_name(name_):
             return None
 
