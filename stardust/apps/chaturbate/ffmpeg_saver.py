@@ -6,8 +6,8 @@ from time import sleep
 
 from stardust.apps.chaturbate.db_query import query_cap_status, query_url
 from stardust.apps.chaturbate.db_write import write_pid, write_remove_pid
+from stardust.apps.chaturbate.ffmpeg_config import FFmpegData
 from stardust.apps.chaturbate.handleurls import NetActions
-from stardust.capture.ffmpeg_config import FFmpegData
 from stardust.config.constants import DataFFmpeg
 from stardust.config.settings import get_setting
 from stardust.utils.applogging import HelioLogger, loglvl
