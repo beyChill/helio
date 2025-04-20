@@ -53,7 +53,7 @@ class Chaturbate(CommandSet):
     @with_argparser(get_parser)
     def do_get(self, streamer: Namespace):
         name_ = streamer.name[0]
-        print(name_,type(name_),len(name_))
+
         if not check_streamer_name(name_):
             return None
 
@@ -183,16 +183,10 @@ class Chaturbate(CommandSet):
     def _query_streamer_pid(self, name_):
         data = query_pid(name_)
 
-        if data is None:
+        if data is not None:
             log.error(
-                f"Problem with query for {name_} [CB]\n\t Check spelling or streamer capture status"
+                f"Already capturing {name_} [CB]"
             )
             return None
 
-        (pid,) = data
-
-        if not isinstance(pid, int):
-            log.warning(f"{name_} [CB] is not in capture status")
-            return None
-
-        return pid
+        return data
