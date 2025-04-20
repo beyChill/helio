@@ -3,7 +3,6 @@ from enum import Enum
 from pathlib import Path
 from random import choice
 from typing import Any, List, Optional
-from curl_cffi.requests.impersonate import BrowserTypeLiteral
 from pydantic import BaseModel
 
 
@@ -25,34 +24,6 @@ class auto:
 
     def __repr__(self):
         return "auto(%r)" % self.value
-
-
-IMPERSONATE: BrowserTypeLiteral = choice(
-    [
-        "safari_ios",
-        "safari15_3",
-        "safari15_5",
-        "safari17_0",
-        "safari17_2_ios",
-        "safari18_0",
-        "safari18_0_ios",
-        "chrome99",
-        "chrome100",
-        "chrome101",
-        "chrome104",
-        "chrome107",
-        "chrome110",
-        "chrome116",
-        "chrome119",
-        "chrome120",
-        "chrome123",
-        "chrome124",
-        "chrome131",
-        "chrome133a",
-        "chrome99_android",
-        "chrome131_android",
-    ]
-)
 
 
 class CBajax(BaseModel):
