@@ -86,7 +86,7 @@ async def manage_cb_room_list():
         if json_data is not None:
             db_data = prep_db_entries(json_data)
             write_db_streamers(db_data)
-        print(len(json_data))
+        log.info(f"{len(json_data)} chaturbate steamers online")
         # Delay reduces api queries per timeframe
         delay_ = set_script_delay()
         await asyncio.sleep(delay_)
@@ -97,7 +97,7 @@ def set_script_delay():
     # used to slow script execution
     delay_ = uniform(671.05, 1088.47)
     t1 = datetime.now() + timedelta(seconds=delay_)
-    log.info(f"Next CB query: {datetime.strftime(t1, '%H:%M:%S')}")
+    log.info(f"Next CB streamer filtered query: {datetime.strftime(t1, '%H:%M:%S')}")
     return delay_
 
 

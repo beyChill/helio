@@ -5,11 +5,11 @@ from stardust.utils.applogging import HelioLogger
 log = HelioLogger()
 
 
-class StripChat(CommandSet):
+class CamSoda(CommandSet):
     prompt = "SC-->"
 
     def __init__(self):
         super().__init__()
 
-    def do_b(self, _):
-        print("hello stripchat")
+    def do_cs(self, _):
+        print("hello camsoda")

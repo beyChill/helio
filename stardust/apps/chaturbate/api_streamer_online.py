@@ -85,7 +85,7 @@ async def manage_online_status():
 
         delay_, time_ = script_delay(209.07, 395.89)
 
-        log.info(f"Check CB streamers at: {time_}")
+        log.info(f"Seek CB streamers: {time_}")
         await asyncio.sleep(delay_)
 
 
