@@ -159,7 +159,6 @@ wheels = [
 
 [[package]]
 name = "helio"
-version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "cmd2" },
