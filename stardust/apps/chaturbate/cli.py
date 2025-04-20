@@ -81,15 +81,19 @@ class Chaturbate(CommandSet):
         if not check_streamer_name(name_):
             return None
 
-        if not (pid := self._query_streamer_pid(name_)):
-            return None
+        query_pid(name_)
 
-        try:
-            os.kill(pid, SIGTERM)
-        except OSError as e:
-            msg = f"{e} for {name_}"
-            log.error(msg)
-        write_remove_seek(name_)
+        if pid := query_pid(name_):
+            try:
+                os.kill(pid, SIGTERM)
+                write_remove_seek(name_)
+                log.info(f"Stopped {name_} [CB]")
+                return None
+            except OSError as e:
+                msg = f"{e} for {name_}"
+                log.error(msg)
+        log.info(f"Capture {name_} [CB] is not active")
+
 
     block_parser = Cmd2ArgumentParser()
     block_parser.add_argument("name", nargs=1, help="Streamer name")
