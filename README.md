@@ -1,4 +1,3 @@
-
 <meta property="og:site_name" content="Helio">
 <meta property="og:title" content="Helio: Python Web interactions" />
 <meta property="og:description" content="Fast, easy, and reliable CLI/UI" />
@@ -14,8 +13,8 @@ hr {
   border-width: 100px;
 } 
 h5 {
-    --color: red;
-  --animation: myanimation 2s infinite;
+    color: red;
+    animation: myanimation 2s infinite;
 }
 </style>
 <p id="top" align="center"><b><h1 align="center">Helio</h1></b></p>
