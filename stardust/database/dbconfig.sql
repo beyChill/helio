@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS chaturbate (
     age Integer DEFAULT NULL,
     data_total INTEGER DEFAULT NULL,
     data_review INTEGER DEFAULT NULL,
-    data_kept INTEGER DEFAULT NULL,
+    data_keep INTEGER DEFAULT NULL,
     last_broadcast DATETIME DEFAULT NULL,
     last_capture DATETIME DEFAULT NULL,
     seek_capture DATETIME DEFAULT NULL,

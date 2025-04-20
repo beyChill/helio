@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from pathlib import Path
 
 from stardust.config.constants import FailVideoContext
 from stardust.database.db_base import write_cb_many, write_db
@@ -130,3 +131,23 @@ def write_videocontext_fail(values:list[FailVideoContext]):
         """
     
     write_cb_many(sql, new_values)
+
+def write_data_review(value: list[tuple[str,Path]]):
+    sql = """
+        INSERT INTO chaturbate (streamer_name, data_review) 
+        VALUES (?, ?) 
+        ON CONFLICT (streamer_name) 
+        DO UPDATE SET 
+        data_review=EXCLUDED.data_review
+        """
+    write_cb_many(sql, value)
+
+def write_data_keep(value: list[tuple[str,Path]]):
+    sql = """
+        INSERT INTO chaturbate (streamer_name, data_keep) 
+        VALUES (?, ?) 
+        ON CONFLICT (streamer_name) 
+        DO UPDATE SET 
+        data_keep=EXCLUDED.data_keep
+        """
+    write_cb_many(sql, value)
