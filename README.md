@@ -1,21 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+
 <meta property="og:site_name" content="Helio">
 <meta property="og:title" content="Helio: Python Web interactions" />
 <meta property="og:description" content="Fast, easy, and reliable CLI/UI" />
 <meta property="og:keywords" content="Python, stream, ffmpeg, download, record, video, chaturbate, adult, cmd2, stripchat, curl_cffi, screenshots, jpgs, images">
 <link rel="stylesheet" href="github-markdown.css">
 <style>
-hr { 
-  display: block;
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
-  margin-left: auto;
-  margin-right: auto;
-  border-style: inset;
-  border-width: 100px;
-} 
-h5 {
-    color: red;
-    animation: myanimation 2s infinite;
+hr {
+    color:red;
 }
 </style>
 <p id="top" align="center"><b><h1 align="center">Helio</h1></b></p>
@@ -90,3 +84,5 @@ Knowledge share for some code in Helio's tech stack<br/>
 <a id="usage"></a>
 <h5>Usage</h5>
 <a href="#top">Top</a>
+</body>
+</html>
