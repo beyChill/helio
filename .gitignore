@@ -183,6 +183,7 @@ stardust/aexper/*
 *.sqlite3
 *.sqlite3-shm
 *.sqlite3-wal
+stardust/database/db/
 
 #video files
 video*/
