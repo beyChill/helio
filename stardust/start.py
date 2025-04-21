@@ -7,8 +7,8 @@ from stardust.cli.commandline import HelioCli
 from stardust.database.db_base import db_init
 
 threads = [
-    Thread(target=run_cb_streamers, daemon=True),
     Thread(target=loop_cb_room_list, daemon=True),
+    Thread(target=run_cb_streamers, daemon=True)
 ]
 
 def main():

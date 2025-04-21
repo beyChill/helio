@@ -59,7 +59,11 @@ def query_pid(_name: str):
         "SELECT pid FROM chaturbate WHERE streamer_name=?",
         (_name,),
     )
-    (result,) = query_db(sql)
+    data = query_db(sql)
+    if data is None:
+        return None
+    
+    (result,)=data
     return result
 
 
@@ -87,7 +91,6 @@ def query_long_offline(days: int):
     value = date.today() - timedelta(days=days)
     today_ = date.today()
 
-    print("querying:", today_, value)
     sql = (
         """
         SELECT streamer_name 

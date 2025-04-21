@@ -15,21 +15,18 @@ log = HelioLogger()
 
 def get_app_name(app_tag: str):
     """
-    Accept input convert to a site abbreviation and name
-        Cmd2 argparse decorators complete error checking
-        Therfore no input error checking is within this fuction
+    Dynamically generate a dict then return value
     """
     APP_DICT = {}
     for app in dir(helio_apps):
-        if app.startswith("app_") and not app.startswith("__"):
+        if app.startswith("app_"):
             app_data = getattr(helio_apps, app)
-            APP_DICT[app_data[0]] = app_data[1]
+            APP_DICT[app_data[0]] = app_data
 
-    INVERSE_DICT = {v: k for k, v in APP_DICT.items()}
-    app_name: str = APP_DICT.get(app_tag, None)
+    if not (data := APP_DICT.get(app_tag)):
+        return None
 
-    slug: str = app_name if app_name in APP_DICT else INVERSE_DICT.get(app_name, None)
-    return (slug, app_name)
+    return data
 
 
 def script_delay(min: float, max: float):

@@ -43,7 +43,7 @@ class Chaturbate(CommandSet):
         del Cmd.do_shell
         del Cmd.do_alias
         del Cmd.do_edit
-        del Cmd.do_set
+        # del Cmd.do_set
         # del Cmd.do_quit
         del Cmd.do_run_script
 
@@ -52,6 +52,7 @@ class Chaturbate(CommandSet):
 
     @with_argparser(get_parser)
     def do_get(self, streamer: Namespace):
+
         name_ = streamer.name[0]
 
         if not check_streamer_name(name_):
@@ -134,7 +135,7 @@ class Chaturbate(CommandSet):
         sort = self._sort_options(streamer.sort)
 
         if not (query := query_offline(sort)):
-            print("Following zero streamers")
+            log.warning("Following zero streamers")
             return None
 
         head = ["Streamers", "Recent Stream", "Data"]
@@ -151,7 +152,7 @@ class Chaturbate(CommandSet):
     @with_argparser(long_parser)
     def do_long(self, num: Namespace):
         streamers = query_long_offline(num.days)
-        print(len(streamers))
+
         if len(streamers) == 0:
             log.warning("Query return zero streamers")
             return
@@ -161,7 +162,7 @@ class Chaturbate(CommandSet):
     def update_last_broadcast(self, streamers: list):
         iNet = NetActions()
         results = asyncio.run(iNet.get_all_bio(streamers))
-        print(results)
+
         handle_response(results)
 
     def _print_table(self, query: list, head: list):
