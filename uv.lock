@@ -115,6 +115,25 @@ wheels = [
 ]
 
 [[package]]
+name = "curl-cffi"
+version = "0.11.0b1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "certifi" },
+    { name = "cffi" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/69/58/0aec1fc9e19a234be73b71bb0f743d39fd3cad4158c1ae68fb81fc1cfe52/curl_cffi-0.11.0b1.tar.gz", hash = "sha256:e6b788c9d5dc89ec73cbae47b7284bee8df44d015e901069247555b54ea36ff5", size = 146640 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2e/21/2f5aba7bbafcdf56a5f348cfdfe04cfebf365aab73ed5c3c01b79fef096e/curl_cffi-0.11.0b1-cp39-abi3-macosx_10_9_x86_64.whl", hash = "sha256:4575f5c914350f0504ea67cdda67986ab25e6bc6208e469585617174417f813b", size = 5507791 },
+    { url = "https://files.pythonhosted.org/packages/4f/4d/13ac951d82a7b9eb1e8c72d61ef37b0575cd97a6b9a51cd25afd97eca374/curl_cffi-0.11.0b1-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:46a81aace238a3c2acb5d4cfcb52ea7e9c13a8b46bed31f27b76e1c40e96e821", size = 2963437 },
+    { url = "https://files.pythonhosted.org/packages/f0/de/ecafa0b0bad88e994bb1c9fbc73d23ece2b9f1055ce785f1f95ab7ddaf79/curl_cffi-0.11.0b1-cp39-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ff488a2f816bcd144d6a9dfd4298f9185d94dbc0d42fd2541b5ed736404c23c5", size = 8080768 },
+    { url = "https://files.pythonhosted.org/packages/de/1b/f0a777c571f8b40061c53c628288548798f5f97216a4c0249120dfdfbc27/curl_cffi-0.11.0b1-cp39-abi3-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:5815be107baa199a4e9423dc8d96c2d936c0a94c447eff07ad121463ccbee693", size = 7640619 },
+    { url = "https://files.pythonhosted.org/packages/cb/d7/73b01617b776fc7e997d1cadcce620ee92b39a65649cf4c61a5b14ab9dba/curl_cffi-0.11.0b1-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:76a0e8ec358a04fefc488934c37037d305e7a8630518d711c5428eb928dcf044", size = 8490873 },
+    { url = "https://files.pythonhosted.org/packages/49/39/1a5cee86919b63f5a6b7e3c706af95720c9f0f3d8fe166a2e60440174dd8/curl_cffi-0.11.0b1-cp39-abi3-musllinux_1_1_aarch64.whl", hash = "sha256:4e7d9115abef97e9a8f0739d35afc165bba8e835e6d1ae483f8201daf1497aba", size = 8889182 },
+    { url = "https://files.pythonhosted.org/packages/24/c8/d8a27ae3546f03d8b2be90d5aed6a2308ca2444205ffc455afd8202899a6/curl_cffi-0.11.0b1-cp39-abi3-musllinux_1_1_x86_64.whl", hash = "sha256:6c9f82fac5f6d2a77d2e810984cc69908645f495ff2083ec8abd3a3ee0b5ebdd", size = 8867794 },
+]
+
+[[package]]
 name = "deprecated"
 version = "1.2.18"
 source = { registry = "https://pypi.org/simple" }
@@ -141,6 +160,7 @@ name = "helio"
 source = { virtual = "." }
 dependencies = [
     { name = "cmd2" },
+    { name = "curl-cffi" },
     { name = "m3u8" },
     { name = "pydantic-settings" },
     { name = "pygithub" },
@@ -152,6 +172,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "cmd2", specifier = ">=2.5.11" },
+    { name = "curl-cffi", specifier = ">=0.11.0b1" },
     { name = "m3u8", specifier = ">=6.0.0" },
     { name = "pydantic-settings", specifier = ">=2.8.1" },
     { name = "pygithub", specifier = ">=2.6.1" },
@@ -232,15 +253,16 @@ wheels = [
 
 [[package]]
 name = "pydantic-settings"
-version = "2.8.1"
+version = "2.9.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pydantic" },
     { name = "python-dotenv" },
+    { name = "typing-inspection" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/88/82/c79424d7d8c29b994fb01d277da57b0a9b09cc03c3ff875f9bd8a86b2145/pydantic_settings-2.8.1.tar.gz", hash = "sha256:d5c663dfbe9db9d5e1c646b2e161da12f0d734d422ee56f567d0ea2cee4e8585", size = 83550 }
+sdist = { url = "https://files.pythonhosted.org/packages/67/1d/42628a2c33e93f8e9acbde0d5d735fa0850f3e6a2f8cb1eb6c40b9a732ac/pydantic_settings-2.9.1.tar.gz", hash = "sha256:c509bf79d27563add44e8446233359004ed85066cd096d8b510f715e6ef5d268", size = 163234 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0b/53/a64f03044927dc47aafe029c42a5b7aabc38dfb813475e0e1bf71c4a59d0/pydantic_settings-2.8.1-py3-none-any.whl", hash = "sha256:81942d5ac3d905f7f3ee1a70df5dfb62d5569c12f51a5a647defc1c3d9ee2e9c", size = 30839 },
+    { url = "https://files.pythonhosted.org/packages/b6/5f/d6d641b490fd3ec2c4c13b4244d68deea3a1b970a97be64f34fb5504ff72/pydantic_settings-2.9.1-py3-none-any.whl", hash = "sha256:59b4f431b1defb26fe620c71a7d3968a710d719f5f4cdbbdb7926edeb770f6ef", size = 44356 },
 ]
 
 [[package]]
