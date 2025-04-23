@@ -14,19 +14,18 @@
     <br/> (primarliy mature / adult sites)
 </p>
 
-<div align='center' >
-    <ul align='center' >
-        <li display="inline"><a href="#requirements">Requirements</a> |</li>
-        <li display="inline"><a href="#installation">Installation</a> |</li>
-        <li style="display: inline;"><a href="#config">Config</a> |</li>
-        <li style="display: inline;"><a href="#dev_notes">Dev Notes</a> |</li>
+<p align='center' >
+    <a href="#requirements">Requirements</a> |
+    <a href="#installation">Installation</a> |
+    <a href="#config">Config</a> |
+    <a href="#dev_notes">Dev Notes</a> |
         <br/>
         <li style="display: inline;"><a href="#tech">Tech</a> |</li>
         <li style="display: inline;"><a href="#sites">Sites</a> |</li>
         <li style="display: inline;"><a href="#disclaimer">Disclaimer</a> |</li>
         <li style="display: inline;"><a href="#disclaimer">Usage</a> |</li>
     </ul>
-</div>
+</p>
 
 <p align="center">Platform: Linux</p>
 
