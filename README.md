@@ -1,81 +1,102 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta property="og:site_name" content="Helio">
-        <meta property="og:title" content="Helio: Python Web interactions" />
-        <meta property="og:description" content="Fast, easy, and reliable CLI/UI" />
-        <meta property="og:keywords" content="Python, stream, ffmpeg, download, record, video, chaturbate, adult, cmd2, stripchat, curl_cffi, screenshots, jpgs, images">
-        <link rel="stylesheet" href="github-markdown.css">
-    </head>
-    <body>
-        <p id="top" align="center"><b><h1 align="center">Helio</h1></b></p>
-        <p align="center">An educational app for testing and comprehending python's
-            <br/> capabilities to interact, monitor, and capture stream data
-            <br/> for a small number of specific internet sites.
-            <br/> (primarliy mature / adult sites)
-        </p>
-        <div align='center' >
-            <ul align='center' >
-                <li style="display: inline; align='center'"><a href="#requirements">Requirements</a> |</li>
-                <li style="display: inline;"><a href="#installation">Installation</a> |</li>
-                <li style="display: inline;"><a href="#config">Config</a> |</li>
-                <li style="display: inline;"><a href="#dev_notes">Dev Notes</a> |</li>
-                <br/>
-                <li style="display: inline;"><a href="#tech">Tech</a> |</li>
-                <li style="display: inline;"><a href="#sites">Sites</a> |</li>
-                <li style="display: inline;"><a href="#disclaimer">Disclaimer</a> |</li>
-                <li style="display: inline;"><a href="#disclaimer">Usage</a> |</li>
-            </ul>
-        </div>        
-        <p align="center">Platform: Linux</p>
-        <div align="center">
-            <img style="margin-right:15px;" alt="Static Badge" src="https://img.shields.io/badge/MIT-orange?style=for-the-badge&label=license&labelColor=blue">
-            <img style="margin-right:15px;" alt="GitHub last commit" src="https://img.shields.io/github/last-commit/beyChill/helio?style=for-the-badge&labelColor=blue">
-            <img style="margin-right:15px;" alt="GitHub Release Date" src="https://img.shields.io/github/release-date/beyChill/helio?style=for-the-badge&labelColor=blue">
-            <img alt="GitHub Downloads (all assets, all releases)" src="https://img.shields.io/github/downloads/beyChill/helio/total?style=for-the-badge&labelColor=blue">
-        </div>
-        <hr style="height:2px;border-width:0;color:gray;">
-        <p align="center" font-size="10px">
-        <div align="center">
-            <h3 id="Requirements">Requirements</h3>
-        </div>
-        <ul>
-            <li>Fast storage (SSD) for real-time access</li>
-            <li>Whatever long term storage for videos</li>
-            <li>Optional: For https access install the mitmproxy security certificates</li>
-            <li><a>https://docs.mitmproxy.org/stable/concepts-certificates/</a></li>            
-        </ul>
-        <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
-        </div>
-        <hr style="height:2px;border-width:0;color:gray;">
-        <div align="center">
-            <h3 id="installation">Installation</h3>
-        </div>
-        <h5>Prerequisite</h5>
-        <p>uv - An ultra fast project and package manager.<br/>
-            https://docs.astral.sh/uv/getting-started/installation/<br/>
-        </p>
-        <p>Clone from github</p>
-        <code> 
-            - from command prompt<br/>
-            mkdir [project name]<br/>
-            cd <project name><br/>
-            uv init .    <--(include dot for current directory)<br/>
-            uv run main.py<br/>
-            source /bin/.venv/activate
-        </code>
-        </div>
-        <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
-        <hr style="height:2px;border-width:0;color:gray;">
-        <div align="center">
-            <h3 id="config">Config</h3>
-        </div>
-        <div >
-            <p>
-                Managed setting are located in settings.py file. ( Path: stardust/config/settings.py )
-                The thought was simple in the beginning.  However, as Helio grows so does the size of settings.py.  Perhaps beyChill will look into other options. 
-                Consideration is being made for live config changes.
-            </p>
+<meta property="og:site_name" content="Helio">
+<meta property="og:title" content="Helio: Python Web interactions" />
+<meta property="og:description" content="Fast, easy, and reliable CLI/UI" />
+<meta property="og:keywords" content="Python, stream, ffmpeg, download, record, video, chaturbate, adult, cmd2, stripchat, curl_cffi, screenshots, jpgs, images">
+<!-- <link rel="stylesheet" href="github-markdown.css"> -->
+
+<p id="top" align="center"><b>
+    <h1 align="center">Helio</h1></b>
+</p>
+
+<p align="center">An educational app for testing and comprehending python's
+    <br/> capabilities to interact, monitor, and capture stream data
+    <br/> for a small number of specific internet sites.
+    <br/> (primarliy mature / adult sites)
+</p>
+
+<div align='center' >
+    <ul align='center' >
+        <li style="display: inline; align='center'"><a href="#requirements">Requirements</a> |</li>
+        <li style="display: inline;"><a href="#installation">Installation</a> |</li>
+        <li style="display: inline;"><a href="#config">Config</a> |</li>
+        <li style="display: inline;"><a href="#dev_notes">Dev Notes</a> |</li>
+        <br/>
+        <li style="display: inline;"><a href="#tech">Tech</a> |</li>
+        <li style="display: inline;"><a href="#sites">Sites</a> |</li>
+        <li style="display: inline;"><a href="#disclaimer">Disclaimer</a> |</li>
+        <li style="display: inline;"><a href="#disclaimer">Usage</a> |</li>
+    </ul>
+</div>
+
+<p align="center">Platform: Linux</p>
+
+<div align="center">
+    <img style="margin-right:15px;" alt="Static Badge" src="https://img.shields.io/badge/MIT-orange?style=for-the-badge&label=license&labelColor=blue">
+    <img style="margin-right:15px;" alt="GitHub last commit" src="https://img.shields.io/github/last-commit/beyChill/helio?style=for-the-badge&labelColor=blue">
+    <img style="margin-right:15px;" alt="GitHub Release Date" src="https://img.shields.io/github/release-date/beyChill/helio?style=for-the-badge&labelColor=blue">
+    <img alt="GitHub Downloads (all assets, all releases)" src="https://img.shields.io/github/downloads/beyChill/helio/total?style=for-the-badge&labelColor=blue">
+</div>
+
+<hr style="height:2px;border-width:0;color:gray;">
+
+<div align="center">
+    <h3 id="Requirements">Requirements</h3>
+</div>
+
+<ul>
+    <li>Fast storage (SSD) for real-time access</li>
+    <li>Whatever long term storage for videos</li>
+    <li>Optional: For https access install the mitmproxy security certificates</li>
+    <li><a>https://docs.mitmproxy.org/stable/concepts-certificates/</a></li>            
+</ul>
+
+<p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
+
+<hr style="height:2px;border-width:0;color:gray;">
+
+<div align="center">
+    <h3 id="installation">Installation</h3>
+</div>
+
+<h5>Prerequisite</h5>
+
+<p>uv - An ultra fast project and package manager.<br/>
+    https://docs.astral.sh/uv/getting-started/installation/<br/>
+</p>
+
+<p>Clone from github</p><br/>
+
+```bash
+    mkdir [project name]<br/>
+    cd <project name><br/>
+    uv init .    <--(include dot for current directory)<br/>
+    uv run main.py<br/>
+    source /bin/.venv/activate
+```
+
+```python
+from seleniumbase import SB
+
+with SB(test=True, uc=True) as sb:
+    sb.open("https://google.com/ncr")
+    sb.type('[title="Search"]', "SeleniumBase GitHub page\n")
+    sb.click('[href*="github.com/seleniumbase/"]')
+    sb.save_screenshot_to_logs()  # ./latest_logs/
+    print(sb.get_page_title())
+```
+
+<p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
+<hr style="height:2px;border-width:0;color:gray;">
+<div align="center">
+    <h3 id="config">Config</h3>
+</div>
+
+<div >
+    <p>
+        Managed setting are located in settings.py file. ( Path: stardust/config/settings.py )
+        The thought was simple in the beginning.  However, as Helio grows so does the size of settings.py.  Perhaps beyChill will look into other options. 
+        Consideration is being made for live config changes.
+    </p>
         </div>
         <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
         <hr style="height:2px;border-width:0;color:gray;">
@@ -128,5 +149,3 @@
             <h3id="usage">Usage</h3id=>
         </div>
         <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
-    </body>
-</html>
