@@ -44,8 +44,8 @@
 <ul>
     <li>Fast storage (SSD) for real-time access</li>
     <li>Whatever long term storage for videos</li>
-    <li>mitmproxy provides <b style="color:orange">https</b> access install the mitmproxy security certificates</li>
-    <li><a>https://docs.mitmproxy.org/stable/concepts-certificates/</a></li>            
+    <li>mitmproxy provides <b style="color:orange;">https</b> access install the mitmproxy security certificates</li>
+    <p style="margin-left:10px;"><a>https://docs.mitmproxy.org/stable/concepts-certificates/</a></p>            
 </ul>
 
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
