@@ -38,13 +38,13 @@
 <hr style="height:2px;border-width:0;color:gray;">
 
 <div align="center">
-    <h3 id="Requirements">Requirements</h3>
+    <h3 id="Requirements">Considerations</h3>
 </div>
 
 <ul>
     <li>Fast storage (SSD) for real-time access</li>
-    <li>Whatever long term storage for videos</li>
-    <li>Optional: For https access install the mitmproxy security certificates</li>
+    <li>Plenty of long term storage for videos</li>
+    <li>Optional: For <span style="color:orange">https</span> access install the mitmproxy security certificates</li>
     <li><a>https://docs.mitmproxy.org/stable/concepts-certificates/</a></li>            
 </ul>
 
@@ -56,7 +56,7 @@
     <h3 id="installation">Installation</h3>
 </div>
 
-<h5>Prerequisite</h5>
+<h4>Prerequisite</h4>
 
 <p>uv - An ultra fast project and package manager.<br/>
     https://docs.astral.sh/uv/getting-started/installation/<br/>
