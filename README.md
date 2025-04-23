@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="utf-8">
-        <title>Helio</title>
-        <script src="showdown.js"></script>
         <meta property="og:site_name" content="Helio">
         <meta property="og:title" content="Helio: Python Web interactions" />
         <meta property="og:description" content="Fast, easy, and reliable CLI/UI" />
