@@ -19,12 +19,11 @@
     <a href="#installation">Installation</a> |
     <a href="#config">Config</a> |
     <a href="#dev_notes">Dev Notes</a> |
-        <br/>
-        <li style="display: inline;"><a href="#tech">Tech</a> |</li>
-        <li style="display: inline;"><a href="#sites">Sites</a> |</li>
-        <li style="display: inline;"><a href="#disclaimer">Disclaimer</a> |</li>
-        <li style="display: inline;"><a href="#disclaimer">Usage</a> |</li>
-    </ul>
+    <br/>
+    <a href="#tech">Tech</a> |
+    <a href="#sites">Sites</a> |
+    <a href="#disclaimer">Disclaimer</a> |
+    <a href="#disclaimer">Usage</a> |
 </p>
 
 <p align="center">Platform: Linux</p>
