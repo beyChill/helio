@@ -17,9 +17,9 @@
             <br/> for a small number of specific internet sites.
             <br/> (primarliy mature / adult sites)
         </p>
-        <div >
+        <div align='center' >
             <ul align='center' >
-                <li style="display: inline;"><a href="#requirements">Requirements</a> |</li>
+                <li style="display: inline; align='center'"><a href="#requirements">Requirements</a> |</li>
                 <li style="display: inline;"><a href="#installation">Installation</a> |</li>
                 <li style="display: inline;"><a href="#config">Config</a> |</li>
                 <li style="display: inline;"><a href="#dev_notes">Dev Notes</a> |</li>
@@ -58,6 +58,7 @@
         <p>uv - An ultra fast project and package manager.<br/>
             https://docs.astral.sh/uv/getting-started/installation/<br/>
         </p>
+        <p>Clone from github</p>
         <code> 
             - from command prompt<br/>
             mkdir [project name]<br/>
@@ -66,7 +67,6 @@
             uv run main.py<br/>
             source /bin/.venv/activate
         </code>
-        <p>Clone from github</p>
         </div>
         <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
         <hr style="height:2px;border-width:0;color:gray;">
