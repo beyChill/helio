@@ -16,8 +16,8 @@
 
 <div align='center' >
     <ul align='center' >
-        <li style="display: inline; align='center'"><a href="#requirements">Requirements</a> |</li>
-        <li style="display: inline;"><a href="#installation">Installation</a> |</li>
+        <li display="inline"><a href="#requirements">Requirements</a> |</li>
+        <li display="inline"><a href="#installation">Installation</a> |</li>
         <li style="display: inline;"><a href="#config">Config</a> |</li>
         <li style="display: inline;"><a href="#dev_notes">Dev Notes</a> |</li>
         <br/>
@@ -64,25 +64,14 @@
     https://docs.astral.sh/uv/getting-started/installation/<br/>
 </p>
 
-<p>Clone from github</p><br/>
+<p>Clone from github</p>
 
 ```bash
-    mkdir [project name]<br/>
-    cd <project name><br/>
-    uv init .    <--(include dot for current directory)<br/>
-    uv run main.py<br/>
-    source /bin/.venv/activate
-```
-
-```python
-from seleniumbase import SB
-
-with SB(test=True, uc=True) as sb:
-    sb.open("https://google.com/ncr")
-    sb.type('[title="Search"]', "SeleniumBase GitHub page\n")
-    sb.click('[href*="github.com/seleniumbase/"]')
-    sb.save_screenshot_to_logs()  # ./latest_logs/
-    print(sb.get_page_title())
+git clone https://github.com/beyChill/helio.git <project name>
+cd <project name>
+uv init .
+uv run main.py
+source /bin/.venv/activate
 ```
 
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
