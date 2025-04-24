@@ -44,8 +44,8 @@
 <ul>
     <li>Fast storage (SSD) for real-time access</li>
     <li>Whatever long term storage for videos</li>
-    <li>mitmproxy provides <b style="color:orange;">https</b> access install the mitmproxy security certificates</li>
-    <p style="margin-left:10px;"><a>https://docs.mitmproxy.org/stable/concepts-certificates/</a></p>            
+    <li>mitmproxy provides the certificates for <b style="color:orange;">https</b> access</li>
+    <span><a title="mitmproxy" href="https://docs.mitmproxy.org/stable/concepts-certificates/">mitmproxy</a></span>            
 </ul>
 
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
@@ -59,7 +59,8 @@
 <h3>Prerequisite</h3>
 
 <p>uv - An ultra fast project and package manager.<br/>
-    https://docs.astral.sh/uv/getting-started/installation/<br/>
+<a title="uv by Atrfal" href="https://docs.astral.sh/uv/getting-started/installation/">uv Astral</a>
+    <br/>
 </p>
 
 <p>Clone from github</p>
