@@ -1,11 +1,11 @@
-<meta property="og:site_name" content="Helio">
+<meta property="og:site_name" content="Helio"/>
 <meta property="og:title" content="Helio: Python Web interactions" />
 <meta property="og:description" content="Fast, easy, and reliable CLI/UI" />
-<meta property="og:keywords" content="Python, stream, ffmpeg, download, record, video, chaturbate, adult, cmd2, stripchat, curl_cffi, screenshots, jpgs, images">
-<!-- <link rel="stylesheet" href="github-markdown.css"> -->
+<meta property="og:keywords" content="Python, stream, ffmpeg, download, record, video, chaturbate, adult, cmd2, stripchat, curl_cffi, screenshots, jpgs, images"/>
+<link rel="stylesheet" href="github-markdown.css">
 
-<p id="top" align="center"><b>
-    <h1 align="center">Helio</h1></b>
+<p id="top" align="center">
+    <b><h1 align="center">Helio</h1></b>
 </p>
 
 <p align="center">An educational app for testing and comprehending python's
@@ -15,7 +15,7 @@
 </p>
 
 <p align='center' >
-    <a href="#requirements">Requirements</a> |
+    <a href="#considerations">Considerations</a> |
     <a href="#installation">Installation</a> |
     <a href="#config">Config</a> |
     <a href="#dev_notes">Dev Notes</a> |
@@ -37,8 +37,12 @@
 
 <hr style="height:2px;border-width:0;color:gray;">
 
-<div align="center">
-    <h2 id="Requirements">Considerations</h2>
+<div id="toc" align="center">
+    <ul style="list-style: none;">
+    <summary>
+        <h2 id="considerations">Considerations</h2>
+    </summary>
+    </ul>
 </div>
 
 <ul>
@@ -52,9 +56,15 @@
 
 <hr style="height:2px;border-width:0;color:gray;">
 
-<div align="center">
-    <h2 id="installation">Installation</h2>
+
+<div id="toc" align="center">
+    <ul style="list-style: none;">
+    <summary>
+        <h2 id="installation">Installation</h2>
+    </summary>
+    </ul>
 </div>
+
 
 <h3>Prerequisite</h3>
 
@@ -92,6 +102,7 @@ sudo update-ca-certificates
 mv mitmproxy-ca-cert.pem /etc/pki/ca-trust/source/anchors/
 sudo update-ca-trust
 ```
+
 <span>Arch Linux</span><span> <a title="Transport Layer Security" href="https://wiki.archlinux.org/title/Transport_Layer_Security#Add_a_certificate_to_a_trust_store">(Detailed instructions)</a></span>
 
 ```bash
@@ -101,31 +112,50 @@ sudo trust anchor mitmproxy-ca-cert.pem
 
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
 <hr style="height:2px;border-width:0;color:gray;">
-<div align="center">
-    <h2 id="config">Config</h2>
+
+<div id="toc" align="center">
+    <ul style="list-style: none;">
+    <summary>
+        <h2 id="config">Config</h2>
+    </summary>
+    </ul>
 </div>
 
-<div >
+<div>
     <p>
         Managed setting are located in settings.py file. ( Path: stardust/config/settings.py )
         The thought was simple in the beginning.  However, as Helio grows so does the size of settings.py.  Perhaps beyChill will look into other options. 
         Consideration is being made for live config changes.
     </p>
 </div>
+
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
 <hr style="height:2px;border-width:0;color:gray;">
-<div align="center">
-    <h2 id="dev_notes">Dev Notes</h2></div>
-<div style="margin-left:15px">
+
+<div id="toc" align="center">
+    <ul style="list-style: none;">
+    <summary>
+        <h2 id="dev_notes">Dev Notes</h2>
+    </summary>
+    </ul>
+</div>
+
+
 <p>
-    Windows compatibility: <b style="color:red">ZERO interest</b>. Any user is free to modify this software for use on platforms outside of Linus
+    Windows compatibility: <b style="color:red">ZERO interest</b>.<br/> Any user is free to modify this software for use on platforms outside of Linus
 </p>
-</div>
+
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
 <hr style="height:2px;border-width:0;color:gray;">
-<div align="center">
-    <h2 id="tech">Tech</h2>
+
+<div id="toc" align="center">
+    <ul style="list-style: none;">
+    <summary>
+        <h2 id="Requirements">Tech</h2>
+    </summary>
+    </ul>
 </div>
+
 <div >
 <p>
 Knowledge share for some packages in Helio's tech stack
@@ -139,9 +169,16 @@ Knowledge share for some packages in Helio's tech stack
 </div>
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
 <hr style="height:2px;border-width:0;color:gray;">
-<div align="center">
-    <h2 id="sites">Sites</h2>
+
+<div id="toc" align="center">
+    <ul style="list-style: none;">
+    <summary>
+        <h2 id="sites">Sites</h2>
+    </summary>
+    </ul>
 </div>
+
+
 <div>
     <ul>
         <li>Chaturbate: active</li>
@@ -150,17 +187,33 @@ Knowledge share for some packages in Helio's tech stack
         <li>StreaMate: planning</li>
     </ul>
 </div>
-<p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
+
+<p style="font-size:30px">
+    <a href="#top" title="Move to page top">⬆️</a>
+</p>
+
 <hr style="height:2px;border-width:0;color:gray;">
-<div align="center">
-    <h2 id="disclaimer">Disclaimer</h2>
+
+<div id="toc" align="center">
+    <ul style="list-style: none;">
+    <summary>
+        <h2 id="disclaimer">Disclaimer</h2>
+    </summary>
+    </ul>
 </div>
+
 
 <div >
 <p>beyChill <b style="color:red">does not</b> provide any warranty of any kind, expressed or implied, relating to the open-source Helio and its use.  beyChill <b style="color:red">disclaims</b> all expressed and/or implied warranties and conditions pertaining in any way to any open-source integrated into Helio code. beyChill <b style="color:red">does not</b> warrant that Helio will integrate error-free with other software running on any machine. Helio may become <b style="color:red">abandoned</b> at any time. beyChill <b style="color:red">is not</b> required to provide prior notice for Helio <b style="color:red">depreciated support</b>. Use of Helio will <b style="color:red">never</b> require any monetary exchange. beyChill will <b style="color:red">never</b> request any donation and/or compensation for Helio.</p></div>
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
 <hr style="height:2px;border-width:0;color:gray;">
-<div align="center">
-    <h2 id="usage">Usage</h2>
+
+<div id="toc" align="center">
+    <ul style="list-style: none;">
+    <summary>
+        <h2 id="usage">Usage</h2>
+    </summary>
+    </ul>
 </div>
+
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
