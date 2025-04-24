@@ -38,7 +38,7 @@
 <hr style="height:2px;border-width:0;color:gray;">
 
 <div align="center">
-    <h3 id="Requirements">Considerations</h3>
+    <h2 id="Requirements">Considerations</h2>
 </div>
 
 <ul>
@@ -53,10 +53,10 @@
 <hr style="height:2px;border-width:0;color:gray;">
 
 <div align="center">
-    <h3 id="installation">Installation</h3>
+    <h2 id="installation">Installation</h2>
 </div>
 
-<h5>Prerequisite</h5>
+<h3>Prerequisite</h3>
 
 <p>uv - An ultra fast project and package manager.<br/>
     https://docs.astral.sh/uv/getting-started/installation/<br/>
@@ -72,10 +72,36 @@ uv run main.py
 source /bin/.venv/activate
 ```
 
+<p>
+    After the inital run security certificates will be install in ~/.mitmproxy
+</p>
+
+<span>Ubuntu/Debian</span>
+<span> <a title="Install a root CA certificate in the trust store" href="https://documentation.ubuntu.com/server/how-to/security/install-a-root-ca-certificate-in-the-trust-store/index.html">(Detailed instructions)</a></span>
+
+```bash
+mv mitmproxy-ca-cert.pem /usr/local/share/ca-certificates/mitmproxy.crt
+sudo update-ca-certificates
+```
+
+<span>Fedora</span>
+<span> <a title="Using Shared System Certificates" href="https://docs.fedoraproject.org/en-US/quick-docs/using-shared-system-certificates/#proc_adding-new-certificates">(Detailed instructions)</a></span>
+
+```bash
+mv mitmproxy-ca-cert.pem /etc/pki/ca-trust/source/anchors/
+sudo update-ca-trust
+```
+<span>Arch Linux</span><span> <a title="Transport Layer Security" href="https://wiki.archlinux.org/title/Transport_Layer_Security#Add_a_certificate_to_a_trust_store">(Detailed instructions)</a></span>
+
+```bash
+sudo trust anchor mitmproxy-ca-cert.pem
+```
+
+
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
 <hr style="height:2px;border-width:0;color:gray;">
 <div align="center">
-    <h3 id="config">Config</h3>
+    <h2 id="config">Config</h2>
 </div>
 
 <div >
@@ -88,7 +114,7 @@ source /bin/.venv/activate
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
 <hr style="height:2px;border-width:0;color:gray;">
 <div align="center">
-    <h3 id="dev_notes">Dev Notes</h3></div>
+    <h2 id="dev_notes">Dev Notes</h2></div>
 <div style="margin-left:15px">
 <p>
     Windows compatibility: <b style="color:red">ZERO interest</b>. Any user is free to modify this software for use on platforms outside of Linus
@@ -97,7 +123,7 @@ source /bin/.venv/activate
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
 <hr style="height:2px;border-width:0;color:gray;">
 <div align="center">
-    <h3 id="tech">Tech</h3>
+    <h2 id="tech">Tech</h2>
 </div>
 <div >
 <p>
@@ -113,7 +139,7 @@ Knowledge share for some packages in Helio's tech stack
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
 <hr style="height:2px;border-width:0;color:gray;">
 <div align="center">
-    <h3 id="sites">Sites</h3>
+    <h2 id="sites">Sites</h2>
 </div>
 <div>
     <ul>
@@ -126,7 +152,7 @@ Knowledge share for some packages in Helio's tech stack
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
 <hr style="height:2px;border-width:0;color:gray;">
 <div align="center">
-    <h3 id="disclaimer">Disclaimer</h3>
+    <h2 id="disclaimer">Disclaimer</h2>
 </div>
 
 <div >
@@ -134,6 +160,6 @@ Knowledge share for some packages in Helio's tech stack
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
 <hr style="height:2px;border-width:0;color:gray;">
 <div align="center">
-    <h3 id="usage">Usage</h3>
+    <h2 id="usage">Usage</h2>
 </div>
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
