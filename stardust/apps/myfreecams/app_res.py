@@ -15,7 +15,7 @@ class AppResponse:
         if url.__contains__("playlist"):
             print("response", url)
 
-        if not url.endswith("debug=cams"):
+        if url.endswith("debug=cams"):
             handle_streamers_online(flow)
             return
 

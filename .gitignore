@@ -194,5 +194,5 @@ stardust/database/db/
 #video files
 video*/
 
-1.json
-5.json
+*.json
+
