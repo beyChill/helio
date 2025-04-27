@@ -47,7 +47,7 @@
 
 - Fast storage (SSD) for real-time access
 - Whatever long term storage for videos
-- mitmproxy provides the certificates for <b style="color:orange;">https</b> access
+- mitmproxy (for web browser intercepts) provides the certificates for <b style="color:orange;">https</b> access when active
     - <a title="mitmproxy" href="https://docs.mitmproxy.org/stable/concepts-certificates/">mitmproxy</a>
 
 <!-- <ul>
@@ -75,8 +75,10 @@
 
 - uv - An ultra fast project and package manager.
     - <a title="uv by Atrfal" href="https://docs.astral.sh/uv/getting-started/installation/">uv Astral</a>
-- Some version of linux (Fedora24) required Xvfb install
-    - dnf xorg-x11-server-Xvfb
+- Some versions of linux (Fedora42) require Xvfb install 
+```bash
+sudo dnf install xorg-x11-server-Xvfb
+```
     
 
 <p>Clone from github</p>
