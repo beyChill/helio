@@ -18,49 +18,12 @@ CREATE TABLE IF NOT EXISTS myfreecams (
     is_new      INTEGER DEFAULT NULL,
     missmfc     INTEGER DEFAULT NULL,
     camscore    INTEGER DEFAULT NULL,
+    continent   VARCHAR(30) DEFAULT NULL,
     country     VARCHAR(4) DEFAULT NULL,
     rank_       INTEGER DEFAULT NULL,
     rc          INTEGER DEFAULT NULL,
     topic       INTEGER DEFAULT NULL,
     hidecs      VARCHAR(200) DEFAULT NULL,
-    share_albums INTEGER DEFAULT NULL,
-    share_follows INTEGER DEFAULT NULL,
-    share_clubs INTEGER DEFAULT NULL,
-    share_tm_album INTEGER DEFAULT NULL,
-    share_collections INTEGER DEFAULT NULL,
-    share_stores INTEGER DEFAULT NULL,
-    share_goals INTEGER DEFAULT NULL,
-    share_polls INTEGER DEFAULT NULL,
-    share_things INTEGER DEFAULT NULL,
-    share_recent_album_tm INTEGER DEFAULT NULL,
-    share_recent_club_tm INTEGER DEFAULT NULL,
-    share_recent_collection_tm INTEGER DEFAULT NULL,
-    share_recent_goal_tm INTEGER DEFAULT NULL,
-    share_recent_item_tm INTEGER DEFAULT NULL,
-    share_recent_poll_tm INTEGER DEFAULT NULL,
-    share_recent_story_tm INTEGER DEFAULT NULL,
-    share_recent_album_thumb VARCHAR(80) DEFAULT NULL,
-    share_recent_club_thumb VARCHAR(80) DEFAULT NULL,
-    share_recent_collection_thumb VARCHAR(80) DEFAULT NULL,
-    share_recent_goal_thumb VARCHAR(80) DEFAULT NULL,
-    share_recent_item_thumb VARCHAR(80) DEFAULT NULL,
-    share_recent_poll_thumb VARCHAR(80) DEFAULT NULL,
-    share_recent_story_thumb VARCHAR(80) DEFAULT NULL,
-    share_recent_album_title VARCHAR(80) DEFAULT NULL,
-    share_recent_club_title VARCHAR(80) DEFAULT NULL,
-    share_recent_collection_title VARCHAR(80) DEFAULT NULL,
-    share_recent_goal_title VARCHAR(80) DEFAULT NULL,
-    share_recent_item_title VARCHAR(80) DEFAULT NULL,
-    share_recent_poll_title VARCHAR(80) DEFAULT NULL,
-    share_recent_story_title VARCHAR(80) DEFAULT NULL,
-    share_recent_album_slug INTEGER DEFAULT NULL,
-    share_recent_collection_slug VARCHAR(80) DEFAULT NULL,
-    share_tipmenus INTEGER DEFAULT NULL,
-    share_recordings INTEGER DEFAULT NULL,
-    share_free_albums INTEGER DEFAULT NULL,
-    social_uname INTEGER DEFAULT NULL,
-    social_posts INTEGER DEFAULT NULL,
-    social_tm_post INTEGER DEFAULT NULL,
     last_broadcast DATETIME DEFAULT NULL,
     data_review INTEGER DEFAULT NULL,
     data_keep INTEGER DEFAULT NULL,
@@ -94,10 +57,10 @@ SET updated_at = (datetime(CURRENT_TIMESTAMP, 'localtime'))
 WHERE streamer_name = OLD.streamer_name;
 END;
 
-CREATE TRIGGER update_myfreecams_most_viewers
+CREATE TRIGGER update_myfreecams_last_broadcast
 AFTER
 INSERT ON myfreecams FOR EACH ROW
-    WHEN NEW.last_broadcast IS NOT NULL BEGIN
+    WHEN NEW.last_broadcast IS NULL BEGIN
 UPDATE myfreecams
 SET last_broadcast = NEW.last_broadcast
 WHERE rowid = NEW.rowid;
