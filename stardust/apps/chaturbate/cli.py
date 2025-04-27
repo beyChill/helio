@@ -2,7 +2,14 @@ from argparse import Namespace
 import asyncio
 import os
 from signal import SIGTERM
-from cmd2 import Cmd, Cmd2ArgumentParser, CommandSet, with_argparser
+from cmd2 import (
+    Cmd,
+    Cmd2ArgumentParser,
+    CommandSet,
+    categorize,
+    with_argparser,
+    with_category,
+)
 from tabulate import tabulate
 from stardust.apps.chaturbate.api_videocontext import handle_response
 from stardust.apps.chaturbate.validations import check_streamer_name
@@ -52,6 +59,9 @@ class Chaturbate(CommandSet):
 
     @with_argparser(get_parser)
     def do_get(self, streamer: Namespace):
+        """Capture a streamer
+        CB--> get my_fav_girl
+        """
 
         name_ = streamer.name[0]
 
@@ -94,7 +104,6 @@ class Chaturbate(CommandSet):
                 msg = f"{e} for {name_}"
                 log.error(msg)
         log.info(f"Capture {name_} [CB] is not active")
-
 
     block_parser = Cmd2ArgumentParser()
     block_parser.add_argument("name", nargs=1, help="Streamer name")
@@ -189,9 +198,10 @@ class Chaturbate(CommandSet):
         data = query_pid(name_)
 
         if data is not None:
-            log.error(
-                f"Already capturing {name_} [CB]"
-            )
+            log.error(f"Already capturing {name_} [CB]")
             return None
 
         return data
+
+    categorize((do_get, do_stop, do_block), "Chaturbate Streamer")
+    categorize((do_cap, do_long, do_off), "Site Streamer Status")
