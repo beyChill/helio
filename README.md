@@ -202,7 +202,7 @@ Knowledge share for some packages in Helio's tech stack
     <ul>
         <li>Chaturbate: active</li>
         <li>StripChat: planning</li>
-        <li>MyFreeCams: planning</li>
+        <li>MyFreeCams: 23%</li>
         <li>StreaMate: planning</li>
     </ul>
 </div>
@@ -235,6 +235,22 @@ Knowledge share for some packages in Helio's tech stack
     </ul>
 </div>
 
-<p>Just doing something nothing special</p>
+<p>Run setup_dirs.py from stardust directory prior to accessing cli.</p>
+
+<p>Run start script from stardust directory. </p>
+
+```bash
+$ uv run stardust/start.py
+Helio--> help
+Helio--> app cb
+CB--> help
+CB--> unapp cb
+Helio--> app mfc
+MFC--> help
+MFC--> unapp mfc
+Helio-->
+```
+<p>User can move from service to service without returning to Helio.</br>However, a second attempt to access a service requires an unapp command prior</p>
+
 
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
