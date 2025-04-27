@@ -173,11 +173,17 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
+
+# Helio specific ignores
+########################
+
+
 # Experiments
 stardust/aexper/*
 
 # Browser files
 *browser*
+downloaded_files/*
 
 # database
 *.sqlite3
@@ -187,3 +193,6 @@ stardust/database/db/
 
 #video files
 video*/
+
+1.json
+5.json
