@@ -1,11 +1,61 @@
+from contextlib import contextmanager
 from datetime import date, datetime
 from pathlib import Path
+import sqlite3
 
 from stardust.config.constants import FailVideoContext
-from stardust.database.db_base import write_cb_many, write_db
+from stardust.config.settings import get_db_setting
 from stardust.utils.applogging import HelioLogger
 
 log = HelioLogger()
+DB = get_db_setting().CB_DB_FOLDER
+
+
+@contextmanager
+def connect_write():
+    pragma_write = """
+    PRAGMA journal_mode=MEMORY;
+    PRAGMA temp_store = MEMORY;
+    PRAGMA synchronous=OFF;
+    PRAGMA locking_mode = exlusive;
+    PRAGMA cache_size = 2000000;
+    """
+    with sqlite3.connect(DB) as conn:
+        conn.executescript(pragma_write)
+        yield conn
+
+
+def write_db(sql: str, values):
+    write = None
+    try:
+        with connect_write() as conn:
+            write = conn.execute(sql, values)
+
+        return bool(write)
+    except sqlite3.Error as e:
+        msg = f"{Path(__file__).parts[-1]} {write_db.__name__}() {e}"
+        log.error(msg)
+
+
+def write_cb_many(sql: str, values):
+    remove_index = "DROP INDEX IF EXISTS idx_num;"
+    add_index = (
+        "CREATE UNIQUE INDEX IF NOT EXISTS idx_streamer ON chaturbate (streamer_name);"
+    )
+
+    with connect_write() as conn:
+        conn.execute(remove_index)
+        try:
+            conn.execute("BEGIN TRANSACTION")
+            conn.executemany(sql, values)
+            conn.execute("END TRANSACTION")
+        except Exception as e:
+            print(e)
+
+        conn.execute(add_index)
+        # 'PRAGMA synchronous = OFF'
+        # display_pragma(conn)
+        conn.executescript("ANALYZE; VACUUM;")
 
 
 def write_db_streamers(value: list):
@@ -116,11 +166,12 @@ def write_block_info(data):
     if not write_db(sql, arg):
         log.error(f"Block command failed for {name_} [CB]")
 
-def write_videocontext_fail(values:list[FailVideoContext]):
-    new_values=[]
+
+def write_videocontext_fail(values: list[FailVideoContext]):
+    new_values = []
     for value in values:
-        new_values.append((value.status,value.detail,value.code,value.name_))
-    sql="""
+        new_values.append((value.status, value.detail, value.code, value.name_))
+    sql = """
         UPDATE chaturbate
         SET bio_chk_date=DATETIME('now', 'localtime'),
         bio_fail_date=DATETIME('now', 'localtime'),
@@ -129,10 +180,11 @@ def write_videocontext_fail(values:list[FailVideoContext]):
         bio_fail_code=?
         WHERE streamer_name=?
         """
-    
+
     write_cb_many(sql, new_values)
 
-def write_data_review(value: list[tuple[str,Path]]):
+
+def write_data_review(value: list[tuple[str, Path]]):
     sql = """
         INSERT INTO chaturbate (streamer_name, data_review) 
         VALUES (?, ?) 
@@ -142,7 +194,8 @@ def write_data_review(value: list[tuple[str,Path]]):
         """
     write_cb_many(sql, value)
 
-def write_data_keep(value: list[tuple[str,Path]]):
+
+def write_data_keep(value: list[tuple[str, Path]]):
     sql = """
         INSERT INTO chaturbate (streamer_name, data_keep) 
         VALUES (?, ?) 

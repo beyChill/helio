@@ -17,19 +17,34 @@ def _storage(vid_type: str):
     return storage
 
 
+# class HelioSettings(BaseSettings):
+APP_NAME: str = "stardust"
+APP_DIR: Path = Path.cwd() / APP_NAME
+
+
+class DBSettings(BaseSettings):
+    DB_SQL_FOLDER: Path = APP_DIR / "database"
+    DB_FOLDER: Path = APP_DIR / "database" / "db"
+    CS_CONFIG: Path = DB_SQL_FOLDER / "camsoda.sql"
+    CS_DB_FOLDER: Path = DB_FOLDER / "camsoda.sqlite3"
+    CB_CONFIG: Path = DB_SQL_FOLDER / "chaturbate.sql"
+    CB_DB_FOLDER: Path = DB_FOLDER / "chaturbate.sqlite3"
+    MFC_CONFIG: Path = DB_SQL_FOLDER / "myfreecams.sql"
+    MFC_DB_FOLDER: Path = DB_FOLDER / "myfreecams.sqlite3"
+    SC_CONFIG: Path = DB_SQL_FOLDER / "stripchat.sql"
+    SC_DB_FOLDER: Path = DB_FOLDER / "stripchat.sqlite3"
+
+    DB_SQLS: list[Path] = [CS_CONFIG, CB_CONFIG, MFC_CONFIG, SC_CONFIG]
+    DB_FILES: list[Path] = [CS_DB_FOLDER, CB_DB_FOLDER, MFC_DB_FOLDER, SC_DB_FOLDER]
+
+
 class Settings(BaseSettings):
-    APP_NAME: str = "stardust"
-    APP_DIR: Path = Path.cwd() / APP_NAME
     BROWSER_PATH: str = "/usr/bin/google-chrome-stable"
     BROWSER_PROFILE: str = str(Path(APP_DIR, "browser/profile"))
     CLI_PROMPT: str = "$"
     COOKIE_DIR: Path = APP_DIR / "browser/app_cookies/"
     COOKIE_CB_NAME: str = "cb_browser_cookies.py"
     COOKIE_CB_PATH: Path = COOKIE_DIR / COOKIE_CB_NAME
-    DB_CONFIG: Path = APP_DIR / "database/dbconfig.sql"
-    DB_NAME: str = f"{APP_NAME}.sqlite3"
-    DB_FOLDER: Path = APP_DIR / "database" / "db"
-    DB_PATH: Path = DB_FOLDER / DB_NAME
     DIR_SSD: Path = Path(f"{env.get('SSD_PATH', f'{APP_DIR}/videos')}")
     DIR_IMG_PATH: Path = Path(f"{env.get('SSD_PATH', f'{APP_DIR}/images')}")
     DIR_PROCESS_CONTACTSHEET: Path = Path(
@@ -58,3 +73,8 @@ class Settings(BaseSettings):
 @lru_cache(maxsize=None)
 def get_setting(**kwargs) -> Settings:
     return Settings(**kwargs)
+
+
+@lru_cache(maxsize=None)
+def get_db_setting(**kwargs) -> DBSettings:
+    return DBSettings(**kwargs)

@@ -36,6 +36,7 @@ UPDATE chaturbate
 SET updated_at = (datetime(CURRENT_TIMESTAMP, 'localtime'))
 WHERE streamer_name = OLD.streamer_name;
 END;
+
 CREATE TRIGGER update_chaturbate_most_viewers
 AFTER
 INSERT ON chaturbate FOR EACH ROW
@@ -44,15 +45,6 @@ UPDATE chaturbate
 SET most_viewers = NEW.viewers
 WHERE rowid = NEW.rowid;
 END;
+
 CREATE UNIQUE INDEX IF NOT EXISTS idx_streamer ON chaturbate (streamer_name);
-CREATE TABLE IF NOT EXISTS num_streamers (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    query DEFAULT (datetime('now', 'localtime')),
-    type_ VARCHAR(10) DEFAULT NULL,
-    num_ INTEGER NOT NULL
-);
-CREATE TABLE IF NOT EXISTS domains (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    streamer_name VARCHAR(20) NOT NULL,
-    domain VARCHAR(212) NOT NULL
-);
+

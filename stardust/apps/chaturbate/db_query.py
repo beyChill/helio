@@ -1,6 +1,52 @@
+from contextlib import contextmanager
 from datetime import date, timedelta
+from pathlib import Path
+import sqlite3
 
-from stardust.database.db_base import query_db
+from stardust.config.settings import get_db_setting
+from stardust.utils.applogging import HelioLogger
+
+log = HelioLogger()
+DB = get_db_setting().CB_DB_FOLDER
+
+@contextmanager
+def connect_query():
+    pragma_query = """
+        PRAGMA temp_store = MEMORY;
+        PRAGMA synchronous=OFF;
+        PRAGMA locking_mode = exlusive;
+        """
+    with sqlite3.connect(DB) as conn:
+        conn.executescript(pragma_query)
+        yield conn
+
+def query_db(sql: str | tuple, action: str = "one"):
+    data = []
+    try:
+        with connect_query() as conn:
+            cursor = conn.cursor()
+
+            if isinstance(sql, tuple):
+                sql_query, args = sql
+                cursor.execute(sql_query, args)
+
+            try:
+                if not isinstance(sql, tuple):
+                    cursor.execute(sql)
+            except Exception as e:
+                print(e)
+            if action == "one":
+                data = cursor.fetchone()
+
+            if action == "all":
+                data = cursor.fetchall()
+            return data
+
+    except sqlite3.Error as e:
+        msg = f"{Path(__file__).parts[-1]} {query_db.__name__}() {e}"
+        log.error(msg)
+        return data
+
 
 
 def query_bio(*, date_: date = date.today(), limit: int = 180):

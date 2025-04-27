@@ -45,12 +45,17 @@
     </ul>
 </div>
 
-<ul>
+- Fast storage (SSD) for real-time access
+- Whatever long term storage for videos
+- mitmproxy provides the certificates for <b style="color:orange;">https</b> access
+    - <a title="mitmproxy" href="https://docs.mitmproxy.org/stable/concepts-certificates/">mitmproxy</a>
+
+<!-- <ul>
     <li>Fast storage (SSD) for real-time access</li>
     <li>Whatever long term storage for videos</li>
     <li>mitmproxy provides the certificates for <b style="color:orange;">https</b> access</li>
     <span><a title="mitmproxy" href="https://docs.mitmproxy.org/stable/concepts-certificates/">mitmproxy</a></span>            
-</ul>
+</ul> -->
 
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
 
@@ -68,20 +73,30 @@
 
 <h3>Prerequisite</h3>
 
-<p>uv - An ultra fast project and package manager.<br/>
-<a title="uv by Atrfal" href="https://docs.astral.sh/uv/getting-started/installation/">uv Astral</a>
-    <br/>
-</p>
+- uv - An ultra fast project and package manager.
+    - <a title="uv by Atrfal" href="https://docs.astral.sh/uv/getting-started/installation/">uv Astral</a>
+- Some version of linux (Fedora24) required Xvfb install
+    - dnf xorg-x11-server-Xvfb
+    
 
 <p>Clone from github</p>
 
 ```bash
 git clone https://github.com/beyChill/helio.git <project name>
 cd <project name>
-uv init .
 uv run main.py
 source /bin/.venv/activate
+uv pip install -e .
+uv sync
 ```
+
+**Install ``Helio`` from a GitHub clone:**
+
+```bash
+git pull
+uv pip install -e .
+```
+
 
 <p>
     After the inital run security certificates will be install in ~/.mitmproxy
@@ -160,10 +175,12 @@ sudo trust anchor mitmproxy-ca-cert.pem
 <p>
 Knowledge share for some packages in Helio's tech stack
 <ul>
-    <li><a href=https://github.com/python-cmd2/cmd2>cmd2: Cli</a></li>
-    <li><a href=https://github.com/0x676e67/rnet>rnet: internet stuff</a></li>
-    <li><a href=https://github.com/PyGithub/PyGithub>pygithub: github api</a></li>
-    <li><a href=https://github.com/theskumar/python-dotenv>python-dotenv: .env stuff</a></li>
+    <li><a href="https://github.com/python-cmd2/cmd2">cmd2: </a>Cli</li>
+    <li><a href="https://github.com/0x676e67/rnet">rnet: </a>internet stuff</li>
+    <li><a href="https://github.com/PyGithub/PyGithub">pygithub: </a>github api</li>
+    <li><a href="https://github.com/theskumar/python-dotenv">python-dotenv: </a>.env stuff</li>
+    <li><a href="https://mitmproxy.org">mitmproxy: </a>browser stuff</li>
+    <li><a href="https://mitmproxy.org">mitmproxy: </a>Seleniumbase automated browser</li>
 </ul>
 </p>
 </div>
@@ -215,5 +232,7 @@ Knowledge share for some packages in Helio's tech stack
     </summary>
     </ul>
 </div>
+
+<p>Just doing something nothing special</p>
 
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
