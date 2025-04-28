@@ -46,7 +46,7 @@ def script_delay(min: float, max: float):
     return (delay, time_)
 
 
-def process_hls(results: list[Any]):
+def process_cb_hls(results: list[Any]):
     streamer_url: list[tuple[str, str]] = []
 
     for url_, m3u8_ in results:

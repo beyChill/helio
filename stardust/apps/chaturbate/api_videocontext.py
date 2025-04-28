@@ -11,7 +11,7 @@ from stardust.apps.chaturbate.db_write import (
 from stardust.apps.chaturbate.handleurls import NetActions
 from stardust.config.constants import ChatVideoContext, FailVideoContext
 from stardust.utils.applogging import HelioLogger, loglvl
-from stardust.utils.general import process_hls
+from stardust.utils.general import process_cb_hls
 from stardust.utils.timer import AppTimer
 
 log = HelioLogger()
@@ -29,7 +29,7 @@ async def manage_api_videocontext(streamers: list[str]):
     if accessible:
         has_hls = handle_response(accessible)
         hls_urls = await iNet.get_all_m3u8(has_hls)
-        streamer_url = process_hls(hls_urls)
+        streamer_url = process_cb_hls(hls_urls)
         write_m3u8(streamer_url)
 
     if fail:

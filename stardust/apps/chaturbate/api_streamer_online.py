@@ -7,7 +7,7 @@ from stardust.apps.chaturbate.db_query import query_seek_status
 from stardust.apps.chaturbate.handleurls import NetActions
 from stardust.apps.chaturbate.manage_capture import start_capture
 from stardust.utils.applogging import HelioLogger
-from stardust.utils.general import process_hls, script_delay
+from stardust.utils.general import process_cb_hls, script_delay
 from stardust.utils.timer import AppTimer
 
 log = HelioLogger()
@@ -34,7 +34,7 @@ async def get_streamers():
     urls_ = [url["url"] for url in urls]
     hls_urls = await iNet.get_all_m3u8(urls_)
 
-    streamer_url = process_hls(hls_urls)
+    streamer_url = process_cb_hls(hls_urls)
 
     return streamer_url
 

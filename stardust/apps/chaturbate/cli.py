@@ -26,7 +26,7 @@ from stardust.apps.chaturbate.db_write import (
 from stardust.apps.chaturbate.handleurls import NetActions
 from stardust.apps.chaturbate.manage_capture import start_capture
 from stardust.utils.applogging import HelioLogger
-from stardust.utils.general import process_hls
+from stardust.utils.general import process_cb_hls
 
 """
 It appears single argparse, nargs=1, creates a list.
@@ -81,7 +81,7 @@ class Chaturbate(CommandSet):
             return None
         new_url = asyncio.run(NetActions().get_m3u8(url_))
 
-        streamer_data = process_hls([new_url])
+        streamer_data = process_cb_hls([new_url])
 
         start_capture(streamer_data)
 
