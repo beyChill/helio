@@ -45,9 +45,6 @@ def calculations(data):
     return results
 
 
-
-
-
 def get_video_sizes():
     storage_ = size_storage()
     keep = size_keep()
