@@ -26,3 +26,6 @@ repository = "https://github.com/beyChill/helio"
 
 [project.scripts]
 start = "stardust.start:main"
+
+[tool.setuptools]
+py-modules = ["stardust"]
