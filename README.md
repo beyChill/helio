@@ -87,12 +87,12 @@ sudo dnf install xorg-x11-server-Xvfb
 git clone https://github.com/beyChill/helio.git <project name>
 cd <project name>
 uv run main.py
-source /bin/.venv/activate
+source .venv/bin/activate
 uv pip install -e .
 uv sync
 ```
 
-**Install ``Helio`` from a GitHub clone:**
+**Update ``Helio`` from a GitHub clone:**
 
 ```bash
 git pull
@@ -235,22 +235,33 @@ Knowledge share for some packages in Helio's tech stack
     </ul>
 </div>
 
-<p>Run setup_dirs.py from stardust directory prior to accessing cli.</p>
-
-<p>Run start script from stardust directory. </p>
+<p>Make sure the .venv is active.</p>
 
 ```bash
-$ uv run stardust/start.py
+$ source .venv/bin/activate
+(helio) $
+```
+<p>Run setup_dirs.py from stardust directory prior to accessing cli.</p>
+
+Run start script from stardust directory.<br/>
+( help screen is visible after entering the help command )
+
+```bash
+(helio) $ uv run stardust/start.py
 Helio--> help
 Helio--> app cb
+chaturbate interactions are ready
 CB--> help
 CB--> unapp cb
 Helio--> app mfc
+myfreecams interactions are ready
 MFC--> help
 MFC--> unapp mfc
-Helio-->
+Helio--> quit
 ```
-<p>User can move from service to service without returning to Helio.</br>However, a second attempt to access a service requires an unapp command prior</p>
+***IMPORTANT***
+<p>The different sites cli (cb, mfc, sc, etc.) use commands with identical names.</br>
+Issue the 'unapp' command before activating another site to prevent an error.</p>
 
 
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
