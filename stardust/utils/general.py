@@ -29,6 +29,15 @@ def get_app_name(app_tag: str):
     return data
 
 
+def get_app_slugs():
+    all_slugs: list[str] = []
+    for app in dir(helio_apps):
+        if app.startswith("app_"):
+            values = getattr(helio_apps, app)
+            all_slugs.append(values[0])
+    return all_slugs
+
+
 def script_delay(min: float, max: float):
     delay = uniform(min, max)
     t1 = datetime.now() + timedelta(seconds=delay)
@@ -94,10 +103,10 @@ async def check_helio_github_version():
 
     return True
 
+
 def calc_size(file_data: list[int]):
     raw_total = sum(file_data)
 
     giga = round(raw_total / (1024**3), 4)
     gigabyte = None if giga == 0 else giga
     return gigabyte
-

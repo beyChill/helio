@@ -17,7 +17,7 @@ from stardust.apps.myfreecams.cli import MyFreeCams
 from stardust.apps.stripchat.cli import StripChat
 from stardust.config.chroma import rgb
 from stardust.utils.applogging import HelioLogger
-from stardust.utils.general import check_helio_github_version, get_app_name
+from stardust.utils.general import check_helio_github_version, get_app_name, get_app_slugs
 
 log = HelioLogger()
 
@@ -38,7 +38,6 @@ class HelioCli(Cmd):
     app_prompt = ""
     slug = ""
     name_ = ""
-    scolor = ""
     prompt = rgb("Helio--> ", "green")
 
     def __init__(self, *args, **kwargs):
@@ -51,7 +50,7 @@ class HelioCli(Cmd):
         self._stripchat = StripChat()
 
     load_parser = Cmd2ArgumentParser()
-    load_parser.add_argument("app", choices=["cb", "cs", "mfc", "sc"])
+    load_parser.add_argument("app", choices=get_app_slugs())
 
     def _new_prompt(self):
         if self.slug is not None:
