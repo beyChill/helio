@@ -4,6 +4,7 @@ from operator import itemgetter
 
 from stardust.apps.chaturbate.db_write import write_data_keep, write_data_review
 from stardust.config.settings import get_setting
+from stardust.utils.general import calc_size
 from stardust.utils.timer import AppTimerSync
 
 
@@ -44,12 +45,7 @@ def calculations(data):
     return results
 
 
-def calc_size(file_data: list[int]):
-    raw_total = sum(file_data)
 
-    giga = round(raw_total / (1024**3), 4)
-    gigabyte = None if giga == 0 else giga
-    return gigabyte
 
 
 def get_video_sizes():

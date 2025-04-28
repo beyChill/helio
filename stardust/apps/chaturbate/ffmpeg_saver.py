@@ -1,17 +1,18 @@
 import asyncio
 from dataclasses import dataclass, field
+import os
 from subprocess import DEVNULL, PIPE, STDOUT, Popen
 from threading import Thread
 from time import sleep
 
 from stardust.apps.chaturbate.db_query import query_cap_status, query_url
-from stardust.apps.chaturbate.db_write import write_pid, write_remove_pid
+from stardust.apps.chaturbate.db_write import write_data_size, write_pid, write_remove_pid
 from stardust.apps.chaturbate.ffmpeg_config import FFmpegData
 from stardust.apps.chaturbate.handleurls import NetActions
 from stardust.config.constants import DataFFmpeg
 from stardust.config.settings import get_setting
 from stardust.utils.applogging import HelioLogger, loglvl
-from stardust.utils.general import process_hls
+from stardust.utils.general import calc_size, process_hls
 
 log = HelioLogger()
 config = get_setting()
@@ -104,9 +105,15 @@ class CaptureStreamer(NetActions):
         return False
 
     def manage_cap_restart(self):
+
+        raw_size = os.stat(self.data.file_).st_size
+        file_size = calc_size([raw_size])
+        values =(file_size,self.data.name_)
+        write_data_size(values)
+
         cap_status = query_cap_status(self.data.name_)
         seek_capture, block = cap_status
-
+ 
         if seek_capture is None or block is not None:
             write_remove_pid(self.pid)
             return None
@@ -162,4 +169,3 @@ class CaptureStreamer(NetActions):
         new_name, restart_url = streamer_data[0]
 
         return (new_name, restart_url)
-

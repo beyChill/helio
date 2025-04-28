@@ -84,11 +84,20 @@ async def check_helio_github_version():
         return False
 
     if stardust.__version__ < latest_version:
-        log.warning(f"Helio version {stardust.__version__} is not current")
+        log.warning(f"This Helio version {stardust.__version__} is not current")
         log.warning(f"Consider updating to {latest_version}")
+        log.warning("https://github.com/beyChill/helio")
         return False
 
     if stardust.__version__ >= latest_version:
         log.app(loglvl.SUCCESS, "Helio is current")
 
     return True
+
+def calc_size(file_data: list[int]):
+    raw_total = sum(file_data)
+
+    giga = round(raw_total / (1024**3), 4)
+    gigabyte = None if giga == 0 else giga
+    return gigabyte
+

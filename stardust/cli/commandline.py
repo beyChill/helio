@@ -45,8 +45,8 @@ class HelioCli(Cmd):
         # gotta have this or neither the plugin or cmd2 will initialize
         super().__init__(*args, auto_load_commands=False, **kwargs)
 
-        self._chaturbate = Chaturbate()
         self._camsoda = CamSoda()
+        self._chaturbate = Chaturbate()
         self._myfreecams = MyFreeCams()
         self._stripchat = StripChat()
 
@@ -76,7 +76,7 @@ class HelioCli(Cmd):
             self.register_command_set(instance_)
 
         try:
-            self.poutput(f"{self.name_} interaction are ready")
+            self.poutput(f"{self.name_} interactions are ready")
             self._new_prompt()
 
         except Exception as e:
@@ -116,18 +116,17 @@ class HelioCli(Cmd):
         self.name_ = name_
         self.color = color
         return True
-    
+
     def do_quit(self, arg):
         """Quit Helio gracefully."""
         self.poutput("Shutting down apps")
         return True
-    
-    categorize((do_app, do_unapp, do_version,do_quit), "Helio commands")
+
+    categorize((do_app, do_unapp, do_version, do_quit), "Helio commands")
 
 
 def app_cli_main(**kwargs):
     sys.exit(HelioCli().cmdloop())
-
 
 
 if __name__ == "__main__":

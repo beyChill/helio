@@ -8,7 +8,6 @@ from cmd2 import (
     CommandSet,
     categorize,
     with_argparser,
-    with_category,
 )
 from tabulate import tabulate
 from stardust.apps.chaturbate.api_videocontext import handle_response

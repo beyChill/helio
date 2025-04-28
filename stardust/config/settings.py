@@ -45,8 +45,8 @@ class Settings(BaseSettings):
     COOKIE_DIR: Path = APP_DIR / "browser/app_cookies/"
     COOKIE_CB_NAME: str = "cb_browser_cookies.py"
     COOKIE_CB_PATH: Path = COOKIE_DIR / COOKIE_CB_NAME
-    DIR_SSD: Path = Path(f"{env.get('SSD_PATH', f'{APP_DIR}/videos')}")
-    DIR_IMG_PATH: Path = Path(f"{env.get('SSD_PATH', f'{APP_DIR}/images')}")
+    DIR_SSD: Path = Path(f"{env.get('SSD_PATH', f'{APP_DIR}/helio')}")
+    DIR_IMG_PATH: Path = Path(f"{env.get('SSD_PATH', f'{APP_DIR}/helio/images')}")
     DIR_PROCESS_CONTACTSHEET: Path = Path(
         f"{env.get('DIR_PROCESS_CONTACTSHEET', f'{APP_DIR}/video_contactsheet')}"
     )
@@ -69,6 +69,10 @@ class Settings(BaseSettings):
     KEEP_STORAGE.append(DIR_KEEP_PATH)
     DIR_KEEP_VIDEOS: list[Path] = KEEP_STORAGE
 
+
+def dir_contactsheet(app_name):
+    contactsheet= Path(APP_DIR / 'video' / app_name / 'contactsheet')
+    location = Path(f"{env.get('SSD_PATH', contactsheet)}")
 
 @lru_cache(maxsize=None)
 def get_setting(**kwargs) -> Settings:

@@ -50,7 +50,7 @@ def write_cb_many(sql: str, values):
             conn.executemany(sql, values)
             conn.execute("END TRANSACTION")
         except Exception as e:
-            print(e)
+            log.error(e)
 
         conn.execute(add_index)
         # 'PRAGMA synchronous = OFF'
@@ -204,3 +204,14 @@ def write_data_keep(value: list[tuple[str, Path]]):
         data_keep=EXCLUDED.data_keep
         """
     write_cb_many(sql, value)
+
+
+def write_data_size(values):
+    sql="""
+        UPDATE chaturbate
+        SET
+        data_total=IFNULL(data_total ,0) + ?
+        WHERE streamer_name = ?
+        """
+
+    write_db(sql, values)
