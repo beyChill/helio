@@ -18,6 +18,3 @@ class AppResponse:
         if url.endswith("debug=cams"):
             handle_streamers_online(flow)
             return
-
-
-
