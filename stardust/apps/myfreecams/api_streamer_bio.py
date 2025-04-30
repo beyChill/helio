@@ -1,5 +1,4 @@
 import asyncio
-from typing import List, Tuple
 from stardust.apps.myfreecams.handleurls import MfcNetActions
 
 
@@ -20,7 +19,7 @@ data = [
 iNet = MfcNetActions()
 
 
-def request_profiles(names: List[str]):
+def request_profiles(names: list[str]):
     profiles = asyncio.run(iNet.get_user_profile(names))
     for profile in profiles:
         name_ = profile.method.split("/")[-1]
@@ -42,10 +41,11 @@ def request_profiles(names: List[str]):
             print(name_, profile.result.user.sessions[0].server_name)
 
 
-def request_app_profile(data: List[Tuple[str, int]]):
+def request_app_profile(data: list[tuple[str, int]]):
     profiles = asyncio.run(iNet.get_streamer_app_profile(data))
     for profile in profiles:
         print(profile.name_, profile.status)
+
 
 request_app_profile(data)
 # EvaEvelin

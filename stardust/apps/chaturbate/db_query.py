@@ -2,13 +2,14 @@ from contextlib import contextmanager
 from datetime import date, timedelta
 from pathlib import Path
 import sqlite3
-from typing import List
+from typing import Any
 
 from stardust.config.settings import get_db_setting
 from stardust.utils.applogging import HelioLogger
 
 log = HelioLogger()
 DB = get_db_setting().CB_DB_FOLDER
+
 
 @contextmanager
 def connect_query():
@@ -21,33 +22,36 @@ def connect_query():
         conn.executescript(pragma_query)
         yield conn
 
+
 def query_db(sql: str | tuple, action: str = "one"):
     data = []
     try:
         with connect_query() as conn:
             cursor = conn.cursor()
 
-            if isinstance(sql, tuple):
-                sql_query, args = sql
-                cursor.execute(sql_query, args)
-
             try:
+                if isinstance(sql, tuple):
+                    sql_query, args = sql
+                    cursor.execute(sql_query, args)
+
                 if not isinstance(sql, tuple):
                     cursor.execute(sql)
+
             except Exception as e:
-                print(e)
+                log.error(f"{sql}")
+                log.error(e)
+
             if action == "one":
-                data = cursor.fetchone()
+                data: Any = cursor.fetchone()[0]
 
             if action == "all":
-                data = cursor.fetchall()
+                data: Any = cursor.fetchall()
             return data
 
     except sqlite3.Error as e:
         msg = f"{Path(__file__).parts[-1]} {query_db.__name__}() {e}"
         log.error(msg)
         return data
-
 
 
 def query_bio(*, date_: date = date.today(), limit: int = 180):
@@ -63,7 +67,7 @@ def query_bio(*, date_: date = date.today(), limit: int = 180):
         """,
         (date_, limit),
     )
-    data:List[str] = query_db(sql, "all")
+    data: list[str] = query_db(sql, "all")
 
     return data
 
@@ -77,7 +81,7 @@ def query_seek_status():
         AND pid IS NULL
         ORDER BY RANDOM()
         """
-    data = query_db(sql, "all")
+    data: list[str] = query_db(sql, "all")
 
     return data
 
@@ -85,7 +89,7 @@ def query_seek_status():
 def query_cap_status(_name: str):
     """Info for determining streamer capture"""
     sql = (
-        "SELECT seek_capture, block_date FROM chaturbate WHERE streamer_name=?",
+        "SELECT seek_capture, block_date FROM chaturbate WHERE streamer_name = ?",
         (_name,),
     )
     result = query_db(sql)
@@ -95,23 +99,17 @@ def query_cap_status(_name: str):
 
 def query_url(_name: str):
     sql = (
-        "SELECT url_ FROM chaturbate WHERE streamer_name=?",
+        "SELECT url_ FROM chaturbate WHERE streamer_name = ?",
         (_name,),
     )
     result = query_db(sql)
     return result
 
 
-def query_pid(_name: str):
-    sql = (
-        "SELECT pid FROM chaturbate WHERE streamer_name=?",
-        (_name,),
-    )
-    data = query_db(sql)
-    if data is None:
-        return None
-    
-    (result,)=data
+def query_pid(name_: str):
+    sql = ("SELECT pid FROM chaturbate WHERE streamer_name = ?", (name_,))
+    result: int = query_db(sql)
+
     return result
 
 

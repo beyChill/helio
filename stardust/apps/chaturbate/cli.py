@@ -10,7 +10,7 @@ from cmd2 import (
     with_argparser,
 )
 from tabulate import tabulate
-from stardust.apps.chaturbate.api_videocontext import handle_response
+from stardust.apps.chaturbate.api_streamer_bio import handle_response
 from stardust.apps.chaturbate.validations import check_streamer_name
 from stardust.apps.chaturbate.db_query import (
     query_capture,
@@ -91,11 +91,9 @@ class Chaturbate(CommandSet):
         if not check_streamer_name(name_):
             return None
 
-        query_pid(name_)
-
         if pid := query_pid(name_):
             try:
-                os.kill(pid, SIGTERM)
+                os.kill(pid, SIGTERM) 
                 write_remove_seek(name_)
                 log.info(f"Stopped {name_} [CB]")
                 return None

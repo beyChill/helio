@@ -2,7 +2,7 @@ from __future__ import annotations
 from enum import Enum
 from pathlib import Path
 from random import choice
-from typing import Any, List, Optional
+from typing import Any, list, Optional
 from pydantic import BaseModel
 
 
@@ -43,7 +43,7 @@ class CBRoom(BaseModel):
     is_new: bool
     num_users: int
     num_followers: int
-    tags: List[str]
+    tags: list[str]
     start_dt_utc: str
     country: Optional[str]
     # has_password: bool
@@ -58,7 +58,7 @@ class CBRoom(BaseModel):
 
 
 class CBModel(BaseModel):
-    rooms: List[CBRoom]
+    rooms: list[CBRoom]
     total_count: int
     all_rooms_count: int
     room_list_id: str
@@ -110,13 +110,13 @@ class StreamerBio(BaseModel):
     # fan_club_is_member: bool
     # fan_club_join_url: str
     # needs_supporter_to_pm: bool
-    # interested_in: List[str]
+    # interested_in: list[str]
     display_age: int | None
     # sex: str
     # subgender: str
     room_status: str
-    # photo_sets: List[PhotoSet]
-    # social_medias: List[SocialMedia]
+    # photo_sets: list[PhotoSet]
+    # social_medias: list[SocialMedia]
     # is_broadcaster_or_staff: bool
 
 
@@ -134,7 +134,7 @@ class BioResults(BaseModel):
 
 
 class PassNone(BaseModel):
-    quit: List[str]
+    quit: list[str]
 
 
 class ContactSheetModel(BaseModel):
@@ -237,7 +237,7 @@ class ChatVideoContext(BaseModel):
     apps_running: str
     hls_source: str
     cmaf_edge: bool
-    dismissible_messages: List
+    dismissible_messages: list
     edge_auth: str
     is_widescreen: bool
     allow_private_shows: bool
@@ -261,7 +261,7 @@ class ChatVideoContext(BaseModel):
     num_followed_online: int
     has_studio: bool
     is_mobile: bool
-    ignored_emoticons: List
+    ignored_emoticons: list
     tfa_enabled: bool
     satisfaction_score: Optional[SatisfactionScore] = None
     hide_satisfaction_score: bool
