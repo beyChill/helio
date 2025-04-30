@@ -2,6 +2,7 @@ from contextlib import contextmanager
 from datetime import date, timedelta
 from pathlib import Path
 import sqlite3
+from typing import List
 
 from stardust.config.settings import get_db_setting
 from stardust.utils.applogging import HelioLogger
@@ -50,6 +51,7 @@ def query_db(sql: str | tuple, action: str = "one"):
 
 
 def query_bio(*, date_: date = date.today(), limit: int = 180):
+    """Query known streamers to update thieir bio info from website api call"""
     sql = (
         """
         SELECT streamer_name 
@@ -61,7 +63,7 @@ def query_bio(*, date_: date = date.today(), limit: int = 180):
         """,
         (date_, limit),
     )
-    data = query_db(sql, "all")
+    data:List[str] = query_db(sql, "all")
 
     return data
 
