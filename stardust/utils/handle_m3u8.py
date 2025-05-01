@@ -4,7 +4,6 @@ from stardust.utils.applogging import HelioLogger
 
 log = HelioLogger()
 
-
 class HandleM3u8:
 
     def __init__(self, url:str):
@@ -46,8 +45,4 @@ class HandleM3u8:
         new_url = self.url.replace(split_m3u8,str(self.top_bandwidth))
         return new_url
     
-   
-
-m="https://edgevideo.myfreecams.com/hls/NxServer/811/ngrp:mfc_119565066.f4v_mobile/playlist.m3u8?nc=0.828112569859305&v=1.97.23"
-f=HandleM3u8(m).mfc_m3u8
-print(f)
+ 
