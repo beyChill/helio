@@ -11,7 +11,7 @@ from cmd2 import (
 )
 from tabulate import tabulate
 from stardust.apps.chaturbate.api_streamer_bio import handle_response
-from stardust.apps.chaturbate.validations import check_streamer_name
+
 from stardust.apps.chaturbate.db_query import (
     query_capture,
     query_long_offline,
@@ -26,7 +26,7 @@ from stardust.apps.chaturbate.db_write import (
 from stardust.apps.chaturbate.handleurls import NetActions
 from stardust.apps.chaturbate.manage_capture import start_capture
 from stardust.utils.applogging import HelioLogger
-from stardust.utils.general import process_cb_hls
+from stardust.utils.general import chk_cb_streamer_name, process_cb_hls
 
 """
 It appears single argparse, nargs=1, creates a list.
@@ -59,12 +59,14 @@ class Chaturbate(CommandSet):
     @with_argparser(get_parser)
     def do_get(self, streamer: Namespace):
         """Capture a streamer
-        CB--> get my_fav_girl
+
+        example:
+        CB--> get <streamer's_name>
         """
 
         name_ = streamer.name[0]
 
-        if not check_streamer_name(name_):
+        if not chk_cb_streamer_name(name_):
             return None
 
         if self._query_streamer_pid(name_):
@@ -88,12 +90,12 @@ class Chaturbate(CommandSet):
     @with_argparser(get_parser)
     def do_stop(self, streamer: Namespace) -> None:
         name_ = streamer.name[0]
-        if not check_streamer_name(name_):
+        if not chk_cb_streamer_name(name_):
             return None
 
         if pid := query_pid(name_):
             try:
-                os.kill(pid, SIGTERM) 
+                os.kill(pid, SIGTERM)
                 write_remove_seek(name_)
                 log.info(f"Stopped {name_} [CB]")
                 return None
@@ -109,7 +111,7 @@ class Chaturbate(CommandSet):
     @with_argparser(block_parser)
     def do_block(self, streamer: Namespace) -> None:
         name_ = streamer.name[0]
-        if not check_streamer_name(name_):
+        if not chk_cb_streamer_name(name_):
             return None
 
         reason = "".join(streamer.reason)

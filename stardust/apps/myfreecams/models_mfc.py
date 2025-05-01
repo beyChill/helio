@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel
 
-from typing import Any, list, Optional
+from typing import Any, Optional
 
 
 class Session(BaseModel):
@@ -121,3 +121,74 @@ class MFCModel(BaseModel):
     method: str
     result: Result
     err: int
+
+
+class AppProfile(BaseModel):
+    age: Optional[str] = None
+    gender: Optional[str] = None
+    city: Optional[str] = None
+    country: Optional[str] = None
+    birthdate: Optional[str] = None
+    sexual_preference: Optional[str] = None
+    marital_status: Optional[str] = None
+    ethnicity: Optional[str] = None
+    hair: Optional[str] = None
+    eyes: Optional[str] = None
+    weight: Optional[str] = None
+    weight_units: Optional[str] = None
+    height: Optional[str] = None
+    height_units: Optional[str] = None
+    body_type: Optional[str] = None
+    smoke: Optional[str] = None
+    drink: Optional[str] = None
+    drugs: Optional[str] = None
+    blurb: Optional[str] = None
+    favorite_food: Optional[str] = None
+    pets: Optional[str] = None
+    automobile: Optional[str] = None
+    perfect_mate: Optional[str] = None
+    perfect_date: Optional[str] = None
+    meaning_life: Optional[str] = None
+    know_me: Optional[str] = None
+
+
+class Attribute(BaseModel):
+    title: str
+    value: str
+    order: int
+
+
+class AppShare(BaseModel):
+    follows: Optional[int]=None
+    tipmenus: Optional[int]=None
+
+
+class MFCAppModel(BaseModel):
+    id: int
+    username: str
+    access_level: int
+    active: int
+    avatar: Optional[str] = None
+    cam_score: Optional[float] = None
+    camserv: Optional[int] = None
+    chat_color: Optional[str] = None
+    chat_font: Optional[int] = None
+    chat_opts: Optional[int] = None
+    hide_cam_score: Optional[int] = None
+    last_login: Optional[str] = None
+    missmfc: Optional[Any] = None
+    profile: Optional[AppProfile] = None
+    rank: Optional[Any] = None
+    sid: Optional[int] = None
+    social: Optional[Any] = None
+    user_id: Optional[int] = None
+    vs: Optional[int] = None
+    attributes: Optional[list[Attribute]] = None
+    tags: Optional[list[str]] = None
+    share: Optional[AppShare] = None
+
+
+class GetStreamerResult(BaseModel):
+    name_: str
+    data: Optional[MFCAppModel] = None
+    status: Optional[int] = None

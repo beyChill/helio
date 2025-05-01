@@ -1,11 +1,13 @@
 import asyncio
 from random import choice
-from typing import Any, Optional
+from typing import Callable
 
-from pydantic import BaseModel
 from rnet import Client, Impersonate, Response
 
-from stardust.apps.myfreecams.models_mfc import MFCModel
+from stardust.apps.myfreecams.models_mfc import GetStreamerResult, MFCAppModel, MFCModel
+from stardust.utils.applogging import HelioLogger
+
+log = HelioLogger()
 
 
 class MfcNetActions:
@@ -19,12 +21,13 @@ class MfcNetActions:
 
     async def get_user_profile(self, names_: list[str]):
         tasks = [self.get_user(name_) for name_ in names_]
-        results = await asyncio.gather(*tasks)
-        result = [x for x in results if x]
-        return result
+        all_results = await asyncio.gather(*tasks)
+        results = [result for result in all_results if result]
+        return results
 
     async def get_user(self, name_: str):
         url = f"https://api-edge.myfreecams.com/usernameLookup/{name_}"
+        print(url)
         resp: Response = await self.client.get(url)
         if resp.status != 200:
             print(name_, resp.status, await resp.text())
@@ -33,23 +36,31 @@ class MfcNetActions:
         result = MFCModel(**await resp.json())
         return result
 
-    async def get_streamer_app_profile(self, data: list[tuple[str, int]]):
-        tasks = [self.get_streamer(name_, uid) for name_, uid in data]
-        results = await asyncio.gather(*tasks)
-        result = [x for x in results if x]
-        return result
+    async def get_streamer_app_profile(self, streamers: list[tuple[str, int]]):
+        data: list[GetStreamerResult] = []
+        tasks = [(name_, uid) for name_, uid in streamers]
+
+        data = await self.task_group(tasks, self.get_streamer)
+
+        results = [result for result in data if result.status == 200]
+        return results
 
     async def get_streamer(self, name_, uid):
         url = f"https://app.myfreecams.com/user/{uid}"
         resp: Response = await self.client.get(url)
         if resp.status != 200:
-            print(name_, resp.status)
-            return None
-        result = AppProfile(name_=name_, data=await resp.json(), status=resp.status)
+            log.error(f"{resp.status}: rate Limit for {name_}", )
+            return GetStreamerResult(name_=name_, data=None, status=resp.status)
+        result = GetStreamerResult(
+            name_=name_, data=MFCAppModel(**await resp.json()), status=resp.status
+        )
         return result
 
+    async def task_group(self, tasks: list, func: Callable):
+        results = []
+        async with asyncio.TaskGroup() as group:
+            for task in tasks:
+                task = group.create_task(func(*task))
+                task.add_done_callback(lambda t: results.append(t.result()))
 
-class AppProfile(BaseModel):
-    name_: str
-    data: Any
-    status: Optional[int] = None
+        return results

@@ -1,8 +1,7 @@
 from __future__ import annotations
 from enum import Enum
 from pathlib import Path
-from random import choice
-from typing import Any, list, Optional
+from typing import Any, Optional
 from pydantic import BaseModel
 
 

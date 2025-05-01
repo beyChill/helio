@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from random import uniform
+from string import ascii_lowercase, digits
 from typing import Any
 
 import m3u8
@@ -12,6 +13,13 @@ from stardust.utils.applogging import HelioLogger, loglvl
 
 log = HelioLogger()
 
+def chk_cb_streamer_name(name_: str):
+    valid_characters = ascii_lowercase + digits + "_"
+    if not all(chars in valid_characters for chars in name_):
+        log.error("Use lowercase letters, digits 0-9, and underscore ( _ ) in name")
+        return None
+    print(name_)
+    return name_
 
 def get_app_name(app_tag: str):
     """

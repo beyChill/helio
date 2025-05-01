@@ -14,8 +14,6 @@ class NetActions:
     def __init__(self):
         self.client.update(
             impersonate=choice(self.browser),
-            impersonate_os=choice(self.os),
-            tls_info=True,
         )
 
     async def get_all_m3u8(self, hls_urls: list[str]):
