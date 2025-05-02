@@ -10,7 +10,7 @@ from stardust.config.chroma import rgb
 # from config.settings import get_setting
 from enum import Enum
 
-from stardust.config.settings import get_setting
+from stardust.config.settings import get_db_setting
 
 
 class loglvl(Enum):
@@ -137,7 +137,7 @@ class HelioLogger(HelioLoggerBase):
 
         if self.log_db:
             try:
-                db_path = get_setting().DB_PATH
+                db_path = get_db_setting().DB_FOLDER
                 if not db_path.exists():
                     db_path.exists()
 
