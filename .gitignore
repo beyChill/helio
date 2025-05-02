@@ -182,7 +182,7 @@ cython_debug/
 stardust/aexper/*
 
 # Browser files
-*browser*
+browser*
 downloaded_files/*
 
 # database
