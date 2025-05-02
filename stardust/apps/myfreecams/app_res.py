@@ -13,7 +13,7 @@ class AppResponse:
         url = flow.request.pretty_url
 
         if url.__contains__("playlist"):
-            print("response", url)
+           log.info(f"response: {url}")
 
         if url.endswith("debug=cams"):
             handle_streamers_online(flow)
