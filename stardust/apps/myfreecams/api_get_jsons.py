@@ -8,8 +8,10 @@ from mitmproxy.options import Options
 from stardust.apps.myfreecams.app_req import AppRequest
 from stardust.apps.myfreecams.app_res import AppResponse
 from stardust.apps.myfreecams.browser import launch_sb_for_mfc
+from stardust.utils.applogging import HelioLogger
 from stardust.utils.timer import AppTimerSync
 
+log=HelioLogger()
 
 class AppDirs:
     def __init__(self):
@@ -115,7 +117,7 @@ def get_mfc_online_json():
     try:
         launch_sb_for_mfc(init_.proxy_address)
     except Exception as e:
-        print(e)
+        log.error(e)
 
 
 if __name__ == "__main__":
