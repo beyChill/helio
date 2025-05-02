@@ -7,7 +7,7 @@ from mitmproxy.options import Options
 
 from stardust.apps.myfreecams.app_req import AppRequest
 from stardust.apps.myfreecams.app_res import AppResponse
-from stardust.apps.myfreecams.browser import launch_sb_for_mfc
+from stardust.apps.myfreecams.web_browser import launch_sb_for_mfc
 from stardust.utils.applogging import HelioLogger
 from stardust.utils.timer import AppTimerSync
 
