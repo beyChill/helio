@@ -21,7 +21,7 @@ def get_folders():
 
 def get_videos():
     streamer = get_setting().DIR_PROCESS_CONTACTSHEET
-    print(streamer)
+    log.info(f"{streamer}")
     paths = [
         path_.resolve()
         for path_ in streamer.rglob("**/*")
@@ -171,7 +171,6 @@ def create_contactsheet(data: ContactSheetModel):
         # using communicate() as a hack to wait for process to finish
 
         _ = sheet.returncode
-        # print("completed:", data.output_path.name)
 
 
 def loop_contactsheet_list(video_data):
@@ -182,7 +181,6 @@ def loop_contactsheet_list(video_data):
                 f"\rprocessing {q} of {len(files)} for {a.input_path.parts[-2]}",
             )
             create_contactsheet(a)
-    #     # print(*sheet,sep='\n')
 
 
 @AppTimerSync
