@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from typing import Any, Optional
 
 
-class Session(BaseModel):
+class MfcSession(BaseModel):
     session_id: int
     vstate: int
     room_count: int
@@ -90,7 +90,7 @@ class User(BaseModel):
     access_level: int
     active: int
     avatar: str
-    sessions: Optional[list[Session]] = None
+    sessions: Optional[list[MfcSession]] = None
     cam_score: float
     camserv: Optional[int] = None
     chat_color: str
