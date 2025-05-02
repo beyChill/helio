@@ -1,5 +1,8 @@
 from mitmproxy import http
 
+from stardust.utils.applogging import HelioLogger
+
+log=HelioLogger()
 BLOCK_WORDS = [
     "assets",
     "favicon",
@@ -27,7 +30,7 @@ class AppRequest:
         url = flow.request.pretty_url
 
         if url.__contains__("playlist"):
-            print("Request", url)
+            log.info(f"Request: {url}")
 
         block_extension = any(url.endswith(ext) for ext in BLOCK_EXTENSIONS)
         block_words = any(block in url for block in BLOCK_WORDS)
