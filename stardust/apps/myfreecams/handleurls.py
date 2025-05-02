@@ -27,10 +27,10 @@ class MfcNetActions:
 
     async def get_user(self, name_: str):
         url = f"https://api-edge.myfreecams.com/usernameLookup/{name_}"
-        print(url)
+
         resp: Response = await self.client.get(url)
         if resp.status != 200:
-            print(name_, resp.status, await resp.text())
+            log.error(f"{name_}: {resp.status}, {await resp.text()}")
             return
 
         result = MFCModel(**await resp.json())
@@ -63,4 +63,14 @@ class MfcNetActions:
                 task = group.create_task(func(*task))
                 task.add_done_callback(lambda t: results.append(t.result()))
 
+        return results
+
+    async def get_all_m3u8(self, hls_urls: list[str]):
+        tasks = [self.get_m3u8(url) for url in hls_urls]
+        results = await asyncio.gather(*tasks)
+        return results
+
+    async def get_m3u8(self, url: str):
+        resp: Response = await self.client.get(url)
+        results = await resp.text()
         return results
