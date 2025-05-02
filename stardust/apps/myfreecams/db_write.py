@@ -3,6 +3,8 @@ import sqlite3
 
 from stardust.config.settings import get_db_setting
 
+log= HelioLogger()
+
 @contextmanager
 def connect_write():
     DB = get_db_setting().MFC_DB_FOLDER
@@ -34,7 +36,7 @@ def write_many(sql: str, values):
             conn.execute(add_index)
             conn.execute("END TRANSACTION")
         except Exception as e:
-            print(e)
+            log.error(e)
 
         # 'PRAGMA synchronous = OFF'
         # display_pragma(conn)
