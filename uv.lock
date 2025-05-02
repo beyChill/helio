@@ -380,7 +380,7 @@ wheels = [
 
 [[package]]
 name = "helio"
-source = { editable = "." }
+source = { virtual = "." }
 dependencies = [
     { name = "cmd2" },
     { name = "m3u8" },
