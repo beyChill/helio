@@ -12,6 +12,7 @@ from cmd2 import (
 from tabulate import tabulate
 from stardust.apps.chaturbate.api_streamer_bio import handle_response
 
+from stardust.apps.chaturbate.db_chaturbate import DbCb
 from stardust.apps.chaturbate.db_query import (
     query_capture,
     query_long_offline,
@@ -24,7 +25,7 @@ from stardust.apps.chaturbate.db_write import (
     write_remove_seek,
 )
 from stardust.apps.chaturbate.handleurls import NetActions
-from stardust.apps.chaturbate.manage_capture import start_capture
+from stardust.apps.manage_capture import start_capture
 from stardust.utils.applogging import HelioLogger
 from stardust.utils.general import chk_cb_streamer_name, process_cb_hls
 
@@ -34,6 +35,7 @@ select first in list for streamer.name inputs ie. [0]
 """
 
 log = HelioLogger()
+db = DbCb("chaturbate")
 
 
 class Chaturbate(CommandSet):
@@ -49,8 +51,6 @@ class Chaturbate(CommandSet):
         del Cmd.do_shell
         del Cmd.do_alias
         del Cmd.do_edit
-        # del Cmd.do_set
-        # del Cmd.do_quit
         del Cmd.do_run_script
 
     get_parser = Cmd2ArgumentParser()
@@ -69,7 +69,7 @@ class Chaturbate(CommandSet):
         if not chk_cb_streamer_name(name_):
             return None
 
-        if self._query_streamer_pid(name_):
+        if db.query_pid(name_):
             log.warning(f"Already capturing {name_} [CB]")
             return None
 
@@ -84,8 +84,10 @@ class Chaturbate(CommandSet):
         new_url = asyncio.run(NetActions().get_m3u8(url_))
 
         streamer_data = process_cb_hls([new_url])
+        db.write_urls_all(streamer_data)
+        capture_data = [(v, k) for k, v in streamer_data]
 
-        start_capture(streamer_data)
+        start_capture(capture_data)
 
     @with_argparser(get_parser)
     def do_stop(self, streamer: Namespace) -> None:
