@@ -73,6 +73,7 @@ class Settings(BaseSettings):
 def dir_contactsheet(app_name):
     contactsheet= Path(APP_DIR / 'video' / app_name / 'contactsheet')
     location = Path(f"{env.get('SSD_PATH', contactsheet)}")
+    return location
 
 @lru_cache(maxsize=None)
 def get_setting(**kwargs) -> Settings:
