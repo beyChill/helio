@@ -11,9 +11,10 @@ config = get_setting()
 
 
 class AppID(NamedTuple):
-    slug:str
-    name_:Optional[str]=None
-    color:Optional[str]=None
+    slug: str
+    name_: Optional[str] = None
+    color: Optional[str] = None
+
 
 def get_app_id(app_tag: str):
     """
@@ -30,35 +31,35 @@ def get_app_id(app_tag: str):
 
     return AppID(*data)
 
-g=get_app_id("mfc")
-
-
-
 
 @dataclass(slots=True)
 class FFmpegConfig:
     """Compile streamer data required for FFmpeg capture."""
 
     name_: str
-    slug:str
+    slug: str
     url_: str
-    site_id:AppID=field(init=False)
-    site:str=field(init=False,default='Unknown')
+    site_id: AppID = field(init=False)
+    site: str = field(init=False, default="Unknown")
     file: Path = field(init=False)
     metadata: list = field(init=False)
     ffmpeg_: list = field(init=False)
     return_data: DataFFmpeg = field(init=False)
 
     def __post_init__(self):
-        self.site_id=get_app_id(self.slug)
+        self.site_id = get_app_id(self.slug)
         if self.site_id.name_:
-            self.site=self.site_id.name_
+            self.site = self.site_id.name_
         # self.config = get_setting()
         self._create_folder()
         self._set_metadata()
         self._ffmpeg_args()
         self.return_data = DataFFmpeg(
-            name_=self.name_, url_=self.url_, file_=self.file, args=self.ffmpeg_
+            name_=self.name_,
+            site=self.site,
+            url_=self.url_,
+            file_=self.file,
+            args=self.ffmpeg_,
         )
         del self
 
@@ -106,13 +107,15 @@ class FFmpegConfig:
         self.metadata = metadata
 
     def _ffmpeg_args(self):
+        ua = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/114.0.5735.99 Mobile/15E148 Safari/604.1"
+
         args = [
             "ffmpeg",
             "-hide_banner",
-            "-loglevel",
-            "error",
             "-progress",
             "pipe:1",
+            "-user_agent",
+            ua,
             "-i",
             self.url_,
             *self.metadata,
@@ -128,6 +131,3 @@ class FFmpegConfig:
 
     def return_streamer(self):
         return self.return_data
-
-b=FFmpegConfig("alex","cb","http://do.it")
-print(b)

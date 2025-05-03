@@ -5,7 +5,8 @@ from subprocess import DEVNULL, PIPE, STDOUT, Popen
 from threading import Thread
 from time import sleep
 
-from stardust.apps.chaturbate.db_query import query_cap_status, query_url
+from stardust.apps.app_db_query import query_url
+from stardust.apps.chaturbate.db_query import query_cap_status
 from stardust.apps.chaturbate.db_write import (
     write_data_size,
     write_pid,
@@ -29,13 +30,14 @@ class CaptureStreamer(NetActions):
     """
 
     data: DataFFmpeg
-    site: str = field(default="chaturbate", init=False)
+    site: str = field(init=False)
     process: Popen[str] = field(init=False)
     pid: int = field(default=0, init=False)
     delay_: int = field(default=12, init=False)
     max_time: bool = field(default=False, init=False)
 
     def __post_init__(self):
+        self.site = self.data.site
         self.activate()
 
     def _std_out(self):
@@ -52,10 +54,10 @@ class CaptureStreamer(NetActions):
         self.process.terminate()
 
     def subprocess_poll_end(self):
-        log.app(loglvl.STOPPED, f"{self.data.name_} [CB]")
+        log.app(loglvl.STOPPED, f"{self.data.name_} [MFC]")
 
     def video_duration_end(self):
-        log.app(loglvl.MAXTIME, f"{self.data.name_} [CB]")
+        log.app(loglvl.MAXTIME, f"{self.data.name_} [MFC]")
 
     def activate(self):
         self.process = Popen(
@@ -75,7 +77,7 @@ class CaptureStreamer(NetActions):
         thread.start()
 
     def status_subprocess(self):
-        log.app(loglvl.CAPTURING, f"{self.data.name_} [CB]")
+        log.app(loglvl.CAPTURING, f"{self.data.name_} [MFC]")
         while True:
             if self.process.poll() is not None:
                 self._terminate()
@@ -138,7 +140,7 @@ class CaptureStreamer(NetActions):
         CaptureStreamer(data)
 
     def get_max_time_url(self, name_):
-        url_query = query_url(name_)
+        url_query = query_url(name_, self.site)
 
         # if url_query is null a bug exist in sql writes for url column
         active_url, *_ = url_query
@@ -161,7 +163,7 @@ class CaptureStreamer(NetActions):
             results = self.get_subprocess_new_url(name_)
 
         if not results[0]["url"]:
-            log.app(loglvl.STOPPED, f"{name_} [CB] {results[0]['room_status']}")
+            log.app(loglvl.STOPPED, f"{name_} [MFC] {results[0]['room_status']}")
             return None
 
         url = results[0]["url"]
