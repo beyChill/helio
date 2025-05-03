@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS myfreecams (
     most_viewers    INTEGER DEFAULT NULL,
     block_date      DATETIME DEFAULT NULL,
     notes           TEXT,
-    tags            TEXT,
     category        VARCHAR(15) DEFAULT NULL,
     bio_chk_date    DATETIME DEFAULT NULL,
     bio_fail_date   DATETIME DEFAULT NULL,
@@ -54,6 +53,7 @@ CREATE TABLE IF NOT EXISTS streamer_data(
     country     VARCHAR(4) DEFAULT NULL,
     rank_       INTEGER DEFAULT NULL,
     rc          INTEGER DEFAULT NULL,
+    tags            TEXT,
     created_on  DATETIME DEFAULT (date('now', 'localtime')),
     updated_at  DATETIME DEFAULT (datetime(CURRENT_TIMESTAMP, 'localtime')),
     PRIMARY KEY (streamer_name)
@@ -72,8 +72,8 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_streamer ON streamer_data (streamer_name);
 
 CREATE TABLE IF NOT EXISTS url_data (
     streamer_name VARCHAR(30) NOT NULL,
-    sid         INTEGER DEFAULT NULL,
-    uid         INTEGER DEFAULT NULL,
+    sid_         INTEGER DEFAULT NULL,
+    uid_         INTEGER DEFAULT NULL,
     vs          INTEGER DEFAULT NULL,
     pid         INTEGER DEFAULT NULL,
     lv          INTEGER DEFAULT NULL,
