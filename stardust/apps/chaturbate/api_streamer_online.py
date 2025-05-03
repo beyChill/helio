@@ -5,10 +5,9 @@ from rnet import Response
 
 from stardust.apps.chaturbate.db_query import query_seek_status
 from stardust.apps.chaturbate.handleurls import NetActions
-from stardust.apps.chaturbate.manage_capture import start_capture
+from stardust.apps.manage_capture import start_capture
 from stardust.utils.applogging import HelioLogger
 from stardust.utils.general import process_cb_hls, script_delay
-from stardust.utils.handle_m3u8 import HandleM3u8
 from stardust.utils.timer import AppTimer
 
 log = HelioLogger()
