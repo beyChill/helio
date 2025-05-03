@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from random import uniform
-from string import ascii_lowercase, digits
+from string import ascii_lowercase, ascii_uppercase, digits
 from typing import Any
 
 import m3u8
@@ -13,13 +13,26 @@ from stardust.utils.applogging import HelioLogger, loglvl
 
 log = HelioLogger()
 
+
+all_valid_chars = [ascii_lowercase, ascii_uppercase, digits, "_"]
+partial_valid_chars = [ascii_lowercase, ascii_uppercase, digits, "_"]
+
+
 def chk_cb_streamer_name(name_: str):
-    valid_characters = ascii_lowercase + digits + "_"
+    valid_characters = "".join(all_valid_chars)
     if not all(chars in valid_characters for chars in name_):
         log.error("Use lowercase letters, digits 0-9, and underscore ( _ ) in name")
         return None
-    print(name_)
     return name_
+
+
+def chk_streamer_name(name_: str):
+    valid_characters =" ".join(all_valid_chars)
+    if not all(chars in valid_characters for chars in name_):
+        log.error("Upper / lower case letters, digits 0-9, and underscore ( _ ) are valid characters")
+        return None
+    return name_
+
 
 def get_app_name(app_tag: str):
     """
@@ -55,8 +68,7 @@ def script_delay(min: float, max: float):
 
 
 def process_cb_hls(results: list[Any]):
-    streamer_url: list[tuple[str, str]] = []
-
+    streamer_url: list[tuple] = []
     for url_, m3u8_ in results:
         m3u8_file = m3u8.loads(m3u8_)
 
@@ -66,9 +78,7 @@ def process_cb_hls(results: list[Any]):
         best_quality = m3u8_file.playlists[-1].uri
         new_url = url_.replace("playlist.m3u8", str(best_quality))
         streamer_name = new_url.split("amlst:")[-1].split("-sd-")[0]
-        streamer_url.append((streamer_name, new_url))
-        write_data = [(v, k) for k, v in streamer_url]
-        write_m3u8(write_data)
+        streamer_url.append((new_url,streamer_name))
 
     return streamer_url
 
