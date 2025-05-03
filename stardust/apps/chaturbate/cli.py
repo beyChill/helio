@@ -21,7 +21,7 @@ from stardust.apps.chaturbate.db_query import (
 )
 from stardust.apps.chaturbate.db_write import (
     write_block_info,
-    write_get_streamer,
+    # write_get_streamer,
     write_remove_seek,
 )
 from stardust.apps.chaturbate.handleurls import NetActions
@@ -41,7 +41,7 @@ db = DbCb("chaturbate")
 class Chaturbate(CommandSet):
     """Interact with Chaturbate streamers"""
 
-    intro = log.info("Type help or ? for command infomation.\n")
+    
 
     def __init__(self):
         super().__init__()
@@ -73,7 +73,7 @@ class Chaturbate(CommandSet):
             log.warning(f"Already capturing {name_} [CB]")
             return None
 
-        write_get_streamer(name_)
+        db.write_seek_capture(name_)
         data = asyncio.run(NetActions().get_ajax_url([name_]))
         url_ = ""
         for d in data:

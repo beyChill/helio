@@ -34,7 +34,7 @@ class HelioCli(Cmd):
     """
     AppGroup dynamically runs the app's cli.
     """
-
+    intro = log.info("Type help or ? for command infomation.\n")
     app_prompt = ""
     slug = ""
     name_ = ""

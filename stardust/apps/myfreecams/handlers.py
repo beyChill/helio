@@ -34,6 +34,9 @@ def handle_streamers_online(flow: HTTPFlow):
     # converting it to a list eliminates issue.
     streamer_data:list = other_data.values.tolist()
 
-    db.write_streamer_data(streamer_data)
-    db.write_url_data(url_data)
-    log.app(loglvl.SUCCESS,f"Evaluated {len(streamer_data)} MFC streamers")
+    write_status= db.write_streamer_data(streamer_data)
+    write_status2 =db.write_url_data(url_data)
+
+    if all([write_status,write_status2]):
+        log.app(loglvl.SUCCESS,f"Evaluated {len(streamer_data)} MFC streamers")
+    return None
