@@ -97,7 +97,7 @@ class CBajax(BaseModel):
 class StreamerBio(BaseModel):
     name_: str
     follower_count: int
-    # location: str
+    location: Optional[str]=None
     # real_name: str
     # body_decorations: str
     last_broadcast: str
