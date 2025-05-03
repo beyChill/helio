@@ -24,18 +24,12 @@ APP_DIR: Path = Path.cwd() / APP_NAME
 
 class DBSettings(BaseSettings):
     DB_SQL_FOLDER: Path = APP_DIR / "database"
-    DB_FOLDER: Path = APP_DIR / "database" / "db"
     CS_CONFIG: Path = DB_SQL_FOLDER / "camsoda.sql"
-    CS_DB_FOLDER: Path = DB_FOLDER / "camsoda.sqlite3"
     CB_CONFIG: Path = DB_SQL_FOLDER / "chaturbate.sql"
-    CB_DB_FOLDER: Path = DB_FOLDER / "chaturbate.sqlite3"
     MFC_CONFIG: Path = DB_SQL_FOLDER / "myfreecams.sql"
-    MFC_DB_FOLDER: Path = DB_FOLDER / "myfreecams.sqlite3"
     SC_CONFIG: Path = DB_SQL_FOLDER / "stripchat.sql"
-    SC_DB_FOLDER: Path = DB_FOLDER / "stripchat.sqlite3"
 
     DB_SQLS: list[Path] = [CS_CONFIG, CB_CONFIG, MFC_CONFIG, SC_CONFIG]
-    DB_FILES: list[Path] = [CS_DB_FOLDER, CB_DB_FOLDER, MFC_DB_FOLDER, SC_DB_FOLDER]
 
 
 class Settings(BaseSettings):
@@ -60,7 +54,7 @@ class Settings(BaseSettings):
     )
     FFMPEG_DEGUB: bool = False
     VIDEO_EXT: str = "mkv"
-    VIDEO_LENGTH_SECONDS: int = 1800
+    VIDEO_LENGTH_SECONDS: int = 30
     LOCAL_STORAGE: list[Path] = _storage("long")
     LOCAL_STORAGE.append(DIR_VIDEO_PATH)
     DIR_STORAGE_LOCATIONS: list[Path] = LOCAL_STORAGE
@@ -71,9 +65,10 @@ class Settings(BaseSettings):
 
 
 def dir_contactsheet(app_name):
-    contactsheet= Path(APP_DIR / 'video' / app_name / 'contactsheet')
+    contactsheet = Path(APP_DIR / "video" / app_name / "contactsheet")
     location = Path(f"{env.get('SSD_PATH', contactsheet)}")
     return location
+
 
 @lru_cache(maxsize=None)
 def get_setting(**kwargs) -> Settings:
