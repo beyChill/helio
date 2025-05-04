@@ -13,8 +13,10 @@ def start_capture(data: list | tuple):
             FFmpegConfig(name_, slug, url_).return_data for name_, slug, url_ in data
         ]
         _ = [CaptureStreamer(result) for result in config_list]
+        return True
 
     name_, slug, url = data
+
     config = FFmpegConfig(name_, slug, url).return_data
     CaptureStreamer(config)
-    return None
+    return True
