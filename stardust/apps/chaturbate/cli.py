@@ -1,7 +1,8 @@
-from argparse import Namespace
 import asyncio
 import os
+from argparse import Namespace
 from signal import SIGTERM
+
 from cmd2 import (
     Cmd,
     Cmd2ArgumentParser,
@@ -10,24 +11,22 @@ from cmd2 import (
     with_argparser,
 )
 from tabulate import tabulate
-from stardust.apps.chaturbate.api_streamer_bio import handle_response
 
+from stardust.apps.chaturbate.api_streamer_bio import handle_response
 from stardust.apps.chaturbate.db_chaturbate import DbCb
 from stardust.apps.chaturbate.db_query import (
     query_capture,
     query_long_offline,
     query_offline,
-    query_pid,
 )
 from stardust.apps.chaturbate.db_write import (
     write_block_info,
-    # write_get_streamer,
-    write_remove_seek,
 )
 from stardust.apps.chaturbate.handleurls import NetActions
 from stardust.apps.manage_capture import start_capture
 from stardust.utils.applogging import HelioLogger
-from stardust.utils.general import chk_cb_streamer_name, process_cb_hls
+from stardust.utils.general import chk_cb_streamer_name
+from stardust.utils.handle_m3u8 import HandleM3u8
 
 """
 It appears single argparse, nargs=1, creates a list.
@@ -41,9 +40,8 @@ db = DbCb("chaturbate")
 class Chaturbate(CommandSet):
     """Interact with Chaturbate streamers"""
 
-    
-
     def __init__(self):
+        self.slug = "CB"
         super().__init__()
         del Cmd.do_macro
         del Cmd.do_run_pyscript
@@ -70,7 +68,7 @@ class Chaturbate(CommandSet):
             return None
 
         if db.query_pid(name_):
-            log.warning(f"Already capturing {name_} [CB]")
+            log.warning(f"Already capturing {name_} [{self.slug}]")
             return None
 
         db.write_seek_capture(name_)
@@ -82,29 +80,37 @@ class Chaturbate(CommandSet):
         if not url_:
             return None
         new_url = asyncio.run(NetActions().get_m3u8(url_))
-
-        streamer_data = process_cb_hls([new_url])
-        db.write_urls_all(streamer_data)
+        name_, url = new_url
+        streamer_data = [
+            (HandleM3u8(url).new_cb_m3u8(), name_) for name_, url in new_url
+        ]
+        db.write_urls_all([(url, name_)])
         capture_data = [(v, k) for k, v in streamer_data]
 
         start_capture(capture_data)
 
     @with_argparser(get_parser)
     def do_stop(self, streamer: Namespace) -> None:
-        name_ = streamer.name[0]
+        """Terminate a single capture session
+
+        example:
+        CB--> stop <streamer's_name>
+        """
+        name_ = str(streamer.streamer)
         if not chk_cb_streamer_name(name_):
             return None
 
-        if pid := query_pid(name_):
+        if pid := db.query_pid(name_):
             try:
                 os.kill(pid, SIGTERM)
-                write_remove_seek(name_)
-                log.info(f"Stopped {name_} [CB]")
+                db.write_stop_seek(name_)
+                log.warning(f"Manually initiated stop for {name_} [{self.slug}]")
                 return None
             except OSError as e:
                 msg = f"{e} for {name_}"
                 log.error(msg)
-        log.info(f"Capture {name_} [CB] is not active")
+        if not pid:
+            log.info(f"Stopping seek for {name_} [{self.slug}]")
 
     block_parser = Cmd2ArgumentParser()
     block_parser.add_argument("name", nargs=1, help="Streamer name")
@@ -196,7 +202,7 @@ class Chaturbate(CommandSet):
         return sort
 
     def _query_streamer_pid(self, name_):
-        data = query_pid(name_)
+        data = db.query_pid(name_)
 
         if data is not None:
             log.error(f"Already capturing {name_} [CB]")
