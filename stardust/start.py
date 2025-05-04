@@ -8,16 +8,21 @@ from stardust.database.db_base import db_init
 
 threads = [
     Thread(target=loop_cb_room_list, daemon=True),
-    Thread(target=run_cb_streamers, daemon=True)
+    Thread(target=run_cb_streamers, daemon=True),
 ]
+
 
 def main():
     db_init()
-    for thread in threads:
-        thread.start()
-
+    run_threads()
+    print()
     cli = HelioCli()
     sys.exit(cli.cmdloop())
-    
+
+
+def run_threads():
+    _ = [thread.start() for thread in threads]
+
+
 if __name__ == "__main__":
     main()

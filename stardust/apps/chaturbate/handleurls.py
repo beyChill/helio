@@ -3,7 +3,8 @@ from random import choice
 
 from rnet import Client, Impersonate, ImpersonateOS, Response
 
-from stardust.config.constants import CBModel, ChatVideoContext, FailVideoContext
+from stardust.apps.chaturbate.models import CBModel, ChatVideoContext
+from stardust.config.constants import FailVideoContext
 
 
 class NetActions:
@@ -40,7 +41,7 @@ class NetActions:
             fail = FailVideoContext(**data, name_=streamer)
             return fail
 
-        result: ChatVideoContext = await resp.json()
+        result= ChatVideoContext(**await resp.json())
         return result
 
     async def get_all_jsons(self, params: str, num_streamers=0) -> list[CBModel]:

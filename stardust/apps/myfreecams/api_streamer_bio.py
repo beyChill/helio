@@ -21,7 +21,7 @@ def request_profiles(names: list[str]):
             continue
 
         if not profile.result.user.sessions:
-            log.warning("{name_} is offline")
+            log.warning(f"{name_} is offline")
             continue
 
         if profile.result.user.sessions:
