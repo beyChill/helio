@@ -3,20 +3,24 @@ from pathlib import Path
 
 from rnet import Response
 
-from stardust.apps.chaturbate.db_query import query_seek_status
+# from stardust.apps.chaturbate.db_query import query_seek_status
 from stardust.apps.chaturbate.handleurls import NetActions
+from stardust.apps.manage_app_db import HelioDB
 from stardust.apps.manage_capture import start_capture
 from stardust.utils.applogging import HelioLogger
-from stardust.utils.general import process_cb_hls, script_delay
+from stardust.utils.general import script_delay
+from stardust.utils.handle_m3u8 import HandleM3u8
 from stardust.utils.timer import AppTimer
 
 log = HelioLogger()
 iNet = NetActions()
 
+db = HelioDB("chaturbate")
+
 
 @AppTimer
 async def get_streamers():
-    data = query_seek_status()
+    data = db.query_seek_capture()
 
     if not data:
         log.warning("Zero Chaturbate streams to capture")
@@ -34,8 +38,8 @@ async def get_streamers():
     urls_ = [url["url"] for url in urls]
     hls_urls = await iNet.get_all_m3u8(urls_)
 
-    # streamer_url = [(name_, HandleM3u8(url)) for name_, url in hls_urls]
-    streamer_url = process_cb_hls(hls_urls)
+    streamer_url = [(name_, HandleM3u8(url).new_cb_m3u8) for name_, url in hls_urls]
+    # streamer_url = process_cb_hls(hls_urls)
 
     return streamer_url
 

@@ -9,13 +9,17 @@ from stardust.apps.chaturbate.db_write import (
     write_videocontext_fail,
 )
 from stardust.apps.chaturbate.handleurls import NetActions
-from stardust.config.constants import ChatVideoContext, FailVideoContext
+from stardust.apps.chaturbate.models import ChatVideoContext
+from stardust.apps.manage_app_db import HelioDB
+from stardust.config.constants import FailVideoContext
 from stardust.utils.applogging import HelioLogger, loglvl
-from stardust.utils.general import process_cb_hls
+# from stardust.utils.general import process_cb_hls
+from stardust.utils.handle_m3u8 import HandleM3u8
 from stardust.utils.timer import AppTimer
 
 log = HelioLogger()
 processed: list[str] = []
+db= HelioDB('chaturbate')
 
 
 @AppTimer
@@ -29,8 +33,9 @@ async def manage_api_videocontext(streamers: list[str]):
     if accessible:
         has_hls = handle_response(accessible)
         hls_urls = await iNet.get_all_m3u8(has_hls)
-        streamer_url = process_cb_hls(hls_urls)
-        write_m3u8(streamer_url)
+        # streamer_url = process_cb_hls(hls_urls) 
+        streamer_url= [(name_, str(HandleM3u8(url).new_cb_m3u8)) for name_, url in hls_urls]
+        db.write_capture_url(streamer_url)
 
     if fail:
         write_videocontext_fail(fail)

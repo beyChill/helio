@@ -7,7 +7,7 @@ from sqlite3 import Date
 
 from stardust.apps.chaturbate.db_write import write_db_streamers
 from stardust.apps.chaturbate.handleurls import NetActions
-from stardust.config.constants import CBRoom, cb_param
+from stardust.apps.chaturbate.models import CBRoom, cb_param
 from stardust.utils.applogging import HelioLogger
 from stardust.utils.timer import AppTimer
 
