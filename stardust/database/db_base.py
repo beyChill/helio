@@ -3,11 +3,12 @@ import sqlite3
 from contextlib import contextmanager
 from stardust.config.settings import get_db_setting
 from stardust.utils.applogging import HelioLogger, loglvl
+from stardust.utils.general import get_all_app_names
 
 log = HelioLogger()
 
 DB_SQL_FOLDER = get_db_setting().DB_SQL_FOLDER
-DB_FILES = get_db_setting().DB_FILES
+
 
 @contextmanager
 def init_connect(file: Path):
@@ -28,6 +29,9 @@ def init_connect(file: Path):
         yield conn
 
 def db_init() -> None:
+    APP_NAMES = get_all_app_names()
+    DB_FILES=[Path(Path.cwd() / f"stardust/database/db/{x}.sqlite3") for x in APP_NAMES]
+
     missing_files = [(x.stem, x) for x in DB_FILES if not Path(x).exists()]
 
     if not missing_files:
@@ -49,6 +53,7 @@ def db_init() -> None:
         log.error(msg)
 
     return None
+
 
 def optimize_db(file):
     pragma_optimize = "pragma integrity_check; PRAGMA optimize; ANALYZE; VACUUM;"
