@@ -28,8 +28,8 @@ SET updated_at = (datetime(CURRENT_TIMESTAMP, 'localtime'))
 WHERE streamer_name = OLD.streamer_name;
 END;
 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_cb ON chaturbate (streamer_name);
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_streamer ON chaturbate (streamer_name);
 
 CREATE TABLE IF NOT EXISTS streamer_data(
     streamer_name   VARCHAR(30) NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS streamer_data(
     created_on      DATETIME DEFAULT (date('now', 'localtime')),
     updated_at      DATETIME DEFAULT (datetime(CURRENT_TIMESTAMP, 'localtime')),
     PRIMARY KEY (streamer_name)
-)
+);
 
 CREATE TRIGGER update_streamer_updated_at
 AFTER
@@ -67,3 +67,5 @@ UPDATE streamer_data
 SET most_viewers = NEW.viewers
 WHERE rowid = NEW.rowid;
 END;
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_streamer ON streamer_data (streamer_name);
