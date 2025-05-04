@@ -10,9 +10,6 @@ from stardust.config.chroma import rgb
 # from config.settings import get_setting
 from enum import Enum
 
-from stardust.config.settings import get_db_setting
-
-
 class loglvl(Enum):
     NOTSET = 0
     CREATED = 1
@@ -135,14 +132,14 @@ class HelioLogger(HelioLoggerBase):
 
         self.log_db = log_db
 
-        if self.log_db:
-            try:
-                db_path = get_db_setting().DB_FOLDER
-                if not db_path.exists():
-                    db_path.exists()
+        # if self.log_db:
+        #     try:
+        #         db_path = get_db_setting().DB_FOLDER
+        #         if not db_path.exists():
+        #             db_path.exists()
 
-            except Exception as e:
-                print(e)
+        #     except Exception as e:
+        #         print(e)
 
     def _set_level(self, *args):
         custom_level = [name for name, value in locals().items() if value is True]

@@ -33,6 +33,13 @@ def chk_streamer_name(name_: str):
         return None
     return name_
 
+def get_all_app_names():
+    app_names=[]
+    for app in dir(helio_apps):
+        if app.startswith("app_"):
+            app_data = getattr(helio_apps, app)
+            app_names.append(app_data[1])
+    return app_names
 
 def get_app_name(app_tag: str):
     """
@@ -67,20 +74,20 @@ def script_delay(min: float, max: float):
     return (delay, time_)
 
 
-def process_cb_hls(results: list[Any]):
-    streamer_url: list[tuple] = []
-    for url_, m3u8_ in results:
-        m3u8_file = m3u8.loads(m3u8_)
+# def process_cb_hls(results: list[Any]):
+#     streamer_url: list[tuple] = []
+#     for url_, m3u8_ in results:
+#         m3u8_file = m3u8.loads(m3u8_)
 
-        if not m3u8_file.playlists[-1]:
-            continue
+#         if not m3u8_file.playlists[-1]:
+#             continue
 
-        best_quality = m3u8_file.playlists[-1].uri
-        new_url = url_.replace("playlist.m3u8", str(best_quality))
-        streamer_name = new_url.split("amlst:")[-1].split("-sd-")[0]
-        streamer_url.append((new_url,streamer_name))
+#         best_quality = m3u8_file.playlists[-1].uri
+#         new_url = url_.replace("playlist.m3u8", str(best_quality))
+#         streamer_name = new_url.split("amlst:")[-1].split("-sd-")[0]
+#         streamer_url.append((new_url,streamer_name))
 
-    return streamer_url
+#     return streamer_url
 
 
 async def check_helio_github_version():
