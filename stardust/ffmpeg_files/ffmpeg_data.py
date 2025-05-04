@@ -56,8 +56,9 @@ class FFmpegConfig:
         self._ffmpeg_args()
         self.return_data = DataFFmpeg(
             name_=self.name_,
+            slug=self.slug,
             site=self.site,
-            url_=self.url_,
+            url=self.url_,
             file_=self.file,
             args=self.ffmpeg_,
         )

@@ -1,43 +1,46 @@
 import asyncio
-from dataclasses import dataclass, field
 import os
+from dataclasses import dataclass, field
 from subprocess import DEVNULL, PIPE, STDOUT, Popen
 from threading import Thread
 from time import sleep
+from typing import Any
 
-from stardust.apps.app_db_query import query_url
-from stardust.apps.chaturbate.db_query import query_cap_status
-from stardust.apps.chaturbate.db_write import (
-    write_data_size,
-    write_pid,
-    write_remove_pid,
-)
-from stardust.apps.chaturbate.ffmpeg_config import FFmpegData
 from stardust.apps.chaturbate.handleurls import NetActions
+from stardust.apps.manage_app_db import HelioDB
+from stardust.apps.myfreecams.handleurls import MfcNetActions
+from stardust.apps.myfreecams.helper import parse_profile
 from stardust.config.constants import DataFFmpeg
 from stardust.config.settings import get_setting
+from stardust.ffmpeg_files.ffmpeg_data import FFmpegConfig
 from stardust.utils.applogging import HelioLogger, loglvl
-from stardust.utils.general import calc_size, process_cb_hls
+from stardust.utils.general import calc_size
+from stardust.utils.handle_m3u8 import HandleM3u8
 
+# process_cb_hls
 log = HelioLogger()
 config = get_setting()
 
 
 @dataclass(slots=True)
-class CaptureStreamer(NetActions):
+class CaptureStreamer:
     """
     Start and monitor FFmpeg live stream capture
     """
 
     data: DataFFmpeg
+    db: HelioDB = field(init=False)
     site: str = field(init=False)
     process: Popen[str] = field(init=False)
     pid: int = field(default=0, init=False)
-    delay_: int = field(default=12, init=False)
+    delay_: int = field(init=False)
     max_time: bool = field(default=False, init=False)
+    restart_url: Any = field(init=False)
 
     def __post_init__(self):
         self.site = self.data.site
+        self.db = HelioDB(self.site)
+        self.delay_=12
         self.activate()
 
     def _std_out(self):
@@ -45,19 +48,19 @@ class CaptureStreamer(NetActions):
             return open(f"{self.data.file_.parent}/stdout.log", "w+", encoding="utf-8")
         return PIPE
 
-    @classmethod
-    def set_delay(cls, seconds: int):
-        cls.delay_ = seconds
+    
+    def set_delay(self, seconds: int):
+        self.delay_ = seconds
 
     def _terminate(self):
         self.process.wait()
         self.process.terminate()
 
     def subprocess_poll_end(self):
-        log.app(loglvl.STOPPED, f"{self.data.name_} [MFC]")
+        log.app(loglvl.STOPPED, f"{self.data.name_} [{self.data.slug}]")
 
     def video_duration_end(self):
-        log.app(loglvl.MAXTIME, f"{self.data.name_} [MFC]")
+        log.app(loglvl.MAXTIME, f"{self.data.name_} [{self.data.slug}]")
 
     def activate(self):
         self.process = Popen(
@@ -71,7 +74,7 @@ class CaptureStreamer(NetActions):
         )
 
         self.pid = self.process.pid
-        write_pid((self.pid, self.data.name_))
+        self.db.write_process_id((self.pid, self.data.name_))
 
         thread = Thread(target=self.status_subprocess, daemon=True)
         thread.start()
@@ -90,6 +93,7 @@ class CaptureStreamer(NetActions):
                 self.set_delay(0)
                 self.video_duration_end()
                 self.max_time = True
+                self.restart_url = self.db.query_url(self.data.name_)
                 break
 
         self.manage_cap_restart()
@@ -111,66 +115,58 @@ class CaptureStreamer(NetActions):
         return False
 
     def manage_cap_restart(self):
-        raw_size = os.stat(self.data.file_).st_size
-        file_size = calc_size([raw_size])
-        values = (file_size, self.data.name_)
-        write_data_size(values)
+        cap_status = self.db.query_cap_status(self.data.name_)
 
-        cap_status = query_cap_status(self.data.name_)
+        if not cap_status:
+            self.db.write_rm_process_id(self.pid)
+            return None
+
         seek_capture, block = cap_status
 
         if seek_capture is None or block is not None:
-            write_remove_pid(self.pid)
+            self.db.write_rm_process_id(self.pid)
             return None
 
-        results = self.get_restart_url((self.max_time, self.data.name_))
+        if not self.max_time:
+            self.restart_url = self.get_restart_url()
 
-        if results is None:
-            write_remove_pid(self.pid)
+        if not self.restart_url:
+            self.db.write_rm_process_id(self.pid)
             return None
 
-        if not any("http" in value for value in results):
-            write_remove_pid(self.pid)
-            return None
+        asyncio.run(write_video_size(self.data.name_, self.data.file_, self.site))
 
-        name_, url_ = results
-
-        data = FFmpegData(name_, url_).return_data
-
+        data = FFmpegConfig(self.data.name_, self.data.slug, self.restart_url).return_data
+        
         CaptureStreamer(data)
 
-    def get_max_time_url(self, name_):
-        url_query = query_url(name_, self.site)
 
-        # if url_query is null a bug exist in sql writes for url column
-        active_url, *_ = url_query
+    def get_restart_url(self):
+        sleep(self.delay_)
+        url = get_url(self.data.name_, self.site)
+        return url
 
-        return (name_, active_url)
 
-    def get_subprocess_new_url(self, name_):
-        results = asyncio.run(self.get_ajax_url([name_]))
-        return results
+def get_url(name_, site):
 
-    def get_restart_url(self, data: tuple[bool, str]):
-        results: list = []
-        max_time, name_ = data
-
-        if max_time:
-            return self.get_max_time_url(name_)
-
-        if not max_time:
-            sleep(self.delay_)
-            results = self.get_subprocess_new_url(name_)
+    if site == "chaturbate":
+        results = asyncio.run(NetActions().get_ajax_url([name_]))
 
         if not results[0]["url"]:
-            log.app(loglvl.STOPPED, f"{name_} [MFC] {results[0]['room_status']}")
+            log.app(loglvl.STOPPED, f"{name_} [{site}] {results[0]['room_status']}")
             return None
 
         url = results[0]["url"]
-        new_data = asyncio.run(self.get_all_m3u8([url]))
-        playlist_url, playlist_data = new_data[0]
+        return HandleM3u8(url).new_cb_m3u8()
 
-        streamer_data = process_cb_hls([(playlist_url, playlist_data)])
-        new_name, restart_url = streamer_data[0]
+    if site == "myfreecams":
+        json_ = asyncio.run(MfcNetActions().get_user_profile([name_]))
+        url_ = parse_profile(json_[0])
+        return url_
 
-        return (new_name, restart_url)
+
+async def write_video_size(name_, file, site):
+    raw_size = os.stat(file).st_size
+    file_size = calc_size([raw_size])
+    values = (file_size, name_)
+    HelioDB(site).write_video_size(values)
