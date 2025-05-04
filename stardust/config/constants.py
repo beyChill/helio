@@ -1,6 +1,17 @@
 from __future__ import annotations
+
 from pathlib import Path
-from pydantic import BaseModel
+
+from pydantic import BaseModel, HttpUrl
+
+
+class URL(BaseModel):
+    url: HttpUrl
+
+
+class NameURL(BaseModel):
+    name_: str
+    url: HttpUrl
 
 
 class PassNone(BaseModel):
@@ -17,8 +28,9 @@ class DataFFmpeg(BaseModel):
     """Data for capturing live stream"""
 
     name_: str
+    slug: str
     site: str
-    url_: str
+    url: str
     file_: Path
     # For FFmpeg use
     args: list
