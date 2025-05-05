@@ -1,21 +1,15 @@
-import asyncio
-import os
 from dataclasses import dataclass, field
 from subprocess import DEVNULL, PIPE, STDOUT, Popen
 from threading import Thread
 from time import sleep
 from typing import Any
 
-from stardust.apps.chaturbate.handleurls import NetActions
 from stardust.apps.manage_app_db import HelioDB
-from stardust.apps.myfreecams.handleurls import MfcNetActions
-from stardust.apps.myfreecams.helper import parse_profile
 from stardust.config.constants import DataFFmpeg
 from stardust.config.settings import get_setting
 from stardust.ffmpeg_files.ffmpeg_data import FFmpegConfig
 from stardust.utils.applogging import HelioLogger, loglvl
-from stardust.utils.general import calc_size
-from stardust.utils.handle_m3u8 import HandleM3u8
+from stardust.utils.general import calc_video_size, get_url
 
 # process_cb_hls
 log = HelioLogger()
@@ -40,7 +34,7 @@ class CaptureStreamer:
     def __post_init__(self):
         self.site = self.data.site
         self.db = HelioDB(self.site)
-        self.delay_=12
+        self.delay_ = 12
         self.activate()
 
     def _std_out(self):
@@ -48,7 +42,6 @@ class CaptureStreamer:
             return open(f"{self.data.file_.parent}/stdout.log", "w+", encoding="utf-8")
         return PIPE
 
-    
     def set_delay(self, seconds: int):
         self.delay_ = seconds
 
@@ -63,10 +56,6 @@ class CaptureStreamer:
         log.app(loglvl.MAXTIME, f"{self.data.name_} [{self.data.slug.upper()}]")
 
     def activate(self):
-        if self.db.query_process_id(self.data.name_):
-            print(self.pid)
-            return None
-        
         self.process = Popen(
             self.data.args,
             stdin=DEVNULL,
@@ -83,7 +72,6 @@ class CaptureStreamer:
             log.warning(f"Unable to capture {self.data.name_}")
             self.db.write_rm_process_id(self.process.pid)
             return
-
 
         self.db.write_process_id((self.pid, self.data.name_))
 
@@ -144,37 +132,14 @@ class CaptureStreamer:
             self.db.write_rm_process_id(self.pid)
             return None
         try:
-            if not self.data.file_.is_file:
+            if not self.data.file_.is_file():
                 return None
-            asyncio.run(write_video_size(self.data.name_, self.data.file_, self.site))
+            calc_video_size(self.data.name_, self.data.file_, self.site)
         except FileNotFoundError as e:
             log.error(f"Opps... {e}")
-            
-        data = FFmpegConfig(self.data.name_, self.data.slug, self.restart_url).return_data
-        
+
+        data = FFmpegConfig(
+            self.data.name_, self.data.slug, self.restart_url
+        ).return_data
+
         CaptureStreamer(data)
-
-
-def get_url(name_, site):
-
-    if site == "chaturbate":
-        results = asyncio.run(NetActions().get_ajax_url([name_]))
-
-        if not results[0]["url"]:
-            log.app(loglvl.STOPPED, f"{name_} [{site}] {results[0]['room_status']}")
-            return None
-
-        url = results[0]["url"]
-        return HandleM3u8(url).new_cb_m3u8()
-
-    if site == "myfreecams":
-        json_ = asyncio.run(MfcNetActions().get_user_profile([name_]))
-        url_ = parse_profile(json_[0])
-        return url_
-
-
-async def write_video_size(name_, file, site):
-    raw_size = os.stat(file).st_size
-    file_size = calc_size([raw_size])
-    values = (file_size, name_)
-    HelioDB(site).write_video_size(values)
