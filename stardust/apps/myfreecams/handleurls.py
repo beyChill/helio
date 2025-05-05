@@ -1,4 +1,5 @@
 import asyncio
+import time
 from random import choice
 from typing import Callable
 
@@ -49,7 +50,9 @@ class MfcNetActions:
         url = f"https://app.myfreecams.com/user/{uid}"
         resp: Response = await self.client.get(url)
         if resp.status != 200:
-            log.error(f"{resp.status}: rate Limit for {name_}", )
+            log.error(
+                f"{resp.status}: rate Limit for {name_}",
+            )
             return GetStreamerResult(name_=name_, data=None, status=resp.status)
         result = GetStreamerResult(
             name_=name_, data=MFCAppModel(**await resp.json()), status=resp.status
@@ -74,3 +77,30 @@ class MfcNetActions:
         resp: Response = await self.client.get(url)
         results = await resp.text()
         return results
+
+    async def get_all_jpg(self, streamers: list[tuple[str, int, int]]):
+        """final url parameter is a 13 digit timestamp. Reducing time() to 13 digits."""
+        epoch_raw = str(time.time()).replace(".","")
+        epoch_ = int(epoch_raw[:-4])
+
+        tasks = [
+            self.get_jpg(
+                (
+                    name_,
+                    f"https://snap.mfcimg.com/snapimg/{server}/853x480/mfc_{id}?no-cache={epoch_}",
+                )
+            )
+            for name_, server, id in streamers
+        ]
+
+        return await asyncio.gather(*tasks)
+
+    async def get_jpg(self, data: tuple[str, str]):
+        name_, url = data
+        resp: Response = await self.client.get(url)
+        if resp.status != 200:
+            print(name_, resp.status_code)
+            return (name_, bytes())
+
+        image: bytes = await resp.bytes()
+        return (name_, image)
