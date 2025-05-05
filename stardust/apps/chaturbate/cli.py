@@ -80,12 +80,11 @@ class Chaturbate(CommandSet):
         if not url_:
             return None
         new_url = asyncio.run(NetActions().get_m3u8(url_))
-        name_, url = new_url
-        streamer_data = [
-            (HandleM3u8(url).new_cb_m3u8(), name_) for name_, url in new_url
-        ]
+        url, url_as_text = new_url
+
+        new_m3u8 = HandleM3u8(url).new_cb_m3u8()
         db.write_urls_all([(url, name_)])
-        capture_data = [(v, k) for k, v in streamer_data]
+        capture_data = (name_, self.slug.lower(), str(new_m3u8))
 
         start_capture(capture_data)
 
@@ -104,7 +103,7 @@ class Chaturbate(CommandSet):
             try:
                 os.kill(pid, SIGTERM)
                 db.write_stop_seek(name_)
-                log.warning(f"Manually initiated stop for {name_} [{self.slug}]")
+                log.warning(f"Manual stop for {name_} [{self.slug}]")
                 return None
             except OSError as e:
                 msg = f"{e} for {name_}"
