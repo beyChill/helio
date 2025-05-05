@@ -8,14 +8,14 @@ from stardust.apps.chaturbate.handleurls import NetActions
 from stardust.apps.manage_app_db import HelioDB
 from stardust.apps.manage_capture import start_capture
 from stardust.utils.applogging import HelioLogger
-from stardust.utils.general import script_delay
+from stardust.utils.general import make_image_dir, script_delay
 from stardust.utils.handle_m3u8 import HandleM3u8
 from stardust.utils.timer import AppTimer
 
 log = HelioLogger()
 iNet = NetActions()
-
-db = HelioDB("chaturbate")
+APP_SITE = "chaturbate"
+db = HelioDB(APP_SITE)
 
 
 @AppTimer
@@ -39,7 +39,6 @@ async def get_streamers():
     hls_urls = await iNet.get_all_m3u8(urls_)
 
     streamer_url = [(name_, HandleM3u8(url).new_cb_m3u8) for name_, url in hls_urls]
-    # streamer_url = process_cb_hls(hls_urls)
 
     return streamer_url
 
@@ -57,23 +56,11 @@ def process_results(results: list[tuple[Response, bytes]]):
     for streamer in results:
         response, image = streamer
         name_ = response.url.split("=")[-1]
-        img_dir = make_image_dir(name_)
+        img_dir = make_image_dir(name_, APP_SITE)
         download_img(image, name_, img_dir)
         online_streamers.append(name_)
 
     return online_streamers
-
-
-def make_image_dir(name_: str) -> Path:
-    img_path = Path("/mnt/Alpha/_bey/uv/aaacapture/app/webactions")
-    dir_name = list(name_)
-    dir_name_upper = dir_name[0].upper()
-    path_ = Path(img_path / "chaturbate", dir_name_upper).joinpath()
-
-    if not path_.exists():
-        path_.mkdir(parents=True, exist_ok=True)
-
-    return path_
 
 
 def download_img(streamer, name_: str, img_dir: Path):
