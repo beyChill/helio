@@ -57,12 +57,16 @@ class CaptureStreamer:
         self.process.terminate()
 
     def subprocess_poll_end(self):
-        log.app(loglvl.STOPPED, f"{self.data.name_} [{self.data.slug}]")
+        log.app(loglvl.STOPPED, f"{self.data.name_} [{self.data.slug.upper()}]")
 
     def video_duration_end(self):
-        log.app(loglvl.MAXTIME, f"{self.data.name_} [{self.data.slug}]")
+        log.app(loglvl.MAXTIME, f"{self.data.name_} [{self.data.slug.upper()}]")
 
     def activate(self):
+        if self.db.query_process_id(self.data.name_):
+            print(self.pid)
+            return None
+        
         self.process = Popen(
             self.data.args,
             stdin=DEVNULL,
@@ -74,13 +78,20 @@ class CaptureStreamer:
         )
 
         self.pid = self.process.pid
+
+        if self.process.poll() is not None:
+            log.warning(f"Unable to capture {self.data.name_}")
+            self.db.write_rm_process_id(self.process.pid)
+            return
+
+
         self.db.write_process_id((self.pid, self.data.name_))
 
         thread = Thread(target=self.status_subprocess, daemon=True)
         thread.start()
 
     def status_subprocess(self):
-        log.app(loglvl.CAPTURING, f"{self.data.name_} [MFC]")
+        log.app(loglvl.CAPTURING, f"{self.data.name_} [{self.data.slug.upper()}]")
         while True:
             if self.process.poll() is not None:
                 self._terminate()
@@ -115,36 +126,33 @@ class CaptureStreamer:
         return False
 
     def manage_cap_restart(self):
-        cap_status = self.db.query_cap_status(self.data.name_)
-
-        if not cap_status:
+        if not (cap_status := self.db.query_cap_status(self.data.name_)):
             self.db.write_rm_process_id(self.pid)
             return None
 
         seek_capture, block = cap_status
 
-        if seek_capture is None or block is not None:
+        if not seek_capture or block:
             self.db.write_rm_process_id(self.pid)
             return None
 
         if not self.max_time:
-            self.restart_url = self.get_restart_url()
+            sleep(self.delay_)
+            self.restart_url = get_url(self.data.name_, self.site)
 
         if not self.restart_url:
             self.db.write_rm_process_id(self.pid)
             return None
-
-        asyncio.run(write_video_size(self.data.name_, self.data.file_, self.site))
-
+        try:
+            if not self.data.file_.is_file:
+                return None
+            asyncio.run(write_video_size(self.data.name_, self.data.file_, self.site))
+        except FileNotFoundError as e:
+            log.error(f"Opps... {e}")
+            
         data = FFmpegConfig(self.data.name_, self.data.slug, self.restart_url).return_data
         
         CaptureStreamer(data)
-
-
-    def get_restart_url(self):
-        sleep(self.delay_)
-        url = get_url(self.data.name_, self.site)
-        return url
 
 
 def get_url(name_, site):
