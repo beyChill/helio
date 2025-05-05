@@ -19,7 +19,7 @@ def parse_profile(json_: MFCModel):
     user_id = json_.result.user.id
 
     if not json_.result.user.sessions:
-        log.warning(f"{name_} user is offline")
+        log.warning(f"{name_} is offline")
         return
     
     if json_.result.user.sessions[-1].vidserver_id==0:
@@ -50,7 +50,7 @@ def make_mfc_playlist(data: MfcSession, user_id: int):
     server = data.vidserver_id - offset
     phase = data.phase
 
-    # 8 in mininum number of digits for url's id
+    # 8 is mininum number of digits for url's id
     if len(str(user_id)) < 8:
         id = f"0{user_id}"
 

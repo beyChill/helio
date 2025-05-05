@@ -1,18 +1,25 @@
+import asyncio
 from datetime import datetime, timedelta
+import os
+from pathlib import Path
 from random import uniform
 from string import ascii_lowercase, ascii_uppercase, digits
-from typing import Any
 
-import m3u8
 from rnet import Client, Response
 
 import stardust
 from stardust.apps import __apps__ as helio_apps
-from stardust.apps.chaturbate.db_write import write_m3u8
+from stardust.apps.chaturbate.handleurls import NetActions
+from stardust.apps.manage_app_db import HelioDB
+from stardust.apps.myfreecams.db_myfreemcams import DbMfc
+from stardust.apps.myfreecams.handleurls import MfcNetActions
+from stardust.apps.myfreecams.helper import parse_profile
+from stardust.config.settings import get_setting
 from stardust.utils.applogging import HelioLogger, loglvl
+from stardust.utils.handle_m3u8 import HandleM3u8
 
 log = HelioLogger()
-
+IMG_PATH = get_setting().DIR_IMG_PATH
 
 all_valid_chars = [ascii_lowercase, ascii_uppercase, digits, "_"]
 partial_valid_chars = [ascii_lowercase, ascii_uppercase, digits, "_"]
@@ -27,19 +34,23 @@ def chk_cb_streamer_name(name_: str):
 
 
 def chk_streamer_name(name_: str):
-    valid_characters =" ".join(all_valid_chars)
+    valid_characters = " ".join(all_valid_chars)
     if not all(chars in valid_characters for chars in name_):
-        log.error("Upper / lower case letters, digits 0-9, and underscore ( _ ) are valid characters")
+        log.error(
+            "Upper / lower case letters, digits 0-9, and underscore ( _ ) are valid characters"
+        )
         return None
     return name_
 
+
 def get_all_app_names():
-    app_names=[]
+    app_names = []
     for app in dir(helio_apps):
         if app.startswith("app_"):
             app_data = getattr(helio_apps, app)
             app_names.append(app_data[1])
     return app_names
+
 
 def get_app_name(app_tag: str):
     """
@@ -72,6 +83,18 @@ def script_delay(min: float, max: float):
     time_ = datetime.strftime(t1, "%H:%M:%S")
 
     return (delay, time_)
+
+
+def make_image_dir(name_: str, app_site) -> Path:
+    """Image files are sorted / stored using first character in streamer's name"""
+    characters = list(name_)
+    folder_character = characters[0].upper()
+    path_ = Path(IMG_PATH / app_site / folder_character)
+
+    if not path_.exists():
+        path_.mkdir(parents=True, exist_ok=True)
+
+    return path_
 
 
 # def process_cb_hls(results: list[Any]):
@@ -131,7 +154,46 @@ async def check_helio_github_version():
 
 def calc_size(file_data: list[int]):
     raw_total = sum(file_data)
-
     giga = round(raw_total / (1024**3), 4)
-    gigabyte = None if giga == 0 else giga
-    return gigabyte
+    return giga
+
+
+def calc_video_size(name_: str, file: Path, site: str):
+    raw_size = os.stat(file).st_size
+    file_size = calc_size([raw_size])
+    values = (file_size, name_)
+    HelioDB(site).write_video_size(values)
+
+
+def mfc_server_offset(server: int):
+    if 845 <= server <= 1399:
+        return server - 500
+
+    if 1545 <= server <= 1559:
+        return server - 1000
+
+    if 1600 <= server <= 1944:
+        return server - 700
+
+    if 3000 <= server <= 3040:
+        return server - 1000
+
+    raise ValueError("Offset calc for MyFreeCams url failed")
+
+
+def get_url(name_, site):
+    if site == "chaturbate":
+        results = asyncio.run(NetActions().get_ajax_url([name_]))
+
+        if not results[0]["url"]:
+            log.app(loglvl.STOPPED, f"{name_} [{site}] {results[0]['room_status']}")
+            return None
+
+        url = results[0]["url"]
+        return HandleM3u8(url).new_cb_m3u8()
+
+    if site == "myfreecams":
+        json_ = asyncio.run(MfcNetActions().get_user_profile([name_]))
+        url_ = parse_profile(json_[0])
+        DbMfc("myfreecams").write_url((url_, name_))
+        return url_
