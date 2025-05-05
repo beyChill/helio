@@ -6,7 +6,6 @@ from typing import Any
 
 from pydantic import HttpUrl
 
-from stardust.config.constants import URL
 from stardust.utils.applogging import HelioLogger
 import inspect
 
@@ -205,7 +204,7 @@ class HelioDB:
 
         return self.execute_write(sql, data)
 
-    def write_video_size(self, values):
+    def write_video_size(self, values:tuple[float,str]):
         sql = f"""
             UPDATE {self.db_name}
             SET

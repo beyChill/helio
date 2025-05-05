@@ -1,4 +1,4 @@
-from datetime import date, datetime, timedelta
+from datetime import date
 from stardust.apps.manage_app_db import HelioDB
 
 
@@ -11,14 +11,18 @@ class DbMfc(HelioDB):
         return self.query_process_id(name_)
 
     def query_for_img(self):
+
+        """Hard limit of 60 to mimic mfc's cap for img push to clients.
+        No rate limit encountered. Trying not to abuse services. """
+
         time =date.today()
         sql=f"""
             SELECT
-            streamer_name, uid_, camserv
+                streamer_name, uid_, camserv
             FROM {self.table_url}
             WHERE updated_at > {time}
             ORDER BY RANDOM()
-            LIMIT 90
+            LIMIT 60
             """
         return self.execute_query(sql,"all")
 
