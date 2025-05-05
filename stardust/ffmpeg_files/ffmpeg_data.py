@@ -70,7 +70,7 @@ class FFmpegConfig:
         self.file = Path(file_path / filename)
 
     def _make_path(self):
-        dir_ = config.DIR_SSD
+        dir_ = config. DIR_VIDEO_PATH
         video_folder = Path(dir_, self.site, self.name_)
         video_folder.mkdir(parents=True, exist_ok=True)
         return video_folder
