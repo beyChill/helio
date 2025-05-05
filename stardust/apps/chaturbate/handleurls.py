@@ -41,7 +41,7 @@ class NetActions:
             fail = FailVideoContext(**data, name_=streamer)
             return fail
 
-        result= ChatVideoContext(**await resp.json())
+        result = ChatVideoContext(**await resp.json())
         return result
 
     async def get_all_jsons(self, params: str, num_streamers=0) -> list[CBModel]:
@@ -82,7 +82,7 @@ class NetActions:
     async def get_jpg(self, url: str):
         resp: Response = await self.client.get(url)
         if resp.status != 200:
-            return (resp, bytes())
+            return (resp, None)
 
         image: bytes = await resp.bytes()
         return (resp, image)
