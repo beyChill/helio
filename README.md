@@ -263,5 +263,7 @@ Helio--> quit
 <p>The different sites cli (cb, mfc, sc, etc.) use commands with identical names.</br>
 Issue the 'unapp' command before activating another site to prevent an error.</p>
 
-
+***IMPORTANT***
+<p>Capitalization is very important with MyFreeCams streamer's names. The MFC app has lowercased streamer names.</br>
+Please ensure correct capitalization otherwise database will contain duplicate streamers</p>
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
