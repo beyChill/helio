@@ -96,23 +96,6 @@ def make_image_dir(name_: str, app_site) -> Path:
 
     return path_
 
-
-# def process_cb_hls(results: list[Any]):
-#     streamer_url: list[tuple] = []
-#     for url_, m3u8_ in results:
-#         m3u8_file = m3u8.loads(m3u8_)
-
-#         if not m3u8_file.playlists[-1]:
-#             continue
-
-#         best_quality = m3u8_file.playlists[-1].uri
-#         new_url = url_.replace("playlist.m3u8", str(best_quality))
-#         streamer_name = new_url.split("amlst:")[-1].split("-sd-")[0]
-#         streamer_url.append((new_url,streamer_name))
-
-#     return streamer_url
-
-
 async def check_helio_github_version():
     """Check Helio version currency"""
 
@@ -163,22 +146,6 @@ def calc_video_size(name_: str, file: Path, site: str):
     file_size = calc_size([raw_size])
     values = (file_size, name_)
     HelioDB(site).write_video_size(values)
-
-
-def mfc_server_offset(server: int):
-    if 845 <= server <= 1399:
-        return server - 500
-
-    if 1545 <= server <= 1559:
-        return server - 1000
-
-    if 1600 <= server <= 1944:
-        return server - 700
-
-    if 3000 <= server <= 3040:
-        return server - 1000
-
-    raise ValueError("Offset calc for MyFreeCams url failed")
 
 
 def get_url(name_, site):

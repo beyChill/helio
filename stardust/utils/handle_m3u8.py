@@ -25,7 +25,7 @@ class HandleM3u8:
             data = m3u8.load(self.url)
             return data
         except HTTPError as e:
-            log.warning(f"{e}")
+            log.warning(f"{self.__class__.__name__}: {e}")
             return None
 
     def get_top_bandwidth(self):
