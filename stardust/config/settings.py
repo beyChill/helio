@@ -40,12 +40,16 @@ class Settings(BaseSettings):
     COOKIE_CB_NAME: str = "cb_browser_cookies.py"
     COOKIE_CB_PATH: Path = COOKIE_DIR / COOKIE_CB_NAME
     DIR_SSD: Path = Path(f"{env.get('SSD_PATH', f'{APP_DIR}/helio')}")
-    DIR_IMG_PATH: Path = Path(f"{env.get('SSD_PATH_IMAGES', f'{APP_DIR}/helio/images')}")
+    DIR_IMG_PATH: Path = Path(
+        f"{env.get('SSD_PATH_IMAGES', f'{APP_DIR}/helio/images')}"
+    )
     DIR_PROCESS_CONTACTSHEET: Path = Path(
         f"{env.get('DIR_PROCESS_CONTACTSHEET', f'{APP_DIR}/video_contactsheet')}"
     )
     DIR_SELENIUM_PROFILE: Path = APP_DIR / "browser/user_profile"
-    DIR_VIDEO_PATH: Path = Path(f"{env.get('SSD_PATH_VIDEOS', f'{APP_DIR}/helio/videos')}")
+    DIR_VIDEO_PATH: Path = Path(
+        f"{env.get('SSD_PATH_VIDEOS', f'{APP_DIR}/helio/videos')}"
+    )
     DIR_VIDEO_REVIEW: Path = Path(
         f"{env.get('DIR_VIDEO_REVIEW', f'{APP_DIR}/video_review')}"
     )
@@ -62,6 +66,7 @@ class Settings(BaseSettings):
     KEEP_STORAGE: list[Path] = _storage("keep")
     KEEP_STORAGE.append(DIR_KEEP_PATH)
     DIR_KEEP_VIDEOS: list[Path] = KEEP_STORAGE
+    DIR_HASH_REF: Path = APP_DIR / "apps" / "myfreecams" / "assets" / "hash"
 
 
 def dir_contactsheet(app_name):
