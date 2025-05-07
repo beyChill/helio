@@ -24,8 +24,9 @@ from stardust.apps.chaturbate.db_write import (
 )
 from stardust.apps.chaturbate.handleurls import NetActions
 from stardust.apps.manage_capture import start_capture
+from stardust.config.arg_parser import get_parser
 from stardust.utils.applogging import HelioLogger
-from stardust.utils.general import chk_cb_streamer_name
+from stardust.utils.general import chk_streamer_name
 from stardust.utils.handle_m3u8 import HandleM3u8
 
 """
@@ -43,50 +44,42 @@ class Chaturbate(CommandSet):
     def __init__(self):
         self.slug = "CB"
         super().__init__()
-        del Cmd.do_macro
-        del Cmd.do_run_pyscript
-        del Cmd.do_shortcuts
-        del Cmd.do_shell
-        del Cmd.do_alias
-        del Cmd.do_edit
-        del Cmd.do_run_script
 
-    get_parser = Cmd2ArgumentParser()
-    get_parser.add_argument("name", nargs=1, help="Streamer name")
-
-    @with_argparser(get_parser)
+    @with_argparser(get_parser())
     def do_get(self, streamer: Namespace):
-        """Capture a streamer
-
+        """
         example:
         CB--> get <streamer's_name>
         """
+        name_ = str(streamer.streamer)
 
-        name_ = streamer.name[0]
-
-        if not chk_cb_streamer_name(name_):
+        if not chk_streamer_name(name_, self.slug):
+            log.error("Use letters, digits, or _ in the name")
             return None
 
         if db.query_pid(name_):
             log.warning(f"Already capturing {name_} [{self.slug}]")
             return None
 
-        db.write_seek_capture(name_)
-        data = asyncio.run(NetActions().get_ajax_url([name_]))
-        url_ = ""
-        for d in data:
-            url_ = d["url"]
+        if not db.write_seek((name_)):
+            return
 
-        if not url_:
+        json_ = asyncio.run(NetActions().get_ajax_url([name_]))
+        
+        if not (url_:=json_[-1]['url']):
             return None
+
         new_url = asyncio.run(NetActions().get_m3u8(url_))
         url, url_as_text = new_url
 
         new_m3u8 = HandleM3u8(url).new_cb_m3u8()
-        db.write_urls_all([(url, name_)])
-        capture_data = (name_, self.slug.lower(), str(new_m3u8))
 
-        start_capture(capture_data)
+        db.write_url((new_m3u8, name_))
+        
+        streamer_data = (name_, self.slug.lower(), str(new_m3u8))
+
+        if not start_capture([streamer_data]):
+            log.error(f"Capture for {name_} failed")
 
     @with_argparser(get_parser)
     def do_stop(self, streamer: Namespace) -> None:
@@ -96,7 +89,7 @@ class Chaturbate(CommandSet):
         CB--> stop <streamer's_name>
         """
         name_ = str(streamer.streamer)
-        if not chk_cb_streamer_name(name_):
+        if not chk_streamer_name(name_,self.slug):
             return None
 
         if pid := db.query_pid(name_):
@@ -118,7 +111,7 @@ class Chaturbate(CommandSet):
     @with_argparser(block_parser)
     def do_block(self, streamer: Namespace) -> None:
         name_ = streamer.name[0]
-        if not chk_cb_streamer_name(name_):
+        if not chk_streamer_name(name_,self.slug):
             return None
 
         reason = "".join(streamer.reason)

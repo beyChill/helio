@@ -29,34 +29,31 @@ class MyFreeCams(CommandSet):
 
     @with_argparser(get_parser())
     def do_get(self, streamer: Namespace):
-        """Initiate capture for a streamer
-
+        """
         example:
         MFC--> get <streamer's_name>
         """
 
         name_ = str(streamer.streamer)
 
-        if not chk_streamer_name(name_):
+        if not chk_streamer_name(name_, self.slug):
+            log.error("Use lower case, digits, and _")
             return
 
         if db.query_pid(name_):
             log.warning(f"Already capturing {name_} [{self.slug}]")
             return None
 
-        json_ = asyncio.run(MfcNetActions().get_user_profile([name_]))
-        url_ = parse_profile(json_[0])
+        if not db.write_seek((name_)):
+            return
 
-        if not url_:
+        json_ = asyncio.run(MfcNetActions().get_user_profile([name_]))
+        if not (url_ := parse_profile(json_[0])):
             return None
 
-        if not db.write_seek((name_)):
-            log.error(f"Failed to update {name_}")
+        if isinstance(url_, tuple):
             return
-        
-        if isinstance(url_,tuple):
-            return
-        
+
         new_m3u8 = HandleM3u8(url_).new_mfc_m3u8()
 
         db.write_url((new_m3u8, name_))
@@ -74,7 +71,7 @@ class MyFreeCams(CommandSet):
         MFC--> stop <streamer's_name>
         """
         name_ = str(streamer.streamer)
-        if not chk_streamer_name(name_):
+        if not chk_streamer_name(name_,self.slug):
             return None
 
         if pid := db.query_pid(name_):

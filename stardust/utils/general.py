@@ -26,16 +26,13 @@ IMG_PATH = get_setting().DIR_IMG_PATH
 def chk_streamer_name(name_: str,site:str):
     valid_all =   "".join([ascii_lowercase, ascii_uppercase, digits, "_"])
     valid_lower = "".join([ascii_lowercase, digits, "_"])
-
-    valid_characters={'all':valid_all,'lower':valid_lower}
-
-    if site=='CB':
-        valid_char=valid_characters.get('all',"")
-        return all(chars in valid_char for chars in name_)
     
     if site=='CB':
-        valid_char=valid_characters.get('lower',"")
-        return all(chars in valid_char for chars in name_)
+
+        return all(chars in valid_all for chars in name_)
+    
+    if site=='MFC':
+        return all(chars in valid_lower for chars in name_)
 
 def get_all_app_names():
     app_names = []
