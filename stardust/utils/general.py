@@ -21,27 +21,21 @@ from stardust.utils.handle_m3u8 import HandleM3u8
 log = HelioLogger()
 IMG_PATH = get_setting().DIR_IMG_PATH
 
-all_valid_chars = [ascii_lowercase, ascii_uppercase, digits, "_"]
-partial_valid_chars = [ascii_lowercase, ascii_uppercase, digits, "_"]
 
 
-def chk_cb_streamer_name(name_: str):
-    valid_characters = "".join(all_valid_chars)
-    if not all(chars in valid_characters for chars in name_):
-        log.error("Use lowercase letters, digits 0-9, and underscore ( _ ) in name")
-        return None
-    return name_
+def chk_streamer_name(name_: str,site:str):
+    valid_all =   "".join([ascii_lowercase, ascii_uppercase, digits, "_"])
+    valid_lower = "".join([ascii_lowercase, digits, "_"])
 
+    valid_characters={'all':valid_all,'lower':valid_lower}
 
-def chk_streamer_name(name_: str):
-    valid_characters = " ".join(all_valid_chars)
-    if not all(chars in valid_characters for chars in name_):
-        log.error(
-            "Upper / lower case letters, digits 0-9, and underscore ( _ ) are valid characters"
-        )
-        return None
-    return name_
-
+    if site=='CB':
+        valid_char=valid_characters.get('all',"")
+        return all(chars in valid_char for chars in name_)
+    
+    if site=='CB':
+        valid_char=valid_characters.get('lower',"")
+        return all(chars in valid_char for chars in name_)
 
 def get_all_app_names():
     app_names = []
@@ -162,5 +156,9 @@ def get_url(name_, site):
     if site == "myfreecams":
         json_ = asyncio.run(MfcNetActions().get_user_profile([name_]))
         url_ = parse_profile(json_[0])
+
+        if isinstance(url_,tuple):
+            url_=None
+
         DbMfc("myfreecams").write_url((url_, name_))
         return url_
