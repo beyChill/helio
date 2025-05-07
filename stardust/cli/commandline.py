@@ -43,7 +43,13 @@ class HelioCli(Cmd):
     def __init__(self, *args, **kwargs):
         # gotta have this or neither the plugin or cmd2 will initialize
         super().__init__(*args, auto_load_commands=False, **kwargs)
-
+        del Cmd.do_macro
+        del Cmd.do_run_pyscript
+        del Cmd.do_shortcuts
+        del Cmd.do_shell
+        del Cmd.do_alias
+        del Cmd.do_edit
+        del Cmd.do_run_script
         self._camsoda = CamSoda()
         self._chaturbate = Chaturbate()
         self._myfreecams = MyFreeCams()
