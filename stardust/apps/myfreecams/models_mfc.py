@@ -192,3 +192,37 @@ class GetStreamerResult(BaseModel):
     name_: str
     data: Optional[MFCAppModel] = None
     status: Optional[int] = None
+
+
+class MfcData(BaseModel):
+    user_id: int
+    username: str
+    cam_score: int
+    answer: str
+    chat_text_color: str
+    chat_text_font: int
+    chat_text_font_flags: int
+    style_string: str
+
+
+class MfcResults(BaseModel):
+    category: str
+    order: str
+    selection: str
+    limit: str
+    full_detail: str
+    desc: str
+    search: str
+    expanded: str
+    _: str
+    offset: int
+    total: int
+    data: list[MfcData]
+
+
+class AllModels(BaseModel):
+    id: str
+    responseVer: int
+    method: str
+    result: MfcResults
+    err: int

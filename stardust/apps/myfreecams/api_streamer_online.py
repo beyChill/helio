@@ -2,7 +2,6 @@ import asyncio
 
 from stardust.apps.manage_app_db import HelioDB
 from stardust.apps.manage_capture import start_capture
-from stardust.apps.myfreecams.db_myfreemcams import DbMfc
 from stardust.apps.myfreecams.handleurls import MfcNetActions
 from stardust.apps.myfreecams.helper import parse_profile
 from stardust.apps.myfreecams.models_mfc import AllModels

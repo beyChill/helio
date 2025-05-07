@@ -53,7 +53,10 @@ class MyFreeCams(CommandSet):
         if not db.write_seek((name_)):
             log.error(f"Failed to update {name_}")
             return
-
+        
+        if isinstance(url_,tuple):
+            return
+        
         new_m3u8 = HandleM3u8(url_).new_mfc_m3u8()
 
         db.write_url((new_m3u8, name_))
@@ -78,7 +81,7 @@ class MyFreeCams(CommandSet):
             try:
                 os.kill(pid, SIGTERM)
                 db.write_stop_seek(name_)
-                log.warning(f"Manually initiated stop for {name_} [{self.slug}]")
+                log.warning(f"Manual stop for {name_} [{self.slug}]")
                 return None
             except OSError as e:
                 msg = f"{e} for {name_}"

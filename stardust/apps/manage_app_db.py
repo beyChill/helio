@@ -86,32 +86,43 @@ class HelioDB:
         )
         # if not result:
         return self.clean_fetchone(sql)
-    
 
     def query_seek_capture(self):
         sql = f"""
-            SELECT streamer_name
+            SELECT streamer_name, seek_capture
             FROM {self.db_name}
             WHERE block_date IS NULL
             AND seek_capture IS NOT NULL
-            AND pid IS NULL
+            AND process_id IS NULL
             ORDER BY RANDOM()
             """
         data = self.execute_query(sql, "all")
 
         return data
-        
-    def clean_fetchone(self,sql):
-        test_variable=None
+
+    def query_main_streamers(self):
+        sql = f"""
+            SELECT streamer_name, seek_capture
+            FROM {self.db_name}
+            WHERE block_date IS NULL
+            AND category IS NULL
+            AND process_id IS NULL
+            ORDER BY RANDOM()
+            """
+        data = self.execute_query(sql, "all")
+
+        return data
+
+    def clean_fetchone(self, sql):
+        test_variable = None
 
         result = self.execute_query(sql)
 
-        if result and len(result)==1:
-            test_variable, = result
+        if result and len(result) == 1:
+            (test_variable,) = result
             return test_variable
 
         return result
-
 
     def query_cap_status(self, name_: str):
         """Info for determining streamer capture"""
@@ -141,7 +152,7 @@ class HelioDB:
             conn.executescript(pragma_write)
             yield conn
 
-    def execute_write(self, sql: str, args: tuple | list = ()):
+    def execute_write(self, sql: str, args: tuple | list = []):
         write_success = False
 
         with self.connect_write() as conn:
@@ -167,7 +178,7 @@ class HelioDB:
                 return False
 
     def write_seek_capture(self, name_):
-        today = datetime.now().replace(microsecond=0)
+        today_ = datetime.now().replace(microsecond=0)
         sql = f"""
             INSERT INTO {self.db_name} (streamer_name, seek_capture) 
             VALUES (?, ?) 
@@ -176,7 +187,7 @@ class HelioDB:
             seek_capture=EXCLUDED.seek_capture
             WHERE seek_capture IS NULL
             """
-        args = (name_, today)
+        args = (name_, today_)
         write = self.execute_write(
             sql,
             args,
@@ -204,11 +215,10 @@ class HelioDB:
 
         return self.execute_write(sql, data)
 
-    def write_video_size(self, values:tuple[float,str]):
+    def write_video_size(self, values: tuple[float, str]):
         sql = f"""
             UPDATE {self.db_name}
-            SET
-            data_total=IFNULL(data_total ,0) + ?
+            SET data_total=IFNULL(data_total ,0) + ?
             WHERE streamer_name = ?
             """
 
@@ -217,10 +227,19 @@ class HelioDB:
     def write_rm_process_id(self, value: int):
         sql = f"UPDATE {self.db_name} SET process_id = ? WHERE process_id = ?"
         return self.execute_write(sql, (None, value))
-    
-    def write_rm_seek_capture(self,name_:str):
+
+    def write_rm_seek_capture(self, name_: str):
         sql = f"UPDATE {self.db_name} SET seek_capture=?, process_id=? WHERE streamer_name=?"
         args = (None, None, name_)
 
         if not self.execute_write(sql, args):
             log.error(f"Unable to stop capture for {name_} {self.db_name}")
+
+    def write_last_broadcast(self, streamers: list):
+        today_ = datetime.now().replace(microsecond=0)
+        sql = f"""
+            UPDATE {self.db_name}
+            SET last_broadcast = '{today_}'
+            WHERE streamer_name = ?                        
+            """
+        return self.execute_write(sql, streamers)

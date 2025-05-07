@@ -5,7 +5,12 @@ from typing import Callable
 
 from rnet import Client, Impersonate, Response
 
-from stardust.apps.myfreecams.models_mfc import GetStreamerResult, MFCAppModel, MFCModel
+from stardust.apps.myfreecams.models_mfc import (
+    AllModels,
+    GetStreamerResult,
+    MFCAppModel,
+    MFCModel,
+)
 from stardust.utils.applogging import HelioLogger
 
 log = HelioLogger()
@@ -79,8 +84,8 @@ class MfcNetActions:
         return results
 
     async def get_all_jpg(self, streamers: list[tuple[str, int, int]]):
-        """final url parameter is a 13 digit timestamp. Reducing time() to 13 digits."""
-        epoch_raw = str(time.time()).replace(".","")
+        """epoch_ is a 13 digit timestamp. Reducing time() to 13 digits."""
+        epoch_raw = str(time.time()).replace(".", "")
         epoch_ = int(epoch_raw[:-4])
 
         tasks = [
@@ -104,3 +109,14 @@ class MfcNetActions:
 
         image: bytes = await resp.bytes()
         return (name_, image)
+
+    async def get_all_models(self):
+        """epoch_ is a 13 digit timestamp. Reducing time() to 13 digits."""
+        epoch_raw = str(time.time()).replace(".", "")
+        epoch_ = int(epoch_raw[:-4])
+
+        url = f"https://api-edge.myfreecams.com/modelExplorer/tags?category=tags&order=username&selection=online&limit=1000&full_detail=1&desc=0&search=&expanded=1&_={epoch_}"
+        resp: Response = await self.client.get(url)
+
+        result = AllModels(**await resp.json())
+        return result
