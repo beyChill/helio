@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 import sqlite3
 from typing import Any
@@ -8,6 +8,7 @@ from pydantic import HttpUrl
 
 from stardust.utils.applogging import HelioLogger
 import inspect
+
 
 BASE_DIR = Path.cwd()
 
@@ -65,6 +66,18 @@ class HelioDB:
             except sqlite3.Error as e:
                 msg = f"{Path(__file__).parts[-1]} {inspect.stack()[0][3]}() {e}"
                 log.error(msg)
+                log.error(str(sql))
+
+    def clean_fetchone(self, sql):
+        test_variable = None
+
+        result = self.execute_query(sql)
+
+        if result and len(result) == 1:
+            (test_variable,) = result
+            return test_variable
+
+        return result
 
     def query_url(self, name_):
         sql = (
@@ -113,17 +126,6 @@ class HelioDB:
 
         return data
 
-    def clean_fetchone(self, sql):
-        test_variable = None
-
-        result = self.execute_query(sql)
-
-        if result and len(result) == 1:
-            (test_variable,) = result
-            return test_variable
-
-        return result
-
     def query_cap_status(self, name_: str):
         """Info for determining streamer capture"""
         sql = (
@@ -131,6 +133,55 @@ class HelioDB:
             (name_,),
         )
         return self.clean_fetchone(sql)
+
+    def query_active_capture(self, value):
+        sql = f"""
+            SELECT streamer_name, seek_capture, printf("%.4f", data_total)
+            FROM {self.db_name} 
+            WHERE process_id IS NOT NULL 
+            ORDER BY {value}"""
+        result = self.execute_query(sql, "all")
+
+        return result
+
+    def query_seek_offline(self, value):
+        sql = f"""
+            SELECT streamer_name, last_broadcast, printf("%.4f", data_total) 
+            FROM {self.db_name} 
+            WHERE process_id IS NULL
+            AND seek_capture IS NOT NULL 
+            AND block_date IS NULL 
+            ORDER BY {value}
+            """
+
+        result = self.execute_query(sql, "all")
+
+        return result
+
+    def query_long_offline(self, days: int):
+        value = date.today() - timedelta(days=days)
+        today_ = date.today()
+
+        sql = (
+            f"""
+            SELECT streamer_name 
+            FROM {self.db_name} 
+            WHERE (last_broadcast<? or last_broadcast IS NULL)
+            AND (bio_chk_date <=? or bio_chk_date IS NULL)
+            AND block_date IS NULL
+            ORDER BY last_broadcast 
+            LIMIT 30
+
+            """,
+            (value, today_),
+        )
+
+        if not (result := self.execute_query(sql, "all")):
+            return []
+
+        data: list[str] = [streamer_name for (streamer_name,) in result]
+
+        return data
 
     #############################
     # database writes
@@ -152,9 +203,8 @@ class HelioDB:
             conn.executescript(pragma_write)
             yield conn
 
+    # @AppTimerSync
     def execute_write(self, sql: str, args: tuple | list = []):
-        write_success = False
-
         with self.connect_write() as conn:
             try:
                 if isinstance(args, list):
@@ -163,19 +213,20 @@ class HelioDB:
 
                     conn.execute("BEGIN TRANSACTION")
                     conn.execute(remove_index)
-                    write_success = conn.executemany(sql, args)
+                    conn.executemany(sql, args)
                     conn.execute(add_index)
                     conn.execute("END TRANSACTION")
 
                     conn.executescript("ANALYZE; VACUUM;")
-                    return bool(write_success)
+                    return None
 
-                write_success = conn.execute(sql, args)
-                return bool(write_success)
+                conn.execute(sql, args)
+
             except sqlite3.Error as e:
                 msg = f"{Path(__file__).parts[-1]} {inspect.stack()[0][3]}() {e}"
                 log.error(msg)
-                return False
+                log.error(sql)
+                log.error(f"{args}")
 
     def write_seek_capture(self, name_):
         today_ = datetime.now().replace(microsecond=0)
@@ -188,15 +239,7 @@ class HelioDB:
             WHERE seek_capture IS NULL
             """
         args = (name_, today_)
-        write = self.execute_write(
-            sql,
-            args,
-        )
-
-        if not write:
-            log.error(f"Failed to add: {name_}")
-
-        return write
+        self.execute_write(sql, args)
 
     def write_capture_url(self, data: tuple[str, str] | list[tuple[str, str]]):
         sql = f"""
@@ -204,36 +247,39 @@ class HelioDB:
             SET capture_url= ?
             WHERE streamer_name = ?
             """
-        return self.execute_write(sql, data)
+        self.execute_write(sql, data)
 
-    def write_process_id(self, data: tuple[int, str] | list[tuple[int, str]]):
+    def write_process_id(
+        self, data: tuple[int, datetime, str] | list[tuple[int, datetime, str]]
+    ):
         sql = f"""
             UPDATE {self.db_name}
-            SET process_id = ?
+            SET 
+            process_id = ?,
+            last_capture= ?
             WHERE streamer_name = ?
             """
 
-        return self.execute_write(sql, data)
+        self.execute_write(sql, data)
 
     def write_video_size(self, values: tuple[float, str]):
         sql = f"""
             UPDATE {self.db_name}
-            SET data_total=IFNULL(data_total ,0) + ?
+            SET data_total=IFNULL(printf("%.4f", data_total) ,0) + ?
             WHERE streamer_name = ?
             """
 
-        return self.execute_write(sql, values)
+        self.execute_write(sql, values)
 
     def write_rm_process_id(self, value: int):
         sql = f"UPDATE {self.db_name} SET process_id = ? WHERE process_id = ?"
-        return self.execute_write(sql, (None, value))
+        self.execute_write(sql, (None, value))
 
     def write_rm_seek_capture(self, name_: str):
         sql = f"UPDATE {self.db_name} SET seek_capture=?, process_id=? WHERE streamer_name=?"
         args = (None, None, name_)
 
-        if not self.execute_write(sql, args):
-            log.error(f"Unable to stop capture for {name_} {self.db_name}")
+        self.execute_write(sql, args)
 
     def write_last_broadcast(self, streamers: list):
         today_ = datetime.now().replace(microsecond=0)
@@ -242,4 +288,18 @@ class HelioDB:
             SET last_broadcast = '{today_}'
             WHERE streamer_name = ?                        
             """
-        return self.execute_write(sql, streamers)
+        self.execute_write(sql, streamers)
+
+    def write_block_reason(self, data):
+        name_, *reason = data
+        reason = " ".join(reason)
+
+        sql = f"""
+            UPDATE {self.db_name}
+            SET block_date=?, seek_capture=?, notes=IFNULL(notes, '')||?
+            WHERE streamer_name=?
+            """
+
+        arg = (date.today(), None, f"{reason}", name_)
+
+        self.execute_write(sql, arg)
