@@ -5,7 +5,7 @@ from time import sleep
 from typing import Any
 
 from stardust.apps.manage_app_db import HelioDB
-from stardust.config.constants import DataFFmpeg
+from stardust.apps.models_app import DataFFmpeg
 from stardust.config.settings import get_setting
 from stardust.ffmpeg_files.ffmpeg_data import FFmpegConfig
 from stardust.utils.applogging import HelioLogger, loglvl

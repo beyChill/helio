@@ -4,7 +4,7 @@ from pathlib import Path
 from time import strftime
 from typing import NamedTuple, Optional
 from stardust.apps import __apps__ as helio_apps
-from stardust.config.constants import DataFFmpeg
+from stardust.apps.models_app import DataFFmpeg
 from stardust.config.settings import get_setting
 
 config = get_setting()
