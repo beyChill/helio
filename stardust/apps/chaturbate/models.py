@@ -161,7 +161,7 @@ class SocialMedia(BaseModel):
     label_text: str
     label_color: str
 
-class ChatSettings(BaseModel):
+class ChatSettings(BaseModel,frozen=True):
     font_size: str
     show_emoticons: bool
     emoticon_autocomplete_delay: int
@@ -181,20 +181,20 @@ class ChatSettings(BaseModel):
     ignored_users: str
 
 
-class SatisfactionScore(BaseModel):
+class SatisfactionScore(BaseModel,frozen=True):
     percent: Optional[int] = None
     up_votes: Optional[int] = None
     down_votes: Optional[int] = None
     max: Optional[int] = None
 
 
-class Quality(BaseModel):
+class Quality(BaseModel,frozen=True):
     quality: str
     rate: float
     stopped: bool
 
 
-class ChatVideoContext(BaseModel):
+class ChatVideoContext(BaseModel,frozen=True):
     viewer_uid: Any
     is_age_verified: bool
     age: Any
@@ -217,7 +217,7 @@ class ChatVideoContext(BaseModel):
     apps_running: str
     hls_source: str
     cmaf_edge: bool
-    dismissible_messages: list
+    # dismissible_messages: list
     edge_auth: str
     is_widescreen: bool
     allow_private_shows: bool
@@ -231,7 +231,7 @@ class ChatVideoContext(BaseModel):
     following: bool
     follow_notification_frequency: str
     is_moderator: bool
-    chat_settings: ChatSettings
+    chat_settings: Optional[ChatSettings]=None
     broadcaster_on_new_chat: bool
     token_balance: int
     is_supporter: bool
@@ -241,7 +241,7 @@ class ChatVideoContext(BaseModel):
     num_followed_online: int
     has_studio: bool
     is_mobile: bool
-    ignored_emoticons: list
+    # ignored_emoticons: list
     tfa_enabled: bool
     satisfaction_score: Optional[SatisfactionScore] = None
     hide_satisfaction_score: bool
@@ -265,5 +265,12 @@ class ChatVideoContext(BaseModel):
     premium_private_price: int
     premium_private_min_minutes: int
     premium_show_running: bool
-    quality: Quality
-    code: Optional[int]
+    quality: Optional[Quality]=None
+    code: Optional[int]=None
+
+class FailVideoContext(BaseModel,frozen=True):
+    status: int
+    detail: str
+    code: str
+    ts_context: str | None
+    name_: str
