@@ -21,10 +21,3 @@ class DataFFmpeg(BaseModel):
     # For FFmpeg use
     args: list
 
-
-class FailVideoContext(BaseModel):
-    status: int
-    detail: str
-    code: str
-    ts_context: str | None
-    name_: str
