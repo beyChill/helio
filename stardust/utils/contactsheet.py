@@ -4,7 +4,7 @@ import subprocess
 from itertools import groupby
 from os.path import dirname
 
-from stardust.config.constants import ContactSheetModel
+from stardust.apps.models_app import ContactSheetModel
 from stardust.utils.applogging import HelioLogger, loglvl
 from stardust.config.settings import get_setting
 from stardust.utils.timer import AppTimerSync
