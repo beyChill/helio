@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from datetime import datetime
 from subprocess import DEVNULL, PIPE, STDOUT, Popen
 from threading import Thread
 from time import sleep
@@ -11,7 +12,6 @@ from stardust.ffmpeg_files.ffmpeg_data import FFmpegConfig
 from stardust.utils.applogging import HelioLogger, loglvl
 from stardust.utils.general import calc_video_size, get_url
 
-# process_cb_hls
 log = HelioLogger()
 config = get_setting()
 
@@ -73,7 +73,8 @@ class CaptureStreamer:
             self.db.write_rm_process_id(self.process.pid)
             return
 
-        self.db.write_process_id((self.pid, self.data.name_))
+        today_ = datetime.now().replace(microsecond=0)
+        self.db.write_process_id((self.pid, today_, self.data.name_))
 
         thread = Thread(target=self.status_subprocess, daemon=True)
         thread.start()
@@ -114,6 +115,10 @@ class CaptureStreamer:
         return False
 
     def manage_cap_restart(self):
+        if not self.data.file_.is_file():
+            return None
+        calc_video_size(self.data.name_, self.data.file_, self.site)
+
         if not (cap_status := self.db.query_cap_status(self.data.name_)):
             self.db.write_rm_process_id(self.pid)
             return None
@@ -131,12 +136,6 @@ class CaptureStreamer:
         if not self.restart_url:
             self.db.write_rm_process_id(self.pid)
             return None
-        try:
-            if not self.data.file_.is_file():
-                return None
-            calc_video_size(self.data.name_, self.data.file_, self.site)
-        except FileNotFoundError as e:
-            log.error(f"Opps... {e}")
 
         data = FFmpegConfig(
             self.data.name_, self.data.slug, self.restart_url
