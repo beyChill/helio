@@ -1,4 +1,3 @@
-
 from datetime import datetime, timedelta
 from stardust.apps.manage_app_db import HelioDB
 
@@ -8,16 +7,15 @@ class DbMfc(HelioDB):
     table_streamer = "streamer_data"
     table_url = "url_data"
 
-    def query_pid(self, name_:str):
+    def query_pid(self, name_: str):
         return self.query_process_id(name_)
 
     def query_for_img(self):
-
         """Hard limit of 60 to mimic mfc's cap for img push to clients.
-        No rate limit encountered. Trying not to abuse services. """
+        No rate limit encountered. Trying not to abuse services."""
 
-        time =datetime.now().replace(microsecond=0)-timedelta(minutes=7)
-        sql=f"""
+        time = datetime.now().replace(microsecond=0) - timedelta(minutes=7)
+        sql = f"""
             SELECT
                 streamer_name, uid_, camserv
             FROM {self.table_url}
@@ -26,10 +24,9 @@ class DbMfc(HelioDB):
             LIMIT 60
             """
 
-        return self.execute_query(sql,"all")
+        return self.execute_query(sql, "all")
 
-
-    def write_seek(self, name_:str):
+    def write_seek(self, name_: str):
         return self.write_seek_capture(name_)
 
     def write_url(self, data: tuple):
@@ -37,8 +34,8 @@ class DbMfc(HelioDB):
 
     def write_urls_all(self, data: list[tuple]):
         return self.write_capture_url(data)
-    
-    def write_stop_seek(self,name_:str):
+
+    def write_stop_seek(self, name_: str):
         return self.write_rm_seek_capture(name_)
 
     def write_streamer_data(self, streamer_data):
