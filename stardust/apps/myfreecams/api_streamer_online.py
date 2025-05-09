@@ -4,7 +4,7 @@ from stardust.apps.manage_app_db import HelioDB
 from stardust.apps.manage_capture import start_capture
 from stardust.apps.myfreecams.handleurls import MfcNetActions
 from stardust.apps.myfreecams.helper import parse_profile
-from stardust.apps.myfreecams.models_mfc import AllModels
+from stardust.apps.myfreecams.models_mfc import MfcModelEx
 from stardust.utils.applogging import HelioLogger
 from stardust.utils.handle_m3u8 import HandleM3u8
 
@@ -14,7 +14,7 @@ iNet = MfcNetActions()
 
 
 async def get_streamers():
-    json: AllModels = await iNet.get_all_models()
+    json: MfcModelEx = await iNet.get_all_models()
 
     site_streamers = [streamer.username for streamer in json.result.data]
 
