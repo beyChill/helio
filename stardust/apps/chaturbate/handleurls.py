@@ -4,7 +4,7 @@ from random import choice
 from rnet import Client, Impersonate, ImpersonateOS, Response
 
 from stardust.apps.chaturbate.models import CBModel, ChatVideoContext
-from stardust.config.constants import FailVideoContext
+from stardust.apps.models_app import FailVideoContext
 
 
 class NetActions:
