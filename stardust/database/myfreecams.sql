@@ -11,11 +11,6 @@ CREATE TABLE IF NOT EXISTS myfreecams (
     block_date      DATETIME DEFAULT NULL,
     notes           TEXT,
     category        VARCHAR(15) DEFAULT NULL,
-    bio_chk_date    DATETIME DEFAULT NULL,
-    bio_fail_date   DATETIME DEFAULT NULL,
-    bio_fail_status INTEGER DEFAULT NULL,
-    bio_fail_detail VARCHAR(50) DEFAULT NULL,
-    bio_fail_code   VARCHAR(20) DEFAULT NULL,
     created_on      DATETIME DEFAULT (date('now', 'localtime')),
     updated_at      DATETIME DEFAULT (datetime(CURRENT_TIMESTAMP, 'localtime')),
     PRIMARY KEY (streamer_name)
@@ -55,6 +50,11 @@ CREATE TABLE IF NOT EXISTS streamer_data(
     rank_       INTEGER DEFAULT NULL,
     rc          INTEGER DEFAULT NULL,
     tags        TEXT,
+    bio_chk_date    DATETIME DEFAULT NULL,
+    bio_fail_date   DATETIME DEFAULT NULL,
+    bio_fail_status INTEGER DEFAULT NULL,
+    bio_fail_detail VARCHAR(50) DEFAULT NULL,
+    bio_fail_code   VARCHAR(20) DEFAULT NULL,
     created_on  DATETIME DEFAULT (date('now', 'localtime')),
     updated_at  DATETIME DEFAULT (datetime(CURRENT_TIMESTAMP, 'localtime')),
     PRIMARY KEY (streamer_name)
