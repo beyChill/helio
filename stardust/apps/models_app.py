@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from pydantic import BaseModel, HttpUrl
-
+from pydantic import BaseModel
 
 class ContactSheetModel(BaseModel):
     input_path: Path
