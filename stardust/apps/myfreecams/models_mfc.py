@@ -109,20 +109,6 @@ class User(BaseModel):
     vs: Optional[int] = None
 
 
-class Result(BaseModel):
-    success: int
-    message: str
-    user: Optional[User] = None
-
-
-class MFCModel(BaseModel):
-    id: str
-    responseVer: int
-    method: str
-    result: Result
-    err: int
-
-
 class AppProfile(BaseModel):
     age: Optional[str] = None
     gender: Optional[str] = None
@@ -159,8 +145,8 @@ class Attribute(BaseModel):
 
 
 class AppShare(BaseModel):
-    follows: Optional[int]=None
-    tipmenus: Optional[int]=None
+    follows: Optional[int] = None
+    tipmenus: Optional[int] = None
 
 
 class MFCAppModel(BaseModel):
@@ -188,13 +174,13 @@ class MFCAppModel(BaseModel):
     share: Optional[AppShare] = None
 
 
-class GetStreamerResult(BaseModel):
+class stdResults(BaseModel):
     name_: str
     data: Optional[MFCAppModel] = None
     status: Optional[int] = None
 
 
-class MfcData(BaseModel):
+class MfcModelExData(BaseModel):
     user_id: int
     username: str
     cam_score: int
@@ -205,7 +191,7 @@ class MfcData(BaseModel):
     style_string: str
 
 
-class MfcResults(BaseModel):
+class MfcModelExResults(BaseModel):
     category: str
     order: str
     selection: str
@@ -217,12 +203,26 @@ class MfcResults(BaseModel):
     _: str
     offset: int
     total: int
-    data: list[MfcData]
+    data: list[MfcModelExData]
 
 
-class AllModels(BaseModel):
+class Result(BaseModel):
+    success: int
+    message: str
+    user: User
+
+
+class MfcModelEx(BaseModel):
     id: str
     responseVer: int
     method: str
-    result: MfcResults
+    result: MfcModelExResults
+    err: int
+
+
+class MfcLookup(BaseModel):
+    id: str
+    responseVer: int
+    method: str
+    result: Result
     err: int
