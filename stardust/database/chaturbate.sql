@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS chaturbate (
     streamer_name   VARCHAR(30) NOT NULL,
+    last_broadcast  DATETIME DEFAULT NULL,
     data_total      INTEGER DEFAULT NULL,
     data_review     INTEGER DEFAULT NULL,
     data_keep       INTEGER DEFAULT NULL,
@@ -19,6 +20,7 @@ CREATE TABLE IF NOT EXISTS chaturbate (
     updated_at      DATETIME DEFAULT (datetime(CURRENT_TIMESTAMP, 'localtime')),
     PRIMARY KEY (streamer_name)
 );
+
 CREATE TRIGGER update_chaturbate_updated_at
 AFTER
 UPDATE ON chaturbate

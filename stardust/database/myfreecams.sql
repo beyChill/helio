@@ -1,16 +1,13 @@
 CREATE TABLE IF NOT EXISTS myfreecams (
-    streamer_name   VARCHAR(30) NOT NULL,
+    streamer_name   VARCHAR(30) NOT NULL COLLATE NOCASE,
     last_broadcast  DATETIME DEFAULT NULL,
+    data_total      INTEGER DEFAULT NULL,
     data_review     INTEGER DEFAULT NULL,
     data_keep       INTEGER DEFAULT NULL,
-    data_total      INTEGER DEFAULT NULL,
     last_capture    DATETIME DEFAULT NULL,
     seek_capture    DATETIME DEFAULT NULL,
     process_id      INTEGER DEFAULT NULL,
     capture_url     VARCHAR(232) DEFAULT NULL,
-    followers       INTEGER DEFAULT NULL,
-    viewers         INTEGER DEFAULT NULL,
-    most_viewers    INTEGER DEFAULT NULL,
     block_date      DATETIME DEFAULT NULL,
     notes           TEXT,
     category        VARCHAR(15) DEFAULT NULL,
@@ -45,8 +42,11 @@ END;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_mfc ON myfreecams (streamer_name);
 
 CREATE TABLE IF NOT EXISTS streamer_data(
-    streamer_name VARCHAR(30) NOT NULL,
+    streamer_name VARCHAR(30) NOT NULL COLLATE NOCASE,
     creation    INTEGER DEFAULT NULL,
+    followers       INTEGER DEFAULT NULL,
+    viewers         INTEGER DEFAULT NULL,
+    most_viewers    INTEGER DEFAULT NULL,
     is_new      INTEGER DEFAULT NULL,
     missmfc     INTEGER DEFAULT NULL,
     camscore    INTEGER DEFAULT NULL,
@@ -72,7 +72,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_streamer ON streamer_data (streamer_name);
 
 
 CREATE TABLE IF NOT EXISTS url_data (
-    streamer_name   VARCHAR(30) NOT NULL,
+    streamer_name   VARCHAR(30) NOT NULL COLLATE NOCASE,
     sid_            INTEGER DEFAULT NULL,
     uid_            INTEGER DEFAULT NULL,
     vs              INTEGER DEFAULT NULL,
