@@ -1,6 +1,6 @@
 import asyncio
-from datetime import datetime, timedelta
 import os
+from datetime import datetime, timedelta
 from pathlib import Path
 from random import uniform
 from string import ascii_lowercase, ascii_uppercase, digits
@@ -22,17 +22,16 @@ log = HelioLogger()
 IMG_PATH = get_setting().DIR_IMG_PATH
 
 
-
-def chk_streamer_name(name_: str,site:str):
-    valid_all =   "".join([ascii_lowercase, ascii_uppercase, digits, "_"])
+def chk_streamer_name(name_: str, site: str):
+    valid_all = "".join([ascii_lowercase, ascii_uppercase, digits, "_"])
     valid_lower = "".join([ascii_lowercase, digits, "_"])
-    
-    if site=='CB':
 
-        return all(chars in valid_all for chars in name_)
-    
-    if site=='MFC':
+    if site == "CB":
         return all(chars in valid_lower for chars in name_)
+
+    if site == "MFC":
+        return all(chars in valid_all for chars in name_)
+
 
 def get_all_app_names():
     app_names = []
@@ -86,6 +85,7 @@ def make_image_dir(name_: str, app_site) -> Path:
         path_.mkdir(parents=True, exist_ok=True)
 
     return path_
+
 
 async def check_helio_github_version():
     """Check Helio version currency"""
@@ -154,8 +154,8 @@ def get_url(name_, site):
         json_ = asyncio.run(MfcNetActions().get_user_profile([name_]))
         url_ = parse_profile(json_[0])
 
-        if isinstance(url_,tuple):
-            url_=None
+        if isinstance(url_, tuple):
+            url_ = None
 
         DbMfc("myfreecams").write_url((url_, name_))
         return url_
