@@ -1,8 +1,5 @@
 import asyncio
-import os
-import random
 from argparse import Namespace
-from signal import SIGTERM
 
 from cmd2 import CommandSet, categorize, with_argparser
 
@@ -10,44 +7,46 @@ from stardust.apps.manage_capture import start_capture
 from stardust.apps.myfreecams.db_myfreemcams import DbMfc
 from stardust.apps.myfreecams.handleurls import MfcNetActions
 
-# from stardust.apps.myfreecams.models_mfc import MFCModel, MfcSession
 from stardust.apps.myfreecams.helper import parse_profile
-from stardust.config.arg_parser import get_parser
+from stardust.apps.shared_cmds import cmd_cap, cmd_long, cmd_off, cmd_stop_process_id
+from stardust.apps.arg_parser import (
+    block_reason,
+    cap_status,
+    get_streamer,
+    long_inactive,
+)
 from stardust.utils.applogging import HelioLogger
 from stardust.utils.general import chk_streamer_name
 from stardust.utils.handle_m3u8 import HandleM3u8
 
 log = HelioLogger()
 
-db = DbMfc("myfreecams")
-
-
 class MyFreeCams(CommandSet):
     def __init__(self):
         self.slug = "MFC"
+        self.db = DbMfc("myfreecams")
+        self.iNet=MfcNetActions()
         super().__init__()
 
-    @with_argparser(get_parser())
-    def do_get(self, streamer: Namespace):
+    @with_argparser(get_streamer())
+    def do_get(self, arg: Namespace):
         """
         example:
         MFC--> get <streamer's_name>
         """
 
-        name_ = str(streamer.streamer)
+        name_ = str(arg.name)
 
         if not chk_streamer_name(name_, self.slug):
             log.error("Use lower case, digits, and _")
             return
 
-        if db.query_pid(name_):
+        if self.db.query_pid(name_):
             log.warning(f"Already capturing {name_} [{self.slug}]")
             return None
 
-        if not db.write_seek((name_)):
-            return
+        json_ = asyncio.run(self.iNet.get_user_profile([name_]))
 
-        json_ = asyncio.run(MfcNetActions().get_user_profile([name_]))
         if not (url_ := parse_profile(json_[0])):
             return None
 
@@ -56,41 +55,45 @@ class MyFreeCams(CommandSet):
 
         new_m3u8 = HandleM3u8(url_).new_mfc_m3u8()
 
-        db.write_url((new_m3u8, name_))
+        self.db.write_url((new_m3u8, name_))
 
         streamer_data = (name_, self.slug.lower(), str(new_m3u8))
 
         if not start_capture([streamer_data]):
             log.error(f"Capture for {name_} failed")
 
-    @with_argparser(get_parser())
-    def do_stop(self, streamer: Namespace) -> None:
-        """Terminate a single capture session
-
+    @with_argparser(get_streamer())
+    def do_stop(self, arg: Namespace) -> None:
+        """
         example:
         MFC--> stop <streamer's_name>
         """
-        name_ = str(streamer.streamer)
-        if not chk_streamer_name(name_,self.slug):
+        name_ = str(arg.name)
+        if not chk_streamer_name(name_, self.slug):
             return None
 
-        if pid := db.query_pid(name_):
-            try:
-                os.kill(pid, SIGTERM)
-                db.write_stop_seek(name_)
-                log.warning(f"Manual stop for {name_} [{self.slug}]")
-                return None
-            except OSError as e:
-                msg = f"{e} for {name_}"
-                log.error(msg)
+        cmd_stop_process_id(name_, self.slug, self.db)
 
-        if not pid:
-            log.info(f"Stopping seek for {name_} [{self.slug}]")
+    @with_argparser(block_reason())
+    def do_block(self, arg: Namespace) -> None:
+        name_ = str(arg.name)
+        if not chk_streamer_name(name_, self.slug):
+            return None
 
-    def do_block(self, ns: Namespace):
-        """Block streamer from long captures
-        MFC--> get my_fav_girl
-        """
-        pass
+        reason = "".join(arg.reason)
+
+        self.db.write_block_reason((name_, reason))
+
+    @with_argparser(cap_status())
+    def do_cap(self, arg: Namespace) -> None:
+        cmd_cap(arg.sort, self.db)
+
+    @with_argparser(cap_status())
+    def do_off(self, arg: Namespace) -> None:
+        cmd_off(arg.sort, self.db)
+
+    @with_argparser(long_inactive())
+    def do_long(self, num: Namespace):
+        cmd_long(num, self.db)
 
     categorize((do_get, do_stop, do_block), "MyFreeCams Streamer")
