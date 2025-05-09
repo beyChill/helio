@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from random import uniform
 from sqlite3 import Date
 
-from stardust.apps.chaturbate.db_write import write_db_streamers
+from stardust.apps.chaturbate.db_chaturbate import DbCb
 from stardust.apps.chaturbate.handleurls import NetActions
 from stardust.apps.chaturbate.models import CBRoom, cb_param
 from stardust.utils.applogging import HelioLogger
@@ -67,6 +67,7 @@ def prep_db_entries(json_data: list[CBRoom]):
         last = today_
         follow = val.num_followers
         view = val.num_users
+        start_dt_utc = val.start_dt_utc
         location = None if val.location == "" else val.location
         country = None if val.country == "" else val.country
         is_new = None if not val.is_new else "NEW"
@@ -74,18 +75,31 @@ def prep_db_entries(json_data: list[CBRoom]):
         bio_date = Date.today()
 
         values.append(
-            (name_, age, last, follow, view, location, country, is_new, tags, bio_date)
+            (
+                name_,
+                age,
+                last,
+                follow,
+                view,
+                start_dt_utc,
+                location,
+                country,
+                is_new,
+                tags,
+                bio_date,
+            )
         )
 
     return values
 
 
 async def manage_cb_room_list():
+    db = DbCb("chaturbate")
     while True:
         json_data = await get_streamers_online()
         if json_data is not None:
             db_data = prep_db_entries(json_data)
-            write_db_streamers(db_data)
+            db.write_db_streamers(db_data)
         log.info(f"{len(json_data)} chaturbate steamers online")
         # Delay reduces api queries per timeframe
         delay_ = set_script_delay()
