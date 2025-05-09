@@ -44,6 +44,8 @@ class MyFreeCams(CommandSet):
         if self.db.query_pid(name_):
             log.warning(f"Already capturing {name_} [{self.slug}]")
             return None
+        
+        self.db.write_seek_capture(name_)
 
         json_ = asyncio.run(self.iNet.get_user_profile([name_]))
 
