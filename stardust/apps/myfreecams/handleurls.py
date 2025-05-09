@@ -6,10 +6,10 @@ from typing import Callable
 from rnet import Client, Impersonate, Response
 
 from stardust.apps.myfreecams.models_mfc import (
-    AllModels,
-    GetStreamerResult,
+    MfcLookup,
+    MfcModelEx,
+    stdResults,
     MFCAppModel,
-    MFCModel,
 )
 from stardust.utils.applogging import HelioLogger
 
@@ -39,11 +39,11 @@ class MfcNetActions:
             log.error(f"{name_}: {resp.status}, {await resp.text()}")
             return
 
-        result = MFCModel(**await resp.json())
+        result = MfcLookup(**await resp.json())
         return result
 
     async def get_streamer_app_profile(self, streamers: list[tuple[str, int]]):
-        data: list[GetStreamerResult] = []
+        data: list[stdResults] = []
         tasks = [(name_, uid) for name_, uid in streamers]
 
         data = await self.task_group(tasks, self.get_streamer)
@@ -58,8 +58,8 @@ class MfcNetActions:
             log.error(
                 f"{resp.status}: rate Limit for {name_}",
             )
-            return GetStreamerResult(name_=name_, data=None, status=resp.status)
-        result = GetStreamerResult(
+            return stdResults(name_=name_, data=None, status=resp.status)
+        result = stdResults(
             name_=name_, data=MFCAppModel(**await resp.json()), status=resp.status
         )
         return result
@@ -118,5 +118,5 @@ class MfcNetActions:
         url = f"https://api-edge.myfreecams.com/modelExplorer/tags?category=tags&order=username&selection=online&limit=1000&full_detail=1&desc=0&search=&expanded=1&_={epoch_}"
         resp: Response = await self.client.get(url)
 
-        result = AllModels(**await resp.json())
+        result = MfcModelEx(**await resp.json())
         return result
