@@ -1,6 +1,5 @@
 from pathlib import Path
 
-# from database.dbconnections import db_init
 from config.settings import get_setting
 from utils.applogging import HelioLogger, loglvl
 
@@ -12,7 +11,6 @@ def create_init_folders():
 
     dirs = [
         dir_.COOKIE_DIR,
-        dir_.DB_FOLDER,
         dir_.DIR_PROCESS_CONTACTSHEET,
         dir_.DIR_SELENIUM_PROFILE,
         dir_.DIR_VIDEO_SHORT,
@@ -30,7 +28,6 @@ def create_folder(folder: Path):
     print(" " * 2, str(folder))
 
 
-# @AppTimer()
 def main():
     create_init_folders()
 
