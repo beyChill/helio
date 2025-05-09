@@ -4,7 +4,7 @@ from pathlib import Path
 import imagehash
 from PIL import Image
 
-from stardust.apps.myfreecams.models_mfc import MFCModel, MfcSession
+from stardust.apps.myfreecams.models_mfc import MfcLookup, MfcSession
 from stardust.config.settings import get_setting
 from stardust.utils.applogging import HelioLogger
 
@@ -27,16 +27,13 @@ def calc_img_hash(image: Path):
     return hash
 
 
-def parse_profile(json_: MFCModel, fetch: str = "one"):
+def parse_profile(json_: MfcLookup, fetch: str = "one"):
     name_ = json_.method.split("/")[-1]
 
     if json_.result.message != "user found":
         log.warning(
             f"{name_} is not a MFC model. Perhaps check spelling or capitalizaton"
         )
-        return (None, name_)
-
-    if not json_.result.user:
         return (None, name_)
 
     user_id = json_.result.user.id
