@@ -76,8 +76,8 @@ class DbCb(HelioDB):
         data = []
         for value in values:
             data.append((value.status, value.detail, value.code, value.name_))
-        sql = """
-            UPDATE chaturbate
+        sql = f"""
+            UPDATE {self.table_streamer}
             SET bio_chk_date=DATETIME('now', 'localtime'),
             bio_fail_date=DATETIME('now', 'localtime'),
             bio_fail_status=?,
