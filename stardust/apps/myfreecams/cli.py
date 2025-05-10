@@ -21,11 +21,12 @@ from stardust.utils.handle_m3u8 import HandleM3u8
 
 log = HelioLogger()
 
+
 class MyFreeCams(CommandSet):
     def __init__(self):
         self.slug = "MFC"
         self.db = DbMfc("myfreecams")
-        self.iNet=MfcNetActions()
+        self.iNet = MfcNetActions()
         super().__init__()
 
     @with_argparser(get_streamer())
@@ -44,7 +45,7 @@ class MyFreeCams(CommandSet):
         if self.db.query_pid(name_):
             log.warning(f"Already capturing {name_} [{self.slug}]")
             return None
-        
+
         self.db.write_seek_capture(name_)
 
         json_ = asyncio.run(self.iNet.get_user_profile([name_]))
@@ -55,7 +56,9 @@ class MyFreeCams(CommandSet):
         if isinstance(url_, tuple):
             return
 
-        new_m3u8 = HandleM3u8(url_).new_mfc_m3u8()
+        m3u8_text = asyncio.run(self.iNet.get_m3u8(url_))
+
+        new_m3u8 = HandleM3u8(m3u8_text).mfc_c3u8()
 
         self.db.write_url((new_m3u8, name_))
 

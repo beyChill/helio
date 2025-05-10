@@ -80,7 +80,7 @@ class MfcNetActions:
 
     async def get_m3u8(self, url: str):
         resp: Response = await self.client.get(url)
-        results = await resp.text()
+        results = (resp.url, await resp.text())
         return results
 
     async def get_all_jpg(self, streamers: list[tuple[str, int, int]]):
