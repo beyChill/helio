@@ -23,8 +23,8 @@ class NetActions:
 
     async def get_m3u8(self, url: str):
         resp: Response = await self.client.get(url)
-        text_string = await resp.text()
-        results = (resp.url, str(text_string))
+        text_ = await resp.text()
+        results = (resp.url, text_)
         return results
 
     async def get_all_bio(self, streamers: list[str]):
