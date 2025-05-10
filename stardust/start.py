@@ -15,7 +15,6 @@ threads = [
 def main():
     db_init()
     run_threads()
-    print()
     cli = HelioCli()
     sys.exit(cli.cmdloop())
 
