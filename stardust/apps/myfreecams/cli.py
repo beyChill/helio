@@ -58,7 +58,7 @@ class MyFreeCams(CommandSet):
 
         m3u8_text = asyncio.run(self.iNet.get_m3u8(url_))
 
-        new_m3u8 = HandleM3u8(m3u8_text).mfc_c3u8()
+        new_m3u8 = HandleM3u8(m3u8_text).mfc_m3u8()
 
         self.db.write_url((new_m3u8, name_))
 

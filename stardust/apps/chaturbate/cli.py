@@ -63,7 +63,7 @@ class Chaturbate(CommandSet):
 
         new_url = asyncio.run(NetActions().get_m3u8(url_))
 
-        new_m3u8 = HandleM3u8(new_url).new_cb_m3u8()
+        new_m3u8 = HandleM3u8(new_url).cb_m3u8()
 
         self.db.write_url((new_m3u8, name_))
 

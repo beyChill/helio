@@ -70,9 +70,7 @@ def capture_process():
     urls = [(url, name_) for url, name_ in parsed_profiles if url]
 
     new_m3u8 = [
-        (HandleM3u8(url).new_mfc_m3u8(), name_)
-        for url, name_ in urls
-        if url is not None
+        (HandleM3u8(url).mfc_m3u8(), name_) for url, name_ in urls if url is not None
     ]
 
     for m3u8, name_ in new_m3u8:

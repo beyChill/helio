@@ -148,7 +148,7 @@ def get_url(name_, site):
             return None
 
         url = results[0]["url"]
-        return HandleM3u8(url).new_cb_m3u8()
+        return HandleM3u8(url).cb_m3u8()
 
     if site == "myfreecams":
         json_ = asyncio.run(MfcNetActions().get_user_profile([name_]))

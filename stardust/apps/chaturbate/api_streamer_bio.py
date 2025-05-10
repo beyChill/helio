@@ -39,7 +39,7 @@ async def handle_results(results: list[FailVideoContext | ChatVideoContext]):
     profile_data = process_json(success)
     db.write_api_data(profile_data)
     streamers_online = await get_m3u8(success)
-    streamers=list(streamers_online)
+    streamers = list(streamers_online)
 
     db.write_capture_url(streamers)
 
@@ -53,7 +53,7 @@ async def get_m3u8(success: set[ChatVideoContext]):
     all_urls = {streamer.hls_source for streamer in success if streamer.hls_source}
 
     results = await iNet.get_all_m3u8(all_urls)
-    new_m3u8s = {HandleM3u8(data).new_cb_m3u8() for data in results}
+    new_m3u8s = {HandleM3u8(data).cb_m3u8() for data in results}
     return new_m3u8s
 
 
