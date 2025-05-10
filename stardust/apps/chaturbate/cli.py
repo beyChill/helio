@@ -65,9 +65,11 @@ class Chaturbate(CommandSet):
 
         new_m3u8 = HandleM3u8(new_url).cb_m3u8()
 
-        self.db.write_url((new_m3u8, name_))
+        self.db.write_url((new_m3u8))
 
-        streamer_data = (name_, self.slug.lower(), str(new_m3u8))
+        best_uri,*_=new_m3u8
+
+        streamer_data = (name_, self.slug.lower(), best_uri)
 
         if not start_capture([streamer_data]):
             log.error(f"Capture for {name_} failed")
