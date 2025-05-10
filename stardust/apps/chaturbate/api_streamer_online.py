@@ -36,9 +36,9 @@ async def get_streamers():
     urls = await iNet.get_ajax_url(online)
 
     urls_ = {url["url"] for url in urls}
-    hls_urls = await iNet.get_all_m3u8(urls_)
+    m3u8_urls = await iNet.get_all_m3u8(urls_)
 
-    streamer_url = [(name_, HandleM3u8(url).new_cb_m3u8) for name_, url in hls_urls]
+    streamer_url = [HandleM3u8(data).new_cb_m3u8() for data in m3u8_urls]
 
     return streamer_url
 

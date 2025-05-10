@@ -38,13 +38,10 @@ async def handle_results(results: list[FailVideoContext | ChatVideoContext]):
 
     profile_data = process_json(success)
     db.write_api_data(profile_data)
-    has_m3u8 = chk_m3u8(success)
+    streamers_online = await get_m3u8(success)
+    streamers=list(streamers_online)
 
-    streamers_online = [
-        (HandleM3u8(url).new_cb_m3u8(), name_) for name_, url in has_m3u8
-    ]
-
-    db.write_capture_url(streamers_online)
+    db.write_capture_url(streamers)
 
     log.debug(
         f"Success: {len(success)} / fail: {len(fail)} || {len(results)} CB api videocontext queries"
@@ -52,14 +49,12 @@ async def handle_results(results: list[FailVideoContext | ChatVideoContext]):
     return streamers_online
 
 
-def chk_m3u8(results: set[ChatVideoContext]):
-    hls_url = {
-        (result.broadcaster_username, result.hls_source)
-        for result in results
-        if result.hls_source
-    }
+async def get_m3u8(success: set[ChatVideoContext]):
+    all_urls = {streamer.hls_source for streamer in success if streamer.hls_source}
 
-    return hls_url
+    results = await iNet.get_all_m3u8(all_urls)
+    new_m3u8s = {HandleM3u8(data).new_cb_m3u8() for data in results}
+    return new_m3u8s
 
 
 def process_json(json_: set[ChatVideoContext]):
@@ -98,7 +93,7 @@ def handle_hashtags(text: str):
 
 
 async def manage_api_query():
-    if not (streamers := db.query_bio()):
+    if not (streamers := db.query_bio(limit=10)):
         log.warning("Zero CB steamers need bio update")
         return None
 
