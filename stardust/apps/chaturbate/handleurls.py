@@ -3,8 +3,7 @@ from random import choice
 
 from rnet import Client, Impersonate, ImpersonateOS, Response
 
-from stardust.apps.chaturbate.models import CBModel, ChatVideoContext
-from stardust.apps.models_app import FailVideoContext
+from stardust.apps.chaturbate.models import CBModel, ChatVideoContext, FailVideoContext
 
 
 class NetActions:
@@ -17,7 +16,7 @@ class NetActions:
             impersonate=choice(self.browser),
         )
 
-    async def get_all_m3u8(self, hls_urls: list[str]):
+    async def get_all_m3u8(self, hls_urls: set[str]):
         tasks = [self.get_m3u8(url) for url in hls_urls]
         results = await asyncio.gather(*tasks)
         return results
@@ -36,6 +35,7 @@ class NetActions:
     async def get_bio(self, streamer: str):
         urls = f"https://chaturbate.com/api/chatvideocontext/{streamer}/"
         resp: Response = await self.client.get(urls)
+
         if resp.status != 200:
             data = await resp.json()
             fail = FailVideoContext(**data, name_=streamer)
