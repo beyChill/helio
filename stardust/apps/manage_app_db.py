@@ -102,7 +102,7 @@ class HelioDB:
 
     def query_seek_capture(self):
         sql = f"""
-            SELECT streamer_name, seek_capture
+            SELECT streamer_name
             FROM {self.db_name}
             WHERE block_date IS NULL
             AND seek_capture IS NOT NULL
