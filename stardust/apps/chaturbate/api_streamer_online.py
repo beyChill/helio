@@ -23,7 +23,7 @@ async def get_streamers():
     data = db.query_seek_capture()
 
     if not data:
-        log.warning("Zero Chaturbate streams to capture")
+        log.warning("Zero Chaturbate streamers to capture")
         return []
 
     streamers = [name_ for (name_,) in data]
@@ -35,7 +35,7 @@ async def get_streamers():
     online = process_results(results)
     urls = await iNet.get_ajax_url(online)
 
-    urls_ = [url["url"] for url in urls]
+    urls_ = {url["url"] for url in urls}
     hls_urls = await iNet.get_all_m3u8(urls_)
 
     streamer_url = [(name_, HandleM3u8(url).new_cb_m3u8) for name_, url in hls_urls]

@@ -242,9 +242,11 @@ class HelioDB:
         self.execute_write(sql, args)
 
     def write_capture_url(self, data: tuple[str, str] | list[tuple[str, str]]):
+        today_ = datetime.now().replace(microsecond=0)
         sql = f"""
             UPDATE {self.db_name}
-            SET capture_url= ?
+            SET capture_url = ?,
+            last_broadcast = '{today_}'
             WHERE streamer_name = ?
             """
         self.execute_write(sql, data)
@@ -268,15 +270,22 @@ class HelioDB:
             SET data_total=IFNULL(printf("%.4f", data_total) ,0) + ?
             WHERE streamer_name = ?
             """
-
         self.execute_write(sql, values)
 
     def write_rm_process_id(self, value: int):
-        sql = f"UPDATE {self.db_name} SET process_id = ? WHERE process_id = ?"
+        sql = f"""
+            UPDATE {self.db_name}
+            SET process_id = ? 
+            WHERE process_id = ?
+            """
         self.execute_write(sql, (None, value))
 
     def write_rm_seek_capture(self, name_: str):
-        sql = f"UPDATE {self.db_name} SET seek_capture=?, process_id=? WHERE streamer_name=?"
+        sql = f"""
+            UPDATE {self.db_name}
+            SET seek_capture=?,
+            process_id=?
+            WHERE streamer_name=?"""
         args = (None, None, name_)
 
         self.execute_write(sql, args)

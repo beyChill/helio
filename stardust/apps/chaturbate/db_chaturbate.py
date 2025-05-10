@@ -10,7 +10,7 @@ class DbCb(HelioDB):
         return self.query_process_id(name_)
 
     def query_bio(self,*, date_: date = date.today(), limit: int = 180):
-        """Query known streamers to update thieir bio info from website api call"""
+        """Query known streamers to update thier bio info from website api call"""
         sql = (
             f"""
             SELECT streamer_name 
