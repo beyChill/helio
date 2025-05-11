@@ -33,10 +33,10 @@ class HelioDB:
         DB = f"file:{self.db_Path}/{self.db_name}.sqlite3?immutable=1"
 
         pragma_query = """
-            PRAGMA journal_mode=OFF;
-            PRAGMA temp_store=MEMORY;
-            PRAGMA synchronous=OFF;
-            PRAGMA locking_mode=exlusive;
+            PRAGMA journal_mode = OFF;
+            PRAGMA temp_store = MEMORY;
+            PRAGMA synchronous = OFF;
+            PRAGMA locking_mode = exlusive;
             """
 
         with sqlite3.connect(DB, uri=True) as conn:
@@ -192,7 +192,8 @@ class HelioDB:
         DB = f"{self.db_Path}/{self.db_name}.sqlite3"
 
         pragma_write = """
-            PRAGMA journal_mode=MEMORY;
+            PRAGMA foreign_keys;
+            PRAGMA journal_mode = MEMORY;
             PRAGMA temp_store = MEMORY;
             PRAGMA synchronous=OFF;
             PRAGMA locking_mode = exlusive;
@@ -226,7 +227,7 @@ class HelioDB:
                 msg = f"{Path(__file__).parts[-1]} {inspect.stack()[0][3]}() {e}"
                 log.error(msg)
                 log.error(sql)
-                log.error(f"{args}")
+                log.error(f"args: {args}")
 
     def write_seek_capture(self, name_):
         today_ = datetime.now().replace(microsecond=0)
