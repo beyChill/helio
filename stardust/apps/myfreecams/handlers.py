@@ -4,7 +4,7 @@ import pandas as pd
 from mitmproxy.http import HTTPFlow
 
 from stardust.apps.myfreecams.db_myfreemcams import DbMfc
-from stardust.utils.applogging import HelioLogger, loglvl
+from stardust.utils.applogging import HelioLogger
 
 log = HelioLogger()
 
