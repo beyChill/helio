@@ -1,9 +1,8 @@
 import asyncio
-from datetime import datetime, timedelta
 from pathlib import Path
-from random import uniform
 from threading import Thread
-from mitmproxy import ctx, addons
+
+from mitmproxy import addons, ctx
 from mitmproxy.master import Master
 from mitmproxy.options import Options
 
@@ -96,7 +95,7 @@ class MitmServer:
 
         # Seleniumbase Chrome doesn't support IPv6 Proxy/
         # Review SeleniumBase's code, GitHub: SeleniumBase / seleniumbase / core / proxy_helper.py
-        # Selenium does support IPv6. Leaving code in
+        # Selenium does support IPv6. Leaving the code in
         # this function just incase we dump seleniumbase.
 
         # addr, port, *_ = ipaddress[0]
