@@ -1,5 +1,7 @@
 import asyncio
+from datetime import datetime, timedelta
 from pathlib import Path
+from random import uniform
 from threading import Thread
 from mitmproxy import ctx, addons
 from mitmproxy.master import Master
@@ -9,9 +11,11 @@ from stardust.apps.myfreecams.app_req import AppRequest
 from stardust.apps.myfreecams.app_res import AppResponse
 from stardust.apps.myfreecams.web_browser import launch_sb_for_mfc
 from stardust.utils.applogging import HelioLogger
+from stardust.utils.general import script_delay
 from stardust.utils.timer import AppTimerSync
 
-log=HelioLogger()
+log = HelioLogger()
+
 
 class AppDirs:
     def __init__(self):
@@ -73,7 +77,7 @@ class MitmServer:
         thread = Thread(target=self.loop.run_forever, daemon=True)
         thread.start()
 
-    # server needs an instance in time to start
+    # mitm needs an instance in time to start
     async def _wait_for_proxyserver(self):
         while not self._has_proxy_address():
             await asyncio.sleep(0.009)
@@ -111,14 +115,33 @@ class MitmServer:
         return self.ip_address
 
 
-@AppTimerSync
-def get_mfc_online_json():
+def mitm_init():
     init_ = MitmServer()
-    try:
-        launch_sb_for_mfc(init_.proxy_address)
-    except Exception as e:
-        log.error(e)
+    launch_sb_for_mfc(init_.proxy_address)
+
+
+@AppTimerSync
+async def get_mfc_online_json():
+    while True:
+        thread = Thread(target=mitm_init, daemon=True)
+        thread.start()
+
+        delay_, time_ = script_delay(609.07, 995.89)
+        log.info(f"Next MFC streamer query: {time_}")
+        await asyncio.sleep(delay_)
+
+
+def exception_handler(loop, context) -> None:
+    log.error(context["exception"])
+    log.error(context["message"])
+
+
+def loop_mfc_all_online():
+    loop = asyncio.new_event_loop()
+    loop.set_exception_handler(exception_handler)
+    loop.create_task(get_mfc_online_json())
+    loop.run_forever()
 
 
 if __name__ == "__main__":
-    get_mfc_online_json()
+    loop_mfc_all_online()
