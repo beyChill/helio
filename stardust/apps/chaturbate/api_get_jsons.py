@@ -9,6 +9,7 @@ from stardust.apps.chaturbate.db_chaturbate import DbCb
 from stardust.apps.chaturbate.handleurls import NetActions
 from stardust.apps.chaturbate.models import CBRoom, cb_param
 from stardust.utils.applogging import HelioLogger
+from stardust.utils.general import script_delay
 from stardust.utils.timer import AppTimer
 
 log = HelioLogger(debug=True)
@@ -102,14 +103,15 @@ async def manage_cb_room_list():
             db.write_db_streamers(db_data)
         log.info(f"{len(json_data)} chaturbate steamers online")
         # Delay reduces api queries per timeframe
-        delay_ = set_script_delay()
+        delay_, time_ = script_delay(609.07, 1095.89)
+        log.info(f"Next CB streamer query: {time_}")
         await asyncio.sleep(delay_)
 
 
 def set_script_delay():
     # A random delay between min, max in seconds
     # used to slow script execution
-    delay_ = uniform(671.05, 1088.47)
+    delay_ = uniform(871.05, 1188.47)
     t1 = datetime.now() + timedelta(seconds=delay_)
     log.info(f"Next CB streamer filtered query: {datetime.strftime(t1, '%H:%M:%S')}")
     return delay_
@@ -120,7 +122,7 @@ def exception_handler(loop, context) -> None:
     log.error(context["message"])
 
 
-def loop_cb_room_list():
+def loop_cb_all_online():
     loop = asyncio.new_event_loop()
     loop.set_exception_handler(exception_handler)
     loop.create_task(manage_cb_room_list())
@@ -128,4 +130,4 @@ def loop_cb_room_list():
 
 
 if __name__ == "__main__":
-    loop_cb_room_list()
+    loop_cb_all_online()

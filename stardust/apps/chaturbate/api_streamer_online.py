@@ -3,7 +3,6 @@ from pathlib import Path
 
 from rnet import Response
 
-# from stardust.apps.chaturbate.db_query import query_seek_status
 from stardust.apps.chaturbate.handleurls import NetActions
 from stardust.apps.manage_app_db import HelioDB
 from stardust.apps.manage_capture import start_capture
@@ -12,10 +11,10 @@ from stardust.utils.general import make_image_dir, script_delay
 from stardust.utils.handle_m3u8 import HandleM3u8
 from stardust.utils.timer import AppTimer
 
-log = HelioLogger()
-iNet = NetActions()
 APP_SITE = "chaturbate"
 db = HelioDB(APP_SITE)
+log = HelioLogger()
+iNet = NetActions()
 
 
 @AppTimer
@@ -81,11 +80,12 @@ async def manage_online_status():
         await asyncio.sleep(delay_)
 
 
-def run_cb_streamers():
+def loop_cb_seek_online():
+    """Query site for specific streamers"""
     loop = asyncio.new_event_loop()
     loop.create_task(manage_online_status())
     loop.run_forever()
 
 
 if __name__ == "__main__":
-    run_cb_streamers()
+    loop_cb_seek_online()
