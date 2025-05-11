@@ -42,13 +42,11 @@ def parse_profile(json_: MfcLookup, fetch: str = "one"):
         log.warning(f"{name_} is offline")
         return (None, name_)
 
-
     if json_.result.user.sessions[0].vstate != 0:
-        print(json_.result.user.sessions[-1].vstate)
-        status =mfc_video_status.get(json_.result.user.sessions[-1].vstate,'unknown')
+        status = MFC_VIDEO_STATUS.get(json_.result.user.sessions[-1].vstate, "unknown")
 
-        if status==2 and json_.result.user.sessions[0].phase=='':
-            status='offline'
+        if status == 2 and json_.result.user.sessions[0].phase == "":
+            status = "offline"
 
         log.warning(f"{name_} is {status}")
         return (None, name_)
@@ -90,13 +88,13 @@ def mfc_server_offset(server: int):
 
     raise ValueError("Offset calc for MyFreeCams server failed")
 
-mfc_video_status={
-    0:'public',
-    2:'away',
-    12:'private',
-    13:'group show',
-    14:'club',
-    90:'hidden',
-    127:'offline',
-    None:'offline'
+
+MFC_VIDEO_STATUS = {
+    0: "public",
+    2: "away",
+    12: "private",
+    13: "group show",
+    14: "club",
+    90: "hidden",
+    127: "offline",
 }
