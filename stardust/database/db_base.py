@@ -13,11 +13,12 @@ DB_SQL_FOLDER = get_db_setting().DB_SQL_FOLDER
 @contextmanager
 def init_connect(file: Path):
     pragma_initial = """
-        PRAGMA auto_vacuum=FULL;
-        PRAGMA journal_mode=MEMORY;
-        PRAGMA temp_store=MEMORY;
-        PRAGMA synchronous=OFF;
+        PRAGMA auto_vacuum = FULL;
+        PRAGMA journal_mode = MEMORY;
+        PRAGMA temp_store = MEMORY;
+        PRAGMA synchronous = OFF;
         PRAGMA cache_size = 1000000;
+        PRAGMA foreign_keys = ON;
         pragma integrity_check;
         PRAGMA optimize; 
         ANALYZE; 
