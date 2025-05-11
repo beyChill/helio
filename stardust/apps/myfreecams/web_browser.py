@@ -4,9 +4,11 @@ from seleniumbase import SB
 
 
 def launch_sb_for_mfc(proxy):
-    """MyFreeCams api sends a list of... users
-    This list could contain bot accounts.
-    The api generates random string
+    """
+    Launch seleniumbase on myfreecams.com
+    MyFreeCams api sends a list of... users
+    The api generates random string. Haven't figured
+    a method to replicate the api generated links.
     
     """
     # add these args to view the brower
