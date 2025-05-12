@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS myfreecams (
     last_capture    DATETIME DEFAULT NULL,
     seek_capture    DATETIME DEFAULT NULL,
     process_id      INTEGER DEFAULT NULL,
-    capture_url     VARCHAR(232) DEFAULT NULL,
+    capture_url     TEXT DEFAULT NULL,
     block_date      DATETIME DEFAULT NULL,
     notes           TEXT,
     category        VARCHAR(15) DEFAULT NULL,
