@@ -2,7 +2,6 @@ from contextlib import contextmanager
 from datetime import date, datetime, timedelta
 from pathlib import Path
 import sqlite3
-from typing import Any
 
 from pydantic import HttpUrl
 
@@ -44,11 +43,10 @@ class HelioDB:
             yield conn
 
     def execute_query(self, sql: str | tuple, fetch: str = "one"):
-        data: Any = ()
         with self.connect_query() as conn:
-            try:
-                cursor = conn.cursor()
+            cursor = conn.cursor()
 
+            try:
                 if not isinstance(sql, tuple):
                     cursor.execute(sql)
 
@@ -56,40 +54,24 @@ class HelioDB:
                     query, args = sql
                     cursor.execute(query, args)
 
-                if fetch == "one":
-                    data = cursor.fetchone()
-
-                if fetch == "all":
-                    data = cursor.fetchall()
-
-                return data
             except sqlite3.Error as e:
                 msg = f"{Path(__file__).parts[-1]} {inspect.stack()[0][3]}() {e}"
                 log.error(msg)
                 log.error(str(sql))
 
-    def clean_fetchone(self, sql):
-        test_variable = None
+            if fetch == "all":
+                return cursor.fetchall()
 
-        result = self.execute_query(sql)
-
-        if result and len(result) == 1:
-            (test_variable,) = result
-            return test_variable
-
-        return result
+            return cursor.fetchone()
 
     def query_url(self, name_):
         sql = (
             f"SELECT capture_url FROM {self.db_name} WHERE streamer_name = ?",
             (name_,),
         )
-        result = self.clean_fetchone(sql)
+        result = self.execute_query(sql)
 
-        if not result:
-            return None
-
-        link: HttpUrl = result
+        link: HttpUrl | list[HttpUrl] = result
         return link
 
     def query_process_id(self, name_):
@@ -98,7 +80,7 @@ class HelioDB:
             (name_,),
         )
         # if not result:
-        return self.clean_fetchone(sql)
+        return self.execute_query(sql)
 
     def query_seek_capture(self):
         sql = f"""
@@ -132,7 +114,7 @@ class HelioDB:
             f"SELECT seek_capture, block_date FROM {self.db_name} WHERE streamer_name = ?",
             (name_,),
         )
-        return self.clean_fetchone(sql)
+        return self.execute_query(sql)
 
     def query_active_capture(self, value):
         sql = f"""
@@ -176,8 +158,7 @@ class HelioDB:
             (value, today_),
         )
 
-        if not (result := self.execute_query(sql, "all")):
-            return []
+        result = self.execute_query(sql, "all")
 
         data: list[str] = [streamer_name for (streamer_name,) in result]
 
