@@ -1,22 +1,27 @@
+import inspect
+import sqlite3
 from contextlib import contextmanager
 from datetime import date, datetime, timedelta
+from enum import StrEnum, auto
 from pathlib import Path
-import sqlite3
 
-from pydantic import HttpUrl
-
+from stardust.apps.models_app import not200
 from stardust.utils.applogging import HelioLogger
-import inspect
-
 
 BASE_DIR = Path.cwd()
 
 log = HelioLogger()
 
 
+class GetRows(StrEnum):
+    FETCHONE = auto()
+    FETCHALL = auto()
+
+
 class HelioDB:
-    def __init__(self, db_name: str, **kwargs):
+    def __init__(self, db_name: str = "helio", slug=None):
         self.db_name = db_name
+        self.slug = slug
         self.conn = None
         self.db_Path = BASE_DIR / "stardust/database/db"
 
@@ -42,7 +47,13 @@ class HelioDB:
             conn.executescript(pragma_query)
             yield conn
 
-    def execute_query(self, sql: str | tuple, fetch: str = "one"):
+    def execute_script(self, sql: str):
+        with self.connect_query() as conn:
+            cursor = conn.cursor()
+            data = cursor.executescript(sql)
+            return data
+
+    def execute_query(self, sql: str | tuple, attribute=GetRows.FETCHONE):
         with self.connect_query() as conn:
             cursor = conn.cursor()
 
@@ -59,28 +70,44 @@ class HelioDB:
                 log.error(msg)
                 log.error(str(sql))
 
-            if fetch == "all":
-                return cursor.fetchall()
+            return getattr(cursor, attribute)()
 
-            return cursor.fetchone()
-
-    def query_url(self, name_):
-        sql = (
-            f"SELECT capture_url FROM {self.db_name} WHERE streamer_name = ?",
-            (name_,),
-        )
+    def clean_fetchone(self, sql):
         result = self.execute_query(sql)
 
-        link: HttpUrl | list[HttpUrl] = result
-        return link
+        if result and len(result) == 1:
+            (tuple_removed,) = result
+            return tuple_removed
 
-    def query_process_id(self, name_):
+        return result
+
+    def query_all_db_process_id(self):
+        sql = f"""
+            SELECT streamer_name, slug, process_id
+            FROM {self.db_name}
+            WHERE process_id IS NOT NULL
+        """
+        return self.execute_query(sql)
+
+    def query_url(self, name_, slug):
         sql = (
-            f"SELECT process_id FROM {self.db_name} WHERE streamer_name = ?",
-            (name_,),
+            f"SELECT capture_url FROM {self.db_name} WHERE streamer_name = ? AND slug = ?",
+            (name_, slug),
+        )
+
+        return self.clean_fetchone(sql)
+
+    def query_process_id(self, name_, slug):
+        sql = (
+            f"""SELECT process_id
+            FROM {self.db_name} 
+            WHERE streamer_name = ?
+            AND slug = ?
+            """,
+            (name_, slug),
         )
         # if not result:
-        return self.execute_query(sql)
+        return self.clean_fetchone(sql)
 
     def query_seek_capture(self):
         sql = f"""
@@ -91,21 +118,22 @@ class HelioDB:
             AND process_id IS NULL
             ORDER BY RANDOM()
             """
-        data = self.execute_query(sql, "all")
+        data = self.execute_query(sql, GetRows.FETCHALL)
 
         return data
 
-    def query_main_streamers(self):
+    def query_site_streamers(self):
         sql = f"""
-            SELECT streamer_name, seek_capture
+            SELECT streamer_name
             FROM {self.db_name}
             WHERE block_date IS NULL
             AND category IS NULL
             AND process_id IS NULL
+            AND slug = '{self.slug}'
             ORDER BY RANDOM()
             """
-        data = self.execute_query(sql, "all")
-
+        result = self.execute_query(sql, GetRows.FETCHALL)
+        data: set[str] = {x for (x,) in result}
         return data
 
     def query_cap_status(self, name_: str):
@@ -114,42 +142,42 @@ class HelioDB:
             f"SELECT seek_capture, block_date FROM {self.db_name} WHERE streamer_name = ?",
             (name_,),
         )
-        return self.execute_query(sql)
+        return self.clean_fetchone(sql)
 
     def query_active_capture(self, value):
         sql = f"""
-            SELECT streamer_name, seek_capture, printf("%.4f", data_total)
+            SELECT streamer_name, slug, seek_capture, printf("%.4f", data_total)
             FROM {self.db_name} 
             WHERE process_id IS NOT NULL 
             ORDER BY {value}"""
-        result = self.execute_query(sql, "all")
+        result = self.execute_query(sql, GetRows.FETCHALL)
 
         return result
 
     def query_seek_offline(self, value):
         sql = f"""
-            SELECT streamer_name, last_broadcast, printf("%.4f", data_total) 
+            SELECT streamer_name, slug, last_broadcast, printf("%.4f", data_total) 
             FROM {self.db_name} 
-            WHERE process_id IS NULL
+            WHERE process_id ISNULL
             AND seek_capture IS NOT NULL 
-            AND block_date IS NULL 
+            AND block_date ISNULL 
             ORDER BY {value}
             """
 
-        result = self.execute_query(sql, "all")
+        result = self.execute_query(sql, GetRows.FETCHALL)
 
         return result
 
     def query_long_offline(self, days: int):
-        value = date.today() - timedelta(days=days)
         today_ = date.today()
+        value = today_ - timedelta(days=days)
 
         sql = (
             f"""
             SELECT streamer_name 
             FROM {self.db_name} 
-            WHERE (last_broadcast<? or last_broadcast IS NULL)
-            AND (bio_chk_date <=? or bio_chk_date IS NULL)
+            WHERE (last_broadcast < ? or last_broadcast IS NULL)
+            AND (bio_chk_date <= ? or bio_chk_date IS NULL)
             AND block_date IS NULL
             ORDER BY last_broadcast 
             LIMIT 30
@@ -158,7 +186,7 @@ class HelioDB:
             (value, today_),
         )
 
-        result = self.execute_query(sql, "all")
+        result = self.execute_query(sql, GetRows.FETCHALL)
 
         data: list[str] = [streamer_name for (streamer_name,) in result]
 
@@ -173,7 +201,6 @@ class HelioDB:
         DB = f"{self.db_Path}/{self.db_name}.sqlite3"
 
         pragma_write = """
-            PRAGMA foreign_keys;
             PRAGMA journal_mode = MEMORY;
             PRAGMA temp_store = MEMORY;
             PRAGMA synchronous=OFF;
@@ -210,47 +237,66 @@ class HelioDB:
                 log.error(sql)
                 log.error(f"args: {args}")
 
-    def write_seek_capture(self, name_):
+    def write_not200(self, data: list[not200]):
+        sql = f"""
+            INSERT INTO {self.db_name} (streamer_name, slug, http_code, http_text)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT (streamer_name, slug)
+            DO UPDATE SET
+            http_code = EXCLUDED.http_code,
+            http_text = EXCLUDED.http_text
+
+            """
+        self.execute_write(sql, data)
+
+    def write_seek_capture(self, name_, slug):
         today_ = datetime.now().replace(microsecond=0)
         sql = f"""
-            INSERT INTO {self.db_name} (streamer_name, seek_capture) 
-            VALUES (?, ?) 
-            ON CONFLICT (streamer_name) 
+            INSERT INTO {self.db_name} (streamer_name, slug, seek_capture) 
+            VALUES (?, ?, ?) 
+            ON CONFLICT (streamer_name, slug) 
             DO UPDATE SET 
+            slug=EXCLUDED.slug,
             seek_capture=EXCLUDED.seek_capture
-            WHERE seek_capture IS NULL
+            WHERE seek_capture ISNULL
             """
-        args = (name_, today_)
+        args = (name_, slug, today_)
         self.execute_write(sql, args)
 
-    def write_capture_url(self, data: tuple[str, str] | list[tuple[str, str]]):
+    def write_capture_url(
+        self, data: tuple[str, str, str] | list[tuple[str, str, str]]
+    ):
         today_ = datetime.now().replace(microsecond=0)
         sql = f"""
             UPDATE {self.db_name}
             SET capture_url = ?,
             last_broadcast = '{today_}'
             WHERE streamer_name = ?
+            AND slug = ?
             """
+
         self.execute_write(sql, data)
 
     def write_process_id(
-        self, data: tuple[int, datetime, str] | list[tuple[int, datetime, str]]
+        self,
+        data: tuple[int, datetime, str, str] | list[tuple[int, datetime, str, str]],
     ):
         sql = f"""
             UPDATE {self.db_name}
-            SET 
-            process_id = ?,
+            SET process_id = ?,
             last_capture= ?
             WHERE streamer_name = ?
+            AND slug = ?
             """
 
         self.execute_write(sql, data)
 
-    def write_video_size(self, values: tuple[float, str]):
+    def write_video_size(self, values: tuple[float, str, str]):
         sql = f"""
             UPDATE {self.db_name}
             SET data_total=IFNULL(printf("%.4f", data_total) ,0) + ?
             WHERE streamer_name = ?
+            AND slug = ?
             """
         self.execute_write(sql, values)
 
@@ -260,15 +306,18 @@ class HelioDB:
             SET process_id = ? 
             WHERE process_id = ?
             """
+
         self.execute_write(sql, (None, value))
 
-    def write_rm_seek_capture(self, name_: str):
+    def write_rm_seek_capture(self, name_: str, slug: str):
         sql = f"""
             UPDATE {self.db_name}
-            SET seek_capture=?,
-            process_id=?
-            WHERE streamer_name=?"""
-        args = (None, None, name_)
+            SET seek_capture = ?,
+            process_id = ?
+            WHERE streamer_name = ?
+            AND slug = ?
+            """
+        args = (None, None, name_, slug)
 
         self.execute_write(sql, args)
 
@@ -277,20 +326,44 @@ class HelioDB:
         sql = f"""
             UPDATE {self.db_name}
             SET last_broadcast = '{today_}'
-            WHERE streamer_name = ?                        
+            WHERE streamer_name = ?
+            AND slug = ?                        
             """
         self.execute_write(sql, streamers)
 
     def write_block_reason(self, data):
-        name_, *reason = data
+        name_, slug, *reason = data
         reason = " ".join(reason)
 
         sql = f"""
             UPDATE {self.db_name}
-            SET block_date=?, seek_capture=?, notes=IFNULL(notes, '')||?
-            WHERE streamer_name=?
+            SET block_date = ?,
+            seek_capture = ?,
+            notes=IFNULL(notes, '') || ?
+            WHERE streamer_name = ?
+            AND slug =?
             """
 
-        arg = (date.today(), None, f"{reason}", name_)
+        arg = (date.today(), None, f"{reason}", name_, slug)
 
         self.execute_write(sql, arg)
+
+    def write_data_review(self, value: list[tuple[str, Path]]):
+        sql = """
+            INSERT INTO {self.db_name} (streamer_name, slug, data_review) 
+            VALUES (?, ?, ?) 
+            ON CONFLICT (streamer_name, slug) 
+            DO UPDATE SET 
+            data_review=EXCLUDED.data_review
+            """
+        self.execute_write(sql, value)
+
+    def write_data_keep(self, value: list[tuple[str, Path]]):
+        sql = """
+            INSERT INTO {self.db_name} (streamer_name, slug, data_keep) 
+            VALUES (?, ?, ?) 
+            ON CONFLICT (streamer_name, slug) 
+            DO UPDATE SET 
+            data_keep=EXCLUDED.data_keep
+            """
+        self.execute_write(sql, value)

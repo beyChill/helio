@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 import asyncio
-from datetime import datetime, timedelta
-from random import uniform
+from datetime import datetime
 from sqlite3 import Date
 
 from stardust.apps.chaturbate.db_chaturbate import DbCb
-from stardust.apps.chaturbate.handleurls import NetActions
+from stardust.apps.chaturbate.handleurls import iNetCb
 from stardust.apps.chaturbate.models import CBRoom, cb_param
 from stardust.utils.applogging import HelioLogger
 from stardust.utils.general import script_delay
@@ -16,23 +15,19 @@ log = HelioLogger(debug=True)
 
 
 def url_param(category=cb_param.FEMALE, tag=cb_param.TAG.NONE):
-    cat = category
-    subcat = tag.value
+    if category == "?":
+        return category
 
-    parameter = cat
+    if tag.value:
+        category = f"{category}&{tag.value}"
 
-    if parameter == "?":
-        return parameter
-
-    if subcat:
-        parameter = f"{parameter}&{subcat}"
-    return parameter
+    return category
 
 
 @AppTimer
 async def get_streamers_online():
     """download and process json files for a predefined category (url_params) of streamers"""
-    iNet = NetActions()
+    iNet = iNetCb()
 
     params = url_param(cb_param.FEMALE, cb_param.TAG.NONE)
 
@@ -106,15 +101,6 @@ async def manage_cb_room_list():
         delay_, time_ = script_delay(609.07, 1095.89)
         log.info(f"Next CB streamer query: {time_}")
         await asyncio.sleep(delay_)
-
-
-def set_script_delay():
-    # A random delay between min, max in seconds
-    # used to slow script execution
-    delay_ = uniform(871.05, 1188.47)
-    t1 = datetime.now() + timedelta(seconds=delay_)
-    log.info(f"Next CB streamer filtered query: {datetime.strftime(t1, '%H:%M:%S')}")
-    return delay_
 
 
 def exception_handler(loop, context) -> None:

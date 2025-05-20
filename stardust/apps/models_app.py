@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Optional
 
 from pydantic import BaseModel
+
 
 class ContactSheetModel(BaseModel):
     input_path: Path
@@ -21,3 +23,9 @@ class DataFFmpeg(BaseModel):
     # For FFmpeg use
     args: list
 
+
+class not200(BaseModel):
+    name_: Optional[str] = None
+    site: str
+    code_: int
+    reason: Optional[str] = None

@@ -1,31 +1,3 @@
-CREATE TABLE IF NOT EXISTS chaturbate (
-    streamer_name   VARCHAR(50) NOT NULL,
-    last_broadcast  DATETIME DEFAULT NULL,
-    data_total      INTEGER DEFAULT NULL,
-    data_review     INTEGER DEFAULT NULL,
-    data_keep       INTEGER DEFAULT NULL,
-    last_capture    DATETIME DEFAULT NULL,
-    seek_capture    DATETIME DEFAULT NULL,
-    process_id      INTEGER DEFAULT NULL,
-    capture_url     TEXT DEFAULT NULL,
-    block_date      DATETIME DEFAULT NULL,
-    notes           TEXT,
-    category        VARCHAR(15) DEFAULT NULL,
-    created_on      DATETIME DEFAULT (date(CURRENT_TIMESTAMP, 'localtime')),
-    updated_at      DATETIME DEFAULT (datetime(CURRENT_TIMESTAMP, 'localtime')),
-    PRIMARY KEY (streamer_name)
-);
-CREATE TRIGGER update_chaturbate_updated_at
-AFTER
-UPDATE ON chaturbate
-    WHEN old.updated_at <> (datetime(CURRENT_TIMESTAMP, 'localtime')) BEGIN
-UPDATE chaturbate
-SET updated_at = (datetime(CURRENT_TIMESTAMP, 'localtime'))
-WHERE streamer_name = OLD.streamer_name;
-END;
-
-CREATE UNIQUE INDEX IF NOT EXISTS idx_cb ON chaturbate (streamer_name);
-
 CREATE TABLE IF NOT EXISTS streamer_data(
     streamer_name       VARCHAR(50) NOT NULL,
     age                 INTEGER DEFAULT NULL,
@@ -57,8 +29,6 @@ UPDATE streamer_data
 SET updated_at = (datetime(CURRENT_TIMESTAMP, 'localtime'))
 WHERE streamer_name = OLD.streamer_name;
 END;
-
-CREATE UNIQUE INDEX IF NOT EXISTS idx_streamer ON streamer_data (streamer_name);
 
 CREATE TRIGGER update_streamer_most_viewers
 AFTER

@@ -1,15 +1,14 @@
 from datetime import date
+
 from stardust.apps.chaturbate.models import FailVideoContext
-from stardust.apps.manage_app_db import HelioDB
+from stardust.apps.manage_app_db import GetRows, HelioDB
+
 
 class DbCb(HelioDB):
     table_main = "chaturbate"
     table_streamer = "streamer_data"
 
-    def query_pid(self, name_):
-        return self.query_process_id(name_)
-
-    def query_bio(self,*, date_: date = date.today(), limit: int = 180):
+    def query_bio(self, *, date_: date = date.today(), limit: int = 180):
         """Query known streamers to update thier bio info from website api call"""
         sql = (
             f"""
@@ -20,7 +19,7 @@ class DbCb(HelioDB):
             """,
             (date_, limit),
         )
-        data = self.execute_query(sql, "all")
+        data = self.execute_query(sql, GetRows.FETCHALL)
 
         return data
 
@@ -30,11 +29,8 @@ class DbCb(HelioDB):
     def write_urls_all(self, data: list[tuple]):
         return self.write_capture_url(data)
 
-    def write_stop_seek(self,name_:str):
-        return self.write_rm_seek_capture(name_)
-    
-    def write_api_data(self,value: list):
-        sql =f"""
+    def write_api_data(self, value: list):
+        sql = f"""
             INSERT INTO {self.table_streamer} (
             streamer_name, age, last_broadcast, viewers, tags)
             VALUES (?, ?, ?, ?, ?)
@@ -50,7 +46,7 @@ class DbCb(HelioDB):
 
         self.execute_write(sql, value)
 
-    def write_db_streamers(self,value: list):
+    def write_db_streamers(self, value: list):
         sql = f"""
             INSERT INTO {self.table_streamer} (
             streamer_name, age, last_broadcast, followers, viewers,start_dt_utc, location, country, is_new, tags,bio_chk_date
@@ -71,8 +67,8 @@ class DbCb(HelioDB):
             bio_chk_date=EXCLUDED.bio_chk_date
             """
         self.execute_write(sql, value)
-    
-    def write_videocontext_fail(self,values: set[FailVideoContext]):
+
+    def write_videocontext_fail(self, values: set[FailVideoContext]):
         data = []
         for value in values:
             data.append((value.status, value.detail, value.code, value.name_))
@@ -86,4 +82,4 @@ class DbCb(HelioDB):
             WHERE streamer_name=?
             """
 
-        self.execute_write(sql,  data)
+        self.execute_write(sql, data)

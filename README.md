@@ -75,7 +75,7 @@
 
 - uv - An ultra fast project and package manager.
     - <a title="uv by Atrfal" href="https://docs.astral.sh/uv/getting-started/installation/">uv Astral</a>
-- Some versions of linux (Fedora42) require Xvfb install 
+- Some versions of linux (Fedora) require Xvfb install to use Seleniumbase without display error messages in the console
 ```bash
 sudo dnf install xorg-x11-server-Xvfb
 ```
@@ -202,7 +202,7 @@ Knowledge share for some packages in Helio's tech stack
     <ul>
         <li>Chaturbate: active</li>
         <li>StripChat: planning</li>
-        <li>MyFreeCams: 23%</li>
+        <li>MyFreeCams: 83%</li>
         <li>StreaMate: planning</li>
     </ul>
 </div>

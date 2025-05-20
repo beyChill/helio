@@ -3,7 +3,7 @@ from pathlib import Path
 
 from rnet import Response
 
-from stardust.apps.chaturbate.handleurls import NetActions
+from stardust.apps.chaturbate.handleurls import iNetCb
 from stardust.apps.manage_app_db import HelioDB
 from stardust.apps.manage_capture import start_capture
 from stardust.utils.applogging import HelioLogger
@@ -12,16 +12,14 @@ from stardust.utils.handle_m3u8 import HandleM3u8
 from stardust.utils.timer import AppTimer
 
 APP_SITE = "chaturbate"
-db = HelioDB(APP_SITE)
 log = HelioLogger()
-iNet = NetActions()
+iNet = iNetCb()
 
 
 @AppTimer
-async def get_streamers():
-    data = db.query_seek_capture()
-
-    if not data:
+async def get_online_cb_streamers():
+    db = HelioDB()
+    if not (data := db.query_seek_capture()):
         log.warning("Zero Chaturbate streamers to capture")
         return []
 
@@ -35,11 +33,12 @@ async def get_streamers():
     urls = await iNet.get_ajax_url(online)
 
     urls_ = {url["url"] for url in urls}
-    m3u8_urls = await iNet.get_all_m3u8(urls_)
 
-    streamer_url = [HandleM3u8(data).cb_m3u8() for data in m3u8_urls]
+    streamer_url = [await HandleM3u8(url).cb_m3u8() for url in urls_]
 
-    return streamer_url
+    online_data = {(name_, "cb", url) for url, name_, *_ in streamer_url}
+
+    return online_data
 
 
 async def check_online_status(streamers: list[str]):
@@ -67,9 +66,9 @@ def download_img(streamer, name_: str, img_dir: Path):
     download_image.write_bytes(streamer)
 
 
-async def manage_online_status():
+async def manage_seek_capture():
     while True:
-        online_streamers = await get_streamers()
+        online_streamers = await get_online_cb_streamers()
 
         if online_streamers:
             start_capture(online_streamers)
@@ -77,15 +76,15 @@ async def manage_online_status():
         delay_, time_ = script_delay(209.07, 395.89)
 
         log.info(f"Seek CB streamers: {time_}")
+
         await asyncio.sleep(delay_)
 
 
-def loop_cb_seek_online():
-    """Query site for specific streamers"""
+def loop_cb_seek_capture():
     loop = asyncio.new_event_loop()
-    loop.create_task(manage_online_status())
+    loop.create_task(manage_seek_capture())
     loop.run_forever()
 
 
 if __name__ == "__main__":
-    loop_cb_seek_online()
+    loop_cb_seek_capture()

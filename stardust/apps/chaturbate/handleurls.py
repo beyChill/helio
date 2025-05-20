@@ -1,14 +1,15 @@
 import asyncio
 from random import choice
 
-from rnet import Client, Impersonate, ImpersonateOS, Response
+from rnet import Client, Impersonate, Response
 
-from stardust.apps.chaturbate.models import CBModel, ChatVideoContext, FailVideoContext
+from stardust.apps.chaturbate.models import CBModel, ChatVideoContext
+from stardust.apps.models_app import not200
+from stardust.utils.general import filter_not200
 
 
-class NetActions:
+class iNetCb:
     browser = [Impersonate.Firefox136, Impersonate.Chrome134, Impersonate.Edge131]
-    os = [ImpersonateOS.Windows, ImpersonateOS.MacOS, ImpersonateOS.Linux]
     client = Client()
 
     def __init__(self):
@@ -29,7 +30,8 @@ class NetActions:
 
     async def get_all_bio(self, streamers: list[str]):
         tasks = [self.get_bio(streamer) for streamer in streamers]
-        results = await asyncio.gather(*tasks)
+        data = await asyncio.gather(*tasks)
+        results = filter_not200(data)
         return results
 
     async def get_bio(self, streamer: str):
@@ -38,38 +40,39 @@ class NetActions:
 
         if resp.status != 200:
             data = await resp.json()
-            fail = FailVideoContext(**data, name_=streamer)
-            return fail
+            return not200(
+                name_=streamer, site="CB", code_=resp.status, reason=data["detail"]
+            )
 
         result = ChatVideoContext(**await resp.json())
         return result
 
-    async def get_all_jsons(self, params: str, num_streamers=0) -> list[CBModel]:
+    async def get_all_jsons(self, params: str, num_streamers=0):
         tasks = []
-        results = []
         if num_streamers != 0:
-            tasks = [
+            tasks = {
                 self.get_json(
                     f"https://chaturbate.com/api/ts/roomlist/room-list/{params}&limit=90&offset={offset}"
                 )
                 for offset in range(90, num_streamers, 90)
-            ]
+            }
 
         if num_streamers == 0:
-            tasks = [
+            tasks = {
                 self.get_json(
                     f"https://chaturbate.com/api/ts/roomlist/room-list/{params}&limit=90&offset=0"
                 )
-            ]
+            }
 
-        results = await asyncio.gather(*tasks)
-        return results
+        data = await asyncio.gather(*tasks)
+        return self.filter_json_urls(data)
 
     async def get_json(self, url: str):
         resp: Response = await self.client.get(url)
 
         if resp.status != 200:
-            return CBModel(rooms=[], total_count=0, all_rooms_count=0, room_list_id="")
+            return not200(site="CB", code_=resp.status, reason="bad url")
+
         return CBModel(**await resp.json())
 
     async def get_all_jpg(self, streamers: list[str]):
@@ -110,3 +113,8 @@ class NetActions:
         data = await resp.json()
 
         return data
+
+    def filter_json_urls(self, data):
+        filtered_data = [x for x in data if not isinstance(x, not200)]
+
+        return filtered_data

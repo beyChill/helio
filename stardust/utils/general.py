@@ -1,45 +1,27 @@
-import asyncio
 import os
 from datetime import datetime, timedelta
 from pathlib import Path
 from random import uniform
-from string import ascii_lowercase, ascii_uppercase, digits
+from string import ascii_lowercase, digits
 
 from rnet import Client, Response
 
 import stardust
 from stardust.apps import __apps__ as helio_apps
-from stardust.apps.chaturbate.handleurls import NetActions
 from stardust.apps.manage_app_db import HelioDB
-from stardust.apps.myfreecams.db_myfreemcams import DbMfc
-from stardust.apps.myfreecams.handleurls import MfcNetActions
-from stardust.apps.myfreecams.helper import parse_profile
+from stardust.apps.models_app import not200
+from stardust.apps.myfreecams.json_models import Lookup
 from stardust.config.settings import get_setting
 from stardust.utils.applogging import HelioLogger, loglvl
-from stardust.utils.handle_m3u8 import HandleM3u8
 
 log = HelioLogger()
 IMG_PATH = get_setting().DIR_IMG_PATH
 
 
 def chk_streamer_name(name_: str, site: str):
-    valid_all = "".join([ascii_lowercase, ascii_uppercase, digits, "_"])
     valid_lower = "".join([ascii_lowercase, digits, "_"])
 
-    if site == "CB":
-        return all(chars in valid_lower for chars in name_)
-
-    if site == "MFC":
-        return all(chars in valid_all for chars in name_)
-
-
-def get_all_app_names():
-    app_names = []
-    for app in dir(helio_apps):
-        if app.startswith("app_"):
-            app_data = getattr(helio_apps, app)
-            app_names.append(app_data[1])
-    return app_names
+    return all(chars in valid_lower for chars in name_)
 
 
 def get_app_name(app_tag: str):
@@ -132,30 +114,46 @@ def calc_size(file_data: list[int]):
     return giga
 
 
-def calc_video_size(name_: str, file: Path, site: str):
+def calc_video_size(name_: str, file: Path, slug: str):
     raw_size = os.stat(file).st_size
     file_size = calc_size([raw_size])
-    values = (file_size, name_)
-    HelioDB(site).write_video_size(values)
+    values = (file_size, name_, slug)
+    HelioDB().write_video_size(values)
 
 
-def get_url(name_, site):
-    if site == "chaturbate":
-        results = asyncio.run(NetActions().get_ajax_url([name_]))
+def filter_not200(data):
+    db = HelioDB()
+    isnot200: list[not200] = []
+    filtered_data = []
 
-        if not results[0]["url"]:
-            log.app(loglvl.STOPPED, f"{name_} [{site}] {results[0]['room_status']}")
-            return None
+    for x in data:
+        if isinstance(x, not200):
+            isnot200.append(x)
+            continue
 
-        url = results[0]["url"]
-        return HandleM3u8(url).cb_m3u8()
+        filtered_data.append(x)
 
-    if site == "myfreecams":
-        json_ = asyncio.run(MfcNetActions().get_user_profile([name_]))
-        url_ = parse_profile(json_[0])
+    db.write_not200(isnot200)
+    return filtered_data
 
-        if isinstance(url_, tuple):
-            url_ = None
+def build_url_data(data: list[Lookup]):
+    table_data = []
 
-        DbMfc("myfreecams").write_url((url_, name_))
-        return url_
+    for x in data:
+        if not x.result.user.sessions:
+            log.warning(f"{x.result.user.username} is offline")
+            continue
+
+        table_data.append(
+            (
+                x.result.user.username,
+                x.result.user.sid,
+                x.result.user.id,
+                x.result.user.vs,
+                x.result.user.sessions[-1].platform_id,
+                x.result.user.access_level,
+                x.result.user.camserv,
+                x.result.user.sessions[-1].phase,
+            )
+        )
+    return table_data

@@ -1,7 +1,10 @@
 from __future__ import annotations
-from enum import Enum
-from pydantic import BaseModel
+
+from enum import Enum, auto
 from typing import Any, Optional
+
+from pydantic import BaseModel
+
 
 class _auto_null:
     def __repr__(self):
@@ -9,16 +12,7 @@ class _auto_null:
 
 
 # _auto_null = _auto_null()
-class auto:
-    """
-    Instances are replaced with an appropriate value in Enum class suites.
-    """
 
-    def __init__(self, value=_auto_null):
-        self.value = value
-
-    def __repr__(self):
-        return "auto(%r)" % self.value
 
 class CB_TAGS(Enum):
     ANAL = auto()
@@ -40,13 +34,13 @@ class CB_TAGS(Enum):
     MISTRESS = auto()
     MUSCLE = auto()
     NEW = auto()
-    NONE = ""
     PANTYHOSE = auto()
     PETITE = auto()
     PUFFNIPPLES = auto()
     REDHEAD = auto()
     SMALLTITS = auto()
     SQUIRT = auto()
+    NONE = None
 
 
 class cb_param:
@@ -58,12 +52,12 @@ class cb_param:
     TAG = CB_TAGS
 
 
-
 class CBModel(BaseModel):
     rooms: list[CBRoom]
     total_count: int
     all_rooms_count: int
     room_list_id: str
+
 
 class CBRoom(BaseModel):
     display_age: Optional[int]
@@ -87,6 +81,7 @@ class CBRoom(BaseModel):
     # img: str
     # subject: str
 
+
 class CBajax(BaseModel):
     success: bool
     url: str
@@ -94,10 +89,11 @@ class CBajax(BaseModel):
     hidden_message: str
     cmaf_edge: bool
 
+
 class StreamerBio(BaseModel):
     name_: str
     follower_count: int
-    location: Optional[str]=None
+    location: Optional[str] = None
     # real_name: str
     # body_decorations: str
     last_broadcast: str
@@ -120,6 +116,7 @@ class StreamerBio(BaseModel):
     # photo_sets: list[PhotoSet]
     # social_medias: list[SocialMedia]
     # is_broadcaster_or_staff: bool
+
 
 class BioResults(BaseModel):
     success: list[StreamerBio]
@@ -161,7 +158,8 @@ class SocialMedia(BaseModel):
     label_text: str
     label_color: str
 
-class ChatSettings(BaseModel,frozen=True):
+
+class ChatSettings(BaseModel, frozen=True):
     font_size: str
     show_emoticons: bool
     emoticon_autocomplete_delay: int
@@ -181,20 +179,20 @@ class ChatSettings(BaseModel,frozen=True):
     ignored_users: str
 
 
-class SatisfactionScore(BaseModel,frozen=True):
+class SatisfactionScore(BaseModel, frozen=True):
     percent: Optional[int] = None
     up_votes: Optional[int] = None
     down_votes: Optional[int] = None
     max: Optional[int] = None
 
 
-class Quality(BaseModel,frozen=True):
+class Quality(BaseModel, frozen=True):
     quality: str
     rate: float
     stopped: bool
 
 
-class ChatVideoContext(BaseModel,frozen=True):
+class ChatVideoContext(BaseModel, frozen=True):
     viewer_uid: Any
     is_age_verified: bool
     age: Any
@@ -231,7 +229,7 @@ class ChatVideoContext(BaseModel,frozen=True):
     following: bool
     follow_notification_frequency: str
     is_moderator: bool
-    chat_settings: Optional[ChatSettings]=None
+    chat_settings: Optional[ChatSettings] = None
     broadcaster_on_new_chat: bool
     token_balance: int
     is_supporter: bool
@@ -265,10 +263,11 @@ class ChatVideoContext(BaseModel,frozen=True):
     premium_private_price: int
     premium_private_min_minutes: int
     premium_show_running: bool
-    quality: Optional[Quality]=None
-    code: Optional[int]=None
+    quality: Optional[Quality] = None
+    code: Optional[int] = None
 
-class FailVideoContext(BaseModel,frozen=True):
+
+class FailVideoContext(BaseModel, frozen=True):
     status: int
     detail: str
     code: str

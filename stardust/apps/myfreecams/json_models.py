@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+from typing import Any, List, Optional
+
 from pydantic import BaseModel
 
-from typing import Any, Optional
 
-
-class MfcSession(BaseModel):
+class LookupSession(BaseModel):
     session_id: int
     vstate: int
     room_count: int
@@ -17,14 +17,16 @@ class MfcSession(BaseModel):
     server_type: Optional[str] = None
     fcapp_type: Optional[int] = None
     video_server_type: Optional[str] = None
-    server_is_webrtc: bool = False
+    server_is_webrtc: Optional[bool] = None
     phase: str
     snap_url: str
 
 
-class Profile(BaseModel):
+class LookupProfile(BaseModel):
     age: Optional[str] = None
     gender: Optional[str] = None
+    city: Optional[str] = None
+    country: Optional[str] = None
     birthdate: Optional[str] = None
     sexual_preference: Optional[str] = None
     marital_status: Optional[str] = None
@@ -40,57 +42,43 @@ class Profile(BaseModel):
     drink: Optional[str] = None
     drugs: Optional[str] = None
     blurb: Optional[str] = None
+    occupation: Optional[str] = None
+    school: Optional[str] = None
+    favorite_food: Optional[str] = None
+    pets: Optional[str] = None
+    automobile: Optional[str] = None
+    know_me: Optional[str] = None
 
 
-class Share(BaseModel):
+class LookupShare(BaseModel):
     albums: Optional[int] = None
     follows: Optional[int] = None
-    clubs: Optional[int] = None
     tm_album: Optional[int] = None
-    collections: Optional[int] = None
     stores: Optional[int] = None
-    goals: Optional[int] = None
-    polls: Optional[int] = None
     things: Optional[int] = None
     recent_album_tm: Optional[int] = None
-    recent_club_tm: Optional[int] = None
-    recent_collection_tm: Optional[int] = None
-    recent_goal_tm: Optional[int] = None
     recent_item_tm: Optional[int] = None
-    recent_poll_tm: Optional[int] = None
-    recent_story_tm: Optional[int] = None
     recent_album_thumb: Optional[str] = None
-    recent_club_thumb: Optional[str] = None
-    recent_collection_thumb: Optional[str] = None
-    recent_goal_thumb: Optional[str] = None
     recent_item_thumb: Optional[str] = None
-    recent_poll_thumb: Optional[str] = None
-    recent_story_thumb: Optional[str] = None
     recent_album_title: Optional[str] = None
-    recent_club_title: Optional[str] = None
-    recent_collection_title: Optional[str] = None
-    recent_goal_title: Optional[str] = None
     recent_item_title: Optional[str] = None
-    recent_poll_title: Optional[str] = None
-    recent_story_title: Optional[str] = None
     recent_album_slug: Optional[str] = None
-    recent_collection_slug: Optional[str] = None
     tipmenus: Optional[int] = None
     free_albums: Optional[int] = None
 
 
-class Social(BaseModel):
+class LookupSocial(BaseModel):
     twitter_username: Optional[str] = None
     instagram_username: Optional[str] = None
 
 
-class User(BaseModel):
+class LookupUser(BaseModel):
     id: int
     username: str
     access_level: int
     active: int
     avatar: str
-    sessions: Optional[list[MfcSession]] = None
+    sessions: List[LookupSession]
     cam_score: float
     camserv: Optional[int] = None
     chat_color: str
@@ -99,14 +87,28 @@ class User(BaseModel):
     hide_cam_score: int
     last_login: str
     missmfc: Any
-    profile: Profile
-    rank: Optional[int] = None
+    profile: LookupProfile
+    rank: Any
     sid: Optional[int] = None
-    share: Optional[Share] = None
-    social: Optional[Social] = None
-    tags: Optional[list[str]] = None
-    user_id: int
+    share: Optional[LookupShare] = None
+    social: Optional[LookupSocial] = None
+    tags: Optional[List[str]] = None
+    user_id: Optional[int] = None
     vs: Optional[int] = None
+
+
+class LookupResult(BaseModel):
+    success: int
+    message: str
+    user: LookupUser
+
+
+class Lookup(BaseModel):
+    id: str
+    responseVer: int
+    method: str
+    result: LookupResult
+    err: int
 
 
 class AppProfile(BaseModel):
@@ -206,12 +208,6 @@ class MfcModelExResults(BaseModel):
     data: list[MfcModelExData]
 
 
-class Result(BaseModel):
-    success: int
-    message: str
-    user: User
-
-
 class MfcModelEx(BaseModel):
     id: str
     responseVer: int
@@ -220,9 +216,38 @@ class MfcModelEx(BaseModel):
     err: int
 
 
-class MfcLookup(BaseModel):
+class TagData(BaseModel):
+    user_id: Optional[int] = None
+    username: str
+    answer: Optional[str] = None
+
+
+class TagResult(BaseModel):
+    category: str
+    order: str
+    selection: str
+    limit: str
+    full_detail: str
+    desc: str
+    search: str
+    expanded: str
+    _: str
+    offset: int
+    total: int
+    data: List[TagData]
+
+
+class Tags(BaseModel):
     id: str
     responseVer: int
     method: str
-    result: Result
+    result: TagResult
     err: int
+
+
+class BuildUrl(BaseModel):
+    name_:str
+    server:int
+    phase:str
+    pid:int
+    uid_:int

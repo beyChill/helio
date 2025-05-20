@@ -17,7 +17,7 @@ dependencies = [
     "pygithub>=2.6.1",
     "pytesseract>=0.3.13",
     "python-dotenv>=1.1.0",
-    "rnet>=2.2.8",
+    "rnet>=2.2.9",
     "seleniumbase>=4.38.0",
     "tabulate>=0.9.0",
 ]

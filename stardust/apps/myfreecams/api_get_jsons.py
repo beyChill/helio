@@ -1,19 +1,44 @@
 import asyncio
+import json
 from pathlib import Path
+from random import choice
 from threading import Thread
 
-from mitmproxy import addons, ctx
+import pandas as pd
+from mitmproxy import addons, ctx, http
+from mitmproxy.http import HTTPFlow
 from mitmproxy.master import Master
 from mitmproxy.options import Options
+from seleniumbase import SB
+from tabulate import tabulate
 
-from stardust.apps.myfreecams.app_req import AppRequest
-from stardust.apps.myfreecams.app_res import AppResponse
-from stardust.apps.myfreecams.web_browser import launch_sb_for_mfc
+from stardust.apps.myfreecams.db_myfreemcams import DbMfc
+from stardust.apps.myfreecams.helper import MFC_VIDEO_STATUS
 from stardust.utils.applogging import HelioLogger
 from stardust.utils.general import script_delay
 from stardust.utils.timer import AppTimerSync
 
 log = HelioLogger()
+
+# BLOCK_WORDS and BLOCK_EXTENSIONS limit the reponses handled by mitmproxy
+BLOCK_WORDS = [
+    "assets",
+    "favicon",
+    "google",
+    "google-analytics",
+    "mobile",
+    "snap.mfcimg",
+]
+
+BLOCK_EXTENSIONS = [
+    ".gif",
+    ".jpg",
+    ".jpeg",
+    ".js",
+    ".png",
+    ".svg",
+    ".webp",
+]
 
 
 class AppDirs:
@@ -47,6 +72,75 @@ class AppDirs:
         return self.data
 
 
+class AppRequest:
+    def __init__(self):
+        pass
+
+    def request(self, flow: http.HTTPFlow) -> None:
+        del flow.request.headers["accept-encoding"]
+        flow.request.headers["accept-encoding"] = "gzip"
+        url = flow.request.pretty_url
+
+        if url.__contains__("playlist"):
+            log.info(f"Request: {url}")
+
+        block_extension = any(url.endswith(ext) for ext in BLOCK_EXTENSIONS)
+        block_words = any(block in url for block in BLOCK_WORDS)
+
+        if block_extension or block_words:
+            return
+
+        if url.endswith("&debug=cams"):
+            # print(flow)
+            pass
+
+
+class AppResponse:
+    def response(self, flow: http.HTTPFlow) -> None:
+        url = flow.request.pretty_url
+
+        if url.__contains__("playlist"):
+            log.info(f"response: {url}")
+
+        if url.endswith("debug=cams"):
+            handle_streamers_online(flow)
+            return
+
+
+def handle_streamers_online(flow: HTTPFlow):
+    db = DbMfc("myfreecams")
+    if flow.response is None:
+        return
+
+    if (body := flow.response.text) is None:
+        return
+
+    print(body[0])
+    # json.loads(body)["rdata"]
+    # might fail to receive or process data
+    # happened once randomly. Bug could the result
+    # of a different problem elsewhere. Keep watching
+    data = json.loads(body)["rdata"]
+    df = pd.DataFrame((data[1:]))
+
+    # Not sure of simple method to include all data from api (63 columns)
+    # keeping most valuable colums vs all columns
+    df_url = df.iloc[:, :8]
+    url_data: list = df_url.values.tolist()
+
+    # Again just keeping valued data from the 63 the api provides
+    other_data = df.loc[0:, [0, 11, 16, 17, 18, 19, 20, 21, 22]]
+
+    # the dataframe to sql function (tosql) overwrites column heads in table.
+    # converting it to a list eliminates issue.
+    streamer_data: list = other_data.values.tolist()
+
+    db.write_streamer_data(streamer_data)
+    db.write_url_data(url_data)
+
+    return None
+
+
 class MitmServer:
     def __init__(self):
         self.ip_address = None
@@ -76,11 +170,6 @@ class MitmServer:
         thread = Thread(target=self.loop.run_forever, daemon=True)
         thread.start()
 
-    # mitm needs an instance in time to start
-    async def _wait_for_proxyserver(self):
-        while not self._has_proxy_address():
-            await asyncio.sleep(0.009)
-
     def _has_proxy_address(self):
         if not (ipaddress := ctx.master.addons.lookup["proxyserver"].listen_addrs()):
             return None
@@ -93,10 +182,9 @@ class MitmServer:
         addr, port = ipaddress[1]
         self.ip_address = f"{addr}:{port}"
 
-        # Seleniumbase Chrome doesn't support IPv6 Proxy/
+        # Seleniumbase using Chrome browser doesn't support IPv6 Proxy/
         # Review SeleniumBase's code, GitHub: SeleniumBase / seleniumbase / core / proxy_helper.py
-        # Selenium does support IPv6. Leaving the code in
-        # this function just incase we dump seleniumbase.
+        # Selenium supports IPv6. Leaving the code just incase seleniumbase is not a solution.
 
         # addr, port, *_ = ipaddress[0]
         # self.ip_address = f"[{addr}]:{port}"
@@ -105,7 +193,8 @@ class MitmServer:
 
     async def start(self):
         asyncio.run_coroutine_threadsafe(ctx.master.run(), self.loop)
-        # asyncio.run(self._wait_for_proxyserver())
+
+        # mitmproxy needs an instance in time to start
         while not self._has_proxy_address():
             await asyncio.sleep(0.009)
 
@@ -114,18 +203,89 @@ class MitmServer:
         return self.ip_address
 
 
+@AppTimerSync
+def launch_sb_for_mfc(proxy):
+    """
+    Launch seleniumbase on myfreecams.com
+    MyFreeCams api sends a json containing all online
+    streamers. The api auto generates online streamer
+    data. This data return is easier and has more reliable
+    access vs generating a http get request for this specific
+    data. Manually creating the api request is not straight forward.
+    """
+
+    # add these args to view (unhide) the web brower
+    headed = True
+    headless2 = (False,)
+
+    window_position = f"{choice(range(401, 912))},{choice(range(321, 863))}"
+    window_size = f"{choice(range(601, 1011))}, {choice(range(122, 643))}"
+
+    if not headed and headless2:
+        window_position = f"{choice(range(101, 412))},{choice(range(121, 563))}"
+        window_size = f"{choice(range(201, 311))}, {choice(range(222, 343))}"
+
+    with SB(
+        uc=True,
+        locale="en",
+        proxy=proxy,
+        headed=headed,
+        headless2=headless2,
+        window_size=(f"{window_size}"),
+        window_position=window_position,
+    ) as sb:
+        url = "https://www.myfreecams.com"
+        sb.activate_cdp_mode(url)
+
+        # delay for myfreecams api to respond,api seems a bit slow
+        # refactor to probably recieve a site trigger.
+        asyncio.run(asyncio.sleep(2))
+
+
+@AppTimerSync
 def mitm_init():
     init_ = MitmServer()
     launch_sb_for_mfc(init_.proxy_address)
 
 
-@AppTimerSync
+def evaluate_steamers():
+    db = DbMfc("myfreecams")
+    videostate = db.query_count_recent_videostate()
+
+    # Using a list because list are easier to sorting.
+    summary = [(MFC_VIDEO_STATUS.get(key), int(total)) for key, total in videostate]
+
+    # total_streamers might be an inaccurate sum. It assumes there
+    # is not an overlap in status categories.
+    total_streamers = sum(x for _, x in summary)
+    log.info(f"{total_streamers} MFC streamers online")
+
+    head = [
+        "Status",
+        "Streamers",
+    ]
+    print(tabulate(summary, headers=head, tablefmt="pretty", colalign=("left", "left")))
+
+    seek, active = db.query_seek_compare()
+    if len(seek) > 0 and len(active) > 0:
+        online = seek.intersection(active)
+        return online
+
+
 async def get_mfc_online_json():
+    # mitmproxy requires and event loop. It is simplier to
+    # give the proxy it's own event loop in a separate thread.
+    # Allowing for the inital to run forever as a means
+    # to continually query myfreecams for data.
+
     while True:
         thread = Thread(target=mitm_init, daemon=True)
         thread.start()
+        thread.join()
 
-        delay_, time_ = script_delay(609.07, 995.89)
+        evaluate_steamers()
+
+        delay_, time_ = script_delay(309.07, 425.89)
         log.info(f"Next MFC streamer query: {time_}")
         await asyncio.sleep(delay_)
 

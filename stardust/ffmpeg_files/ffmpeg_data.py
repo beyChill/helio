@@ -40,14 +40,14 @@ class FFmpegConfig:
     slug: str
     url_: str
     site_id: AppID = field(init=False)
-    site: str = field(init=False, default="Unknown")
+    site: str = field(init=False)
     file: Path = field(init=False)
     metadata: list = field(init=False)
     ffmpeg_: list = field(init=False)
     return_data: DataFFmpeg = field(init=False)
 
     def __post_init__(self):
-        self.site_id = get_app_id(self.slug)
+        self.site_id = get_app_id(self.slug.lower())
         if self.site_id.name_:
             self.site = self.site_id.name_
         # self.config = get_setting()

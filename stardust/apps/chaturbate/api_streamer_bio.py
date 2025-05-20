@@ -3,7 +3,7 @@ import re
 from datetime import datetime
 
 from stardust.apps.chaturbate.db_chaturbate import DbCb
-from stardust.apps.chaturbate.handleurls import NetActions
+from stardust.apps.chaturbate.handleurls import iNetCb
 from stardust.apps.chaturbate.models import ChatVideoContext, FailVideoContext
 from stardust.utils.applogging import HelioLogger, loglvl
 from stardust.utils.handle_m3u8 import HandleM3u8
@@ -13,7 +13,7 @@ log = HelioLogger()
 processed: list[str] = []
 db = DbCb("chaturbate")
 
-iNet = NetActions()
+iNet = iNetCb()
 
 
 @AppTimer
@@ -52,8 +52,8 @@ async def handle_results(results: list[FailVideoContext | ChatVideoContext]):
 async def get_m3u8(success: set[ChatVideoContext]):
     all_urls = {streamer.hls_source for streamer in success if streamer.hls_source}
 
-    results = await iNet.get_all_m3u8(all_urls)
-    new_m3u8s = {HandleM3u8(data).cb_m3u8() for data in results}
+    # results = await iNet.get_all_m3u8(all_urls)
+    new_m3u8s = {await HandleM3u8(data).cb_m3u8() for data in all_urls}
     return new_m3u8s
 
 
