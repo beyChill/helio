@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS helio (
-    streamer_name   VARCHAR(50) NOT NULL,
+    streamer_name   VARCHAR(50) NOT NULL COLLATE NOCASE,
     slug            VARCHAR(5) NOT NULL,
     last_broadcast  DATETIME DEFAULT NULL,
     data_total      INTEGER DEFAULT NULL,
