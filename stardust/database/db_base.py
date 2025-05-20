@@ -3,12 +3,20 @@ import sqlite3
 from contextlib import contextmanager
 from stardust.config.settings import get_db_setting
 from stardust.utils.applogging import HelioLogger, loglvl
-from stardust.utils.general import get_all_app_names
+from stardust.apps import __apps__ as helio_apps
 
 log = HelioLogger()
 
 DB_SQL_FOLDER = get_db_setting().DB_SQL_FOLDER
 
+def get_db_names():
+    names = set()
+    names.add('helio')
+    for app in dir(helio_apps):
+        if app.startswith("app_"):
+            app_data = getattr(helio_apps, app)
+            names.add(app_data[1])
+    return names
 
 @contextmanager
 def init_connect(file: Path):
@@ -30,16 +38,17 @@ def init_connect(file: Path):
         yield conn
 
 def db_init() -> None:
-    APP_NAMES = get_all_app_names()
-    DB_FILES=[Path(Path.cwd() / f"stardust/database/db/{x}.sqlite3") for x in APP_NAMES]
+    APP_NAMES = get_db_names()
+    DB_FILES=[Path(Path.cwd() / f"stardust/database/db/{name_}.sqlite3") for name_ in APP_NAMES]
 
-    missing_files = [(x.stem, x) for x in DB_FILES if not Path(x).exists()]
+    missing_files = {(path.stem, path) for path in DB_FILES if not Path(path).exists()}
 
     if not missing_files:
-        [optimize_db(file) for file in DB_FILES]
+        {optimize_db(file) for file in DB_FILES}
+        log.info('Databases are ready')
         return None
 
-    [x.parent.mkdir(parents=True, exist_ok=True) for _, x in missing_files]
+    {x.parent.mkdir(parents=True, exist_ok=True) for _, x in missing_files}
 
     try:
         for name_, file in missing_files:
