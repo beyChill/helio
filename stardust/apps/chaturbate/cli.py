@@ -109,8 +109,8 @@ class Chaturbate(CommandSet):
     def _query_streamer_pid(self, name_):
         data = self.db.query_process_id(name_, self.slug)
 
-        if data is not None:
-            log.error(f"Already capturing {name_} [CB]")
+        if data:
+            log.error(f"Already capturing {name_} [{self.slug}]")
             return None
 
         return data

@@ -114,7 +114,7 @@ class HelioCli(Cmd):
         self.prompt = rgb("Helio--> ", "green")
 
     def do_version(self, _) -> None:
-        """Check currency of app with GitHub release"""
+        """Compare app version with GitHub version"""
         asyncio.run(check_helio_github_version())
 
     def _get_app_info(self, app: str):

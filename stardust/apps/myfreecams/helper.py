@@ -37,22 +37,19 @@ def get_name_url(streamer: Lookup):
 
 def make_playlist(session: LookupSession, streamer_id: int):
     server = mfc_server_offset(session.vidserver_id)
-    phase_fix = ""
+
     phase = session.phase
 
-    if phase == "a":
-        phase_fix = "a_"
     pid = str(session.platform_id)
 
     # 8 is mininum number of digits for a url's id
     id = str(streamer_id).zfill(8)
 
-    session_name = "".join([phase_fix, pid, id])
+    session_name = "".join([phase, pid, id])
 
     nc_value = random.random()
 
     url = f"https://edgevideo.myfreecams.com/llhls/NxServer/{server}/ngrp:mfc_{session_name}.f4v_cmaf/playlist.m3u8?nc={nc_value}&v=1.97.23"
-
     return url
 
 

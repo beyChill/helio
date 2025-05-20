@@ -30,6 +30,7 @@ def cmd_stop_process_id(name_: str, slug: str):
 def cmd_stop_all_captures():
     if not (results := db.query_all_db_process_id()):
         return None
+
     try:
         {remove_pids(result) for result in results}
     except Exception as e:
@@ -37,11 +38,8 @@ def cmd_stop_all_captures():
 
 
 def remove_pids(results: map):
-    (
-        name_,
-        slug,
-        process_id,
-    ) = results
+
+    name_, slug, process_id = results
     try:
         os.kill(process_id, SIGTERM)
         log.warning(f"Manually stopping {name_} [{slug}]")

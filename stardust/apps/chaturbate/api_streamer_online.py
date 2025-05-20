@@ -18,15 +18,13 @@ iNet = iNetCb()
 
 @AppTimer
 async def get_online_cb_streamers():
-    db = HelioDB()
-    if not (data := db.query_seek_capture()):
+    db = HelioDB(slug="CB")
+    if not (streamers := db.query_site_streamers()):
         log.warning("Zero Chaturbate streamers to capture")
         return []
 
-    streamers = [name_ for (name_,) in data]
-
     if not (results := await check_online_status(streamers)):
-        log.info(f"0 of {len(data)} Chaurbate streamers online")
+        log.info(f"0 of {len(streamers)} Chaurbate streamers online")
         return []
 
     online = process_results(results)
@@ -41,7 +39,7 @@ async def get_online_cb_streamers():
     return online_data
 
 
-async def check_online_status(streamers: list[str]):
+async def check_online_status(streamers: set[str]):
     data = await iNet.get_all_jpg(streamers)
 
     results = [(response, image) for response, image in data if image]
@@ -73,7 +71,7 @@ async def manage_seek_capture():
         if online_streamers:
             start_capture(online_streamers)
 
-        delay_, time_ = script_delay(209.07, 395.89)
+        delay_, time_ = script_delay(249.07, 395.89)
 
         log.info(f"Seek CB streamers: {time_}")
 

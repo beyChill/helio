@@ -97,12 +97,10 @@ async def manage_seek_capture():
             thread.join()
 
             # 2nd attempt to attain data to build the m3u8 playlist
-            print(seek_capture, capture_streamers)
             m3u8_data = DbMfc("myfreecams").query_m3u8_data(capture_streamers)
 
         playlist = build_m3u8s(m3u8_data)
         m3u8s, streamer_data = await organize_capture_data(playlist)
-        print(streamer_data)
 
         start_capture(streamer_data)
         db.write_capture_url(m3u8s)

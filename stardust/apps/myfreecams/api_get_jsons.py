@@ -90,10 +90,6 @@ class AppRequest:
         if block_extension or block_words:
             return
 
-        if url.endswith("&debug=cams"):
-            # print(flow)
-            pass
-
 
 class AppResponse:
     def response(self, flow: http.HTTPFlow) -> None:
@@ -115,7 +111,6 @@ def handle_streamers_online(flow: HTTPFlow):
     if (body := flow.response.text) is None:
         return
 
-    print(body[0])
     # json.loads(body)["rdata"]
     # might fail to receive or process data
     # happened once randomly. Bug could the result

@@ -75,7 +75,7 @@ class iNetCb:
 
         return CBModel(**await resp.json())
 
-    async def get_all_jpg(self, streamers: list[str]):
+    async def get_all_jpg(self, streamers: set[str]):
         tasks = [
             self.get_jpg(f"https://jpeg.live.mmcdn.com/stream?room={streamer}")
             for streamer in streamers
