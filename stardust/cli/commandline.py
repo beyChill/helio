@@ -5,19 +5,22 @@ import sys
 from cmd2 import (
     Cmd,
     Cmd2ArgumentParser,
-    argparse_custom,
     categorize,
     with_argparser,
-    with_category,
 )
 
 from stardust.apps.camsoda.cli import CamSoda
 from stardust.apps.chaturbate.cli import Chaturbate
 from stardust.apps.myfreecams.cli import MyFreeCams
+from stardust.apps.shared_cmds import cmd_stop_all_captures
 from stardust.apps.stripchat.cli import StripChat
 from stardust.config.chroma import rgb
 from stardust.utils.applogging import HelioLogger
-from stardust.utils.general import check_helio_github_version, get_app_name, get_app_slugs
+from stardust.utils.general import (
+    check_helio_github_version,
+    get_app_name,
+    get_app_slugs,
+)
 
 log = HelioLogger()
 
@@ -32,12 +35,14 @@ def run_async_in_thread(coro):
 
 class HelioCli(Cmd):
     """
-    AppGroup dynamically runs the app's cli.
+    Manage cli to interact with several sites.
     """
+
     intro = log.info("Type help or ? for command infomation.\n")
     app_prompt = ""
     slug = ""
     name_ = ""
+    instance_ = ""
     prompt = rgb("Helio--> ", "green")
 
     def __init__(self, *args, **kwargs):
@@ -50,10 +55,10 @@ class HelioCli(Cmd):
         del Cmd.do_alias
         del Cmd.do_edit
         del Cmd.do_run_script
-        self._camsoda = CamSoda()
-        self._chaturbate = Chaturbate()
-        self._myfreecams = MyFreeCams()
-        self._stripchat = StripChat()
+        self.camsoda = CamSoda()
+        self.chaturbate = Chaturbate()
+        self.myfreecams = MyFreeCams()
+        self.stripchat = StripChat()
 
     load_parser = Cmd2ArgumentParser()
     load_parser.add_argument("app", choices=get_app_slugs())
@@ -65,41 +70,42 @@ class HelioCli(Cmd):
         if self.slug is None:
             self.prompt = rgb("Helio--> ", "green")
 
-    @with_category("Helio Commands")
     @with_argparser(load_parser)
-    def do_app(self, ns: argparse.Namespace):
-        """Access the cli for a given site"""
+    def do_load(self, ns: argparse.Namespace):
+        """Activate the cli for a given site"""
+
+        # automating do_unload
+        if self.instance_:
+            self.do_unload(self.slug)
+
         if not self._get_app_info(ns.app):
             return
 
         self.app_prompt = self.slug
 
-        mod_name = f"_{self.name_}"
-        instance_ = getattr(self, mod_name)
+        self.instance_ = getattr(self, self.name_)
 
         if ns.app == self.slug.lower():
-            self.register_command_set(instance_)
+            self.register_command_set(self.instance_)
 
         try:
-            self.poutput(f"{self.name_} interactions are ready")
+            self.poutput(f"{self.name_} cli is ready")
             self._new_prompt()
 
         except Exception as e:
             log.error(e)
             self.poutput(f"{self.name_} already loaded")
 
-    @with_category("Helio Commands")
     @with_argparser(load_parser)
-    def do_unapp(self, ns: argparse.Namespace):
-        """Unload app from memory, threaded functions will continue to run"""
+    def do_unload(self, ns: argparse.Namespace):
+        """Make the app cli inactive, threaded functions using asyncio.run_forever() will continue to run"""
         if not self._get_app_info(ns.app):
             return
 
-        mod_name = f"_{self.name_}"
-        instance_ = getattr(self, mod_name)
+        self.instance_ = getattr(self, self.name_)
 
         if ns.app == self.slug.lower():
-            self.unregister_command_set(instance_)
+            self.unregister_command_set(self.instance_)
 
         if ns.app != self.app_prompt:
             return None
@@ -124,10 +130,11 @@ class HelioCli(Cmd):
 
     def do_quit(self, arg):
         """Quit Helio gracefully."""
+        cmd_stop_all_captures()
         self.poutput("Shutting down apps")
         return True
 
-    categorize((do_app, do_unapp, do_version, do_quit), "Helio commands")
+    categorize((do_load, do_unload, do_version, do_quit), "Helio commands")
 
 
 def app_cli_main(**kwargs):
