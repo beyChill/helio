@@ -87,7 +87,6 @@ def chk_online_status(streamer: Lookup, name_: str, slug: str):
 
         status = MFC_VIDEO_STATUS.get(streamer.result.user.sessions[-1].vstate, "unknown")
         
-        print("mfc online status:", status)
         if status != "public":
             log.warning(f"{name_} {slug} is {status}")
             return None
