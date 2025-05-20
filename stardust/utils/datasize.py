@@ -2,36 +2,34 @@ import os
 from itertools import groupby
 from operator import itemgetter
 
-from stardust.apps.chaturbate.db_write import write_data_keep, write_data_review
+from stardust.apps.manage_app_db import HelioDB
 from stardust.config.settings import get_setting
 from stardust.utils.general import calc_size
 from stardust.utils.timer import AppTimerSync
 
 
 @AppTimerSync
-def size_storage():
+def find_size_review():
     DIRS = get_setting().DIR_STORAGE_LOCATIONS
     data = [
         (file.name.split(" ")[0], file) for dir in DIRS for file in dir.rglob("*.m*")
     ]
-    results = calculations(data)
-    return results
+    return calculations(data)
 
 
 @AppTimerSync
-def size_keep():
+def find_size_keep():
     DIRS = get_setting().DIR_KEEP_VIDEOS
     data = [
         (file.name.split(" ")[0], file) for dir in DIRS for file in dir.rglob("*.m*")
     ]
-    results = calculations(data)
-    return results
+    return calculations(data)
 
 
 def calculations(data):
     total_size = []
-    results = []
-    streamer = ""
+    results: list[tuple[str, float]] = []
+    streamer: str = ""
     data.sort(key=itemgetter(0))
     grouped = [list(group) for _, group in groupby(data, key=itemgetter(0))]
     for folder in grouped:
@@ -46,10 +44,10 @@ def calculations(data):
 
 
 def get_video_sizes():
-    storage_ = size_storage()
-    keep = size_keep()
-    write_data_review(storage_)
-    write_data_keep(keep)
+    storage_ = find_size_review()
+    keep = find_size_keep()
+    HelioDB().write_data_review(storage_)
+    HelioDB().write_data_keep(keep)
 
 
 if __name__ == "__main__":
