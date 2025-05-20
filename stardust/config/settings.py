@@ -69,12 +69,6 @@ class Settings(BaseSettings):
     DIR_HASH_REF: Path = APP_DIR / "apps" / "myfreecams" / "assets" / "hash"
 
 
-def dir_contactsheet(app_name):
-    contactsheet = Path(APP_DIR / "video" / app_name / "contactsheet")
-    location = Path(f"{env.get('SSD_PATH', contactsheet)}")
-    return location
-
-
 @lru_cache(maxsize=None)
 def get_setting(**kwargs) -> Settings:
     return Settings(**kwargs)
