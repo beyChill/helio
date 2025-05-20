@@ -43,10 +43,10 @@ def remove_pids(results: map):
     try:
         os.kill(process_id, SIGTERM)
         log.warning(f"Manually stopping {name_} [{slug}]")
-        db.write_rm_seek_capture(name_, slug)
+        db.write_rm_process_id(process_id)
         return None
     except OSError as e:
-        db.write_rm_seek_capture(name_, slug)
+        db.write_rm_process_id(process_id)
         if e.errno == 3:
             log.warning(f"Invalid process ID for {name_} [{slug}]. Removed ID")
             return None
