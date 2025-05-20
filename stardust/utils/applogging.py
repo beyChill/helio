@@ -10,10 +10,12 @@ from stardust.config.chroma import rgb
 # from config.settings import get_setting
 from enum import Enum
 
+
 class loglvl(Enum):
     NOTSET = 0
     CREATED = 1
     MOVED = 2
+    OFFLINE = 8
     STOPPED = 9
     DEBUG = 10
     MAXTIME = 12
@@ -29,6 +31,7 @@ _levelToName = {
     loglvl.NOTSET: "NOTSET",
     loglvl.CREATED: "CREATED",
     loglvl.MOVED: "MOVED",
+    loglvl.OFFLINE: "OFFLINE",
     loglvl.STOPPED: "STOPPED",
     loglvl.DEBUG: "DEBUG",
     loglvl.MAXTIME: "MAXTIME",
@@ -44,6 +47,7 @@ _valueToName = {
     loglvl.NOTSET.value: "NOTSET",
     loglvl.CREATED.value: "CREATED",
     loglvl.MOVED.value: "MOVED",
+    loglvl.OFFLINE.value: "OFFLINE",
     loglvl.STOPPED.value: "STOPPED",
     loglvl.DEBUG.value: "DEBUG",
     loglvl.SUCCESS.value: "SUCCESS",
@@ -59,6 +63,7 @@ _msgToLevel = {
     "NOTSET": loglvl.NOTSET,
     "CREATED": loglvl.CREATED,
     "MOVED": loglvl.MOVED,
+    "OFFLINE": loglvl.OFFLINE,
     "STOPPED": loglvl.STOPPED,
     "DEBUG": loglvl.DEBUG,
     "SUCCESS": loglvl.SUCCESS,
@@ -74,11 +79,12 @@ LOG_COLORS = {
     "NOTSET": "",
     "CREATED": "cyan",
     "MOVED": "cyan",
+    "OFFLINE": "rust",
     "STOPPED": "yellow",
     "DEBUG": "orange",
     "SUCCESS": "green",
     "MAXTIME": "teal",
-    "INFO": "white",
+    "INFO": "glaucous",
     "CAPTURING": "green",
     "WARNING": "yellow",
     "ERROR": "red",
