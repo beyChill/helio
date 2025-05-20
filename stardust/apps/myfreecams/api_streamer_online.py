@@ -83,6 +83,7 @@ async def manage_seek_capture():
         capture_streamers = seek_capture.intersection(online_streamers)
 
         if len(capture_streamers) == 0:
+            log.warning("Zero MFC streamers to capture")
             await delay_()
             continue
         # returns streamers having an update within past 6 minutes

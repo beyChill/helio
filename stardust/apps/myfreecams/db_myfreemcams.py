@@ -92,20 +92,16 @@ class DbMfc(HelioDB):
         time = datetime.now().replace(microsecond=0) - timedelta(minutes=3)
         sql = f"""
             SELECT streamer_name
-            FROM {self.table_main}
-            WHERE process_id IS NULL
-            """
-        seek = set(self.execute_query(sql, GetRows.FETCHALL))
-
-        sql2 = f"""
-            SELECT streamer_name
             FROM {self.table_url}
             WHERE updated_at > '{time}'
             and vs = 0
             """
-        online = set(self.execute_query(sql2, GetRows.FETCHALL))
+        data = self.execute_query(sql, GetRows.FETCHALL)
+        online:set=set(data)
 
-        return (seek, online)
+        seek = HelioDB(slug="MFC").query_site_streamers()
+
+        return (online, seek)
 
     def write_url(self, data: tuple):
         return self.write_capture_url(data)

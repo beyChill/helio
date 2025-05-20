@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS streamer_data(
-    streamer_name       VARCHAR(50) NOT NULL,
+    streamer_name       VARCHAR(50) NOT NULL COLLATE NOCASE,
     age                 INTEGER DEFAULT NULL,
     last_broadcast      DATETIME DEFAULT NULL,
     location            VARCHAR(30) DEFAULT NULL,

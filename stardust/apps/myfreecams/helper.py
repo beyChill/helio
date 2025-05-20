@@ -12,10 +12,9 @@ log = HelioLogger()
 REF_IMG_DIR = get_setting().DIR_HASH_REF
 
 
-# Couldn't determine method to get average_hash
+# Couldn't determine a method to get average_hash
 # from a list comprehension. Using __str__()
-# otherwise it returns hash map. Issue absent
-# a for loop
+# has benefits that work.
 HASH_REFS = [
     (imagehash.average_hash(Image.open(path_)).__str__())
     for path_ in REF_IMG_DIR.glob("*.jpg")
@@ -86,13 +85,13 @@ def chk_online_status(streamer: Lookup, name_: str, slug: str):
             log.app(loglvl.OFFLINE, f"{name_} [{slug}]")
             return None
 
-        status = MFC_VIDEO_STATUS.get(
-            streamer.result.user.sessions[-1].vstate, "unknown"
-        )
-
+        status = MFC_VIDEO_STATUS.get(streamer.result.user.sessions[-1].vstate, "unknown")
+        
+        print("mfc online status:", status)
         if status != "public":
             log.warning(f"{name_} {slug} is {status}")
             return None
+        
         return streamer
     except Exception as e:
         log.error(e)

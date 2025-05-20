@@ -18,7 +18,7 @@ class GetRows(StrEnum):
     FETCHALL = auto()
 
 
-class HelioDB:
+class HelioDB():
     def __init__(self, db_name: str = "helio", slug=None):
         self.db_name = db_name
         self.slug = slug
@@ -80,6 +80,16 @@ class HelioDB:
             return tuple_removed
 
         return result
+    
+    def mfc_query_seek(self):
+        sql = f"""
+            SELECT streamer_name
+            FROM {self.db_name}
+            WHERE slug = '{self.slug}'
+            AND process_id IS NULL
+            """
+        seek = set(self.execute_query(sql, GetRows.FETCHALL))
+        return seek
 
     def query_all_db_process_id(self):
         sql = f"""
@@ -117,10 +127,9 @@ class HelioDB:
             AND category IS NULL
             AND process_id IS NULL
             AND slug = '{self.slug}'
-            ORDER BY RANDOM()
             """
         data = self.execute_query(sql, GetRows.FETCHALL)
-        result: set[str] = {x for (x,) in data}
+        result = {x for (x,) in data}
         return result
 
     def query_cap_status(self, name_: str):
@@ -185,6 +194,7 @@ class HelioDB:
 
     @contextmanager
     def connect_write(self):
+
         DB = f"{self.db_Path}/{self.db_name}.sqlite3"
 
         pragma_write = """
@@ -201,16 +211,17 @@ class HelioDB:
 
     # @AppTimerSync
     def execute_write(self, sql: str, args: tuple | list = []):
+
         with self.connect_write() as conn:
             try:
                 if isinstance(args, list):
-                    remove_index = "DROP INDEX IF EXISTS idx_streamer;"
-                    add_index = f"CREATE UNIQUE INDEX IF NOT EXISTS idx_streamer ON {self.db_name} (streamer_name);"
+                    # remove_index = "DROP INDEX IF EXISTS idx_streamer;"
+                    # add_index = f"CREATE UNIQUE INDEX IF NOT EXISTS idx_streamer ON {self.db_name} (streamer_name);"
 
                     conn.execute("BEGIN TRANSACTION")
-                    conn.execute(remove_index)
+                    # conn.execute(remove_index)
                     conn.executemany(sql, args)
-                    conn.execute(add_index)
+                    # conn.execute(add_index)
                     conn.execute("END TRANSACTION")
 
                     conn.executescript("ANALYZE; VACUUM;")
@@ -222,7 +233,8 @@ class HelioDB:
                 msg = f"{Path(__file__).parts[-1]} {inspect.stack()[0][3]}() {e}"
                 log.error(msg)
                 log.error(sql)
-                log.error(f"args: {args}")
+                # log.error(f"args: {args}")
+                log.error(f"{self.slug}")
 
     def write_not200(self, data: list[not200]):
         sql = f"""

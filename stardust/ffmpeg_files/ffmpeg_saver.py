@@ -65,8 +65,10 @@ class CaptureStreamer:
         log.app(loglvl.MAXTIME, f"{self.name_} [{self.slug}]")
 
     def activate(self):
-        if self.db.query_process_id(self.name_, self.slug) is not None:
+        if self.db.query_process_id(self.name_, self.slug):
+            log.warning(f"Already capturing {self.name_} {self.slug}")
             return None
+
         self.process = Popen(
             self.data.args,
             stdin=DEVNULL,
