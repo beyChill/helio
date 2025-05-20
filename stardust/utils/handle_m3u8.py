@@ -25,11 +25,12 @@ class HandleM3u8:
         return self.top_bandwidth
 
     def load(self):
-        data = m3u8.loads(self.text)
-        return data
+        text_ = m3u8.loads(self.text)
+        return text_
 
     def get_top_bandwidth(self):
         if not self.m3u8.is_variant:
+
             log.error("m3u8 playlist is invalid")
             return self.url
 
