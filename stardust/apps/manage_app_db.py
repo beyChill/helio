@@ -87,7 +87,7 @@ class HelioDB:
             FROM {self.db_name}
             WHERE process_id IS NOT NULL
         """
-        return self.execute_query(sql)
+        return self.execute_query(sql,GetRows.FETCHALL)
 
     def query_url(self, name_, slug):
         sql = (
@@ -106,21 +106,8 @@ class HelioDB:
             """,
             (name_, slug),
         )
-        # if not result:
+
         return self.clean_fetchone(sql)
-
-    def query_seek_capture(self):
-        sql = f"""
-            SELECT streamer_name
-            FROM {self.db_name}
-            WHERE block_date IS NULL
-            AND seek_capture IS NOT NULL
-            AND process_id IS NULL
-            ORDER BY RANDOM()
-            """
-        data = self.execute_query(sql, GetRows.FETCHALL)
-
-        return data
 
     def query_site_streamers(self):
         sql = f"""
@@ -132,9 +119,9 @@ class HelioDB:
             AND slug = '{self.slug}'
             ORDER BY RANDOM()
             """
-        result = self.execute_query(sql, GetRows.FETCHALL)
-        data: set[str] = {x for (x,) in result}
-        return data
+        data = self.execute_query(sql, GetRows.FETCHALL)
+        result: set[str] = {x for (x,) in data}
+        return result
 
     def query_cap_status(self, name_: str):
         """Info for determining streamer capture"""
