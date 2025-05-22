@@ -37,9 +37,11 @@ start = "stardust.start:main"
 py-modules = ["stardust"]
 
 [tool.pyright]
+exclude = ['**/_experiments', ".vscode/*.py", "**/site-packages/**/*.py", ".venv"]
 linetoolong = false
-typeCheckingMode = "off"
-ignore = ["*"]
+
+[tool.ruff]
+exclude = ['_experiments']
 
 [tool.ruff.lint]
 # Avoid enforcing line-length violations
