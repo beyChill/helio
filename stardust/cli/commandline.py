@@ -116,7 +116,6 @@ class HelioCli(Cmd):
 
     @with_argparser(set_logs())
     def do_log(self, arg: argparse.Namespace):
-        print(arg.level, arg.value)
         level = arg.level.lower()
         value = ""
 
