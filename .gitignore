@@ -179,7 +179,7 @@ cython_debug/
 
 
 # Experiments
-stardust/aexper/*
+stardust/_experiments/*
 
 # Browser files
 browser*
