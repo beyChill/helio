@@ -16,7 +16,7 @@ def rgb(text: str, col: str | None = None):
         "lime": functools.partial(style, fg=RgbFg(128, 200, 0)),
         "magenta": functools.partial(style, fg=RgbFg(255, 0, 255)),
         "maroon": functools.partial(style, fg=RgbFg(128, 0, 0)),
-        "navy": functools.partial(style, fg=RgbFg(0, 0, 128)),
+        "royal": functools.partial(style, fg=RgbFg(50, 168, 228)),
         "orange": functools.partial(style, fg=RgbFg(255, 165, 0)),
         "purple": functools.partial(style, fg=RgbFg(128, 0, 128)),
         "red": functools.partial(style, fg=RgbFg(255, 0, 0)),
@@ -24,7 +24,7 @@ def rgb(text: str, col: str | None = None):
         "teal": functools.partial(style, fg=RgbFg(0, 128, 128)),
         "black": functools.partial(style, fg=RgbFg(0, 0, 0)),
         "slate_blue": functools.partial(style, fg=RgbFg(115, 124, 161)),
-        "glaucous": functools.partial(style, fg=RgbFg(96, 130, 182)),
+        "glaucous": functools.partial(style, fg=RgbFg(209, 208, 206)),
         "rust": functools.partial(style, fg=RgbFg(183, 65, 14)),
         
     }

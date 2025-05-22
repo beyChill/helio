@@ -9,13 +9,14 @@ from cmd2 import (
     with_argparser,
 )
 
+from stardust.apps.arg_parser import set_logs
 from stardust.apps.camsoda.cli import CamSoda
 from stardust.apps.chaturbate.cli import Chaturbate
 from stardust.apps.myfreecams.cli import MyFreeCams
 from stardust.apps.shared_cmds import cmd_stop_all_captures
 from stardust.apps.stripchat.cli import StripChat
 from stardust.config.chroma import rgb
-from stardust.utils.applogging import HelioLogger
+from stardust.utils.applogging import HelioLogger, set_permission
 from stardust.utils.general import (
     check_helio_github_version,
     get_app_name,
@@ -113,6 +114,26 @@ class HelioCli(Cmd):
         self.poutput("Helio active")
         self.prompt = rgb("Helio--> ", "green")
 
+    @with_argparser(set_logs())
+    def do_log(self, arg: argparse.Namespace):
+        print(arg.level, arg.value)
+        level = arg.level.lower()
+        value = ""
+
+        if arg.value == "on":
+            value = arg.level.upper()
+
+        if arg.value == "off":
+            value = None
+
+        set_permission(level, value)
+
+    def do_quit(self, arg):
+        """Quit Helio gracefully."""
+        cmd_stop_all_captures()
+        self.poutput("Shutting down apps")
+        return True
+
     def do_version(self, _) -> None:
         """Compare app version with GitHub version"""
         asyncio.run(check_helio_github_version())
@@ -128,13 +149,9 @@ class HelioCli(Cmd):
         self.color = color
         return True
 
-    def do_quit(self, arg):
-        """Quit Helio gracefully."""
-        cmd_stop_all_captures()
-        self.poutput("Shutting down apps")
-        return True
-
-    categorize((do_load, do_unload, do_version, do_quit), "Helio commands")
+    categorize(
+        (do_load, do_unload, do_log, do_version, do_quit, do_version), "Helio commands"
+    )
 
 
 def app_cli_main(**kwargs):

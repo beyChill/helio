@@ -6,7 +6,7 @@ h_name = "Streamer's name"
 def get_streamer():
     usage = "get [streamer_name]"
     desc = "Initiate video capture or view stored data"
-    epilog = "capture is the default argument, it can be ommitted."
+    epilog = "Capture is the default argument, it can be ommitted."
     parser = Cmd2ArgumentParser(description=desc, usage=usage, epilog=epilog)
     parser.add_argument("name", nargs="?", help=h_name, default="--capture")
     parser.add_argument("-c", "--capture", action="store_true", help="capture video")
@@ -28,7 +28,7 @@ def block_reason():
 def cap_status():
     usage = "cap data"
     desc = "Display stats for active captures"
-    epilog = "name is the default sort field"
+    epilog = "Name is the default sort field"
     parser = Cmd2ArgumentParser(
         prog="hello", usage=usage, description=desc, epilog=epilog
     )
@@ -44,8 +44,8 @@ def cap_status():
 
 
 def long_inactive():
-    usage = "long [number]"
-    desc = "Places streamer in an inactive status"
+    usage = "long [number of days]"
+    desc = "Lable streamer inactive based on input number of days\n Compares last broadcast with input of number of days"
     parser = Cmd2ArgumentParser(usage=usage, description=desc)
     parser.add_argument(
         "days",
@@ -54,4 +54,26 @@ def long_inactive():
         help="Use one option",
     )
 
+    return parser
+
+
+def set_logs():
+    usage = "log [debug] / log [info] on"
+    desc = "Control visibility of Helio's logging messages"
+    epilog = "Off is the default argument, it can be ommitted."
+    parser = Cmd2ArgumentParser(usage=usage, description=desc,epilog=epilog)
+
+    parser.add_argument(
+        "level",
+        type=str,
+        help='',
+        choices=[
+            "notset", "created", "moved", "timer", "offline",
+            "stopped", "debug", "maxtime", "info", "success",
+            "capturing", "warning", "error", "failure"
+             ] 
+        )
+    
+    parser.add_argument("value", type=str, nargs='?', help="Activate / deactivate (default)", default='off',
+        choices=["on","off"])
     return parser

@@ -1,20 +1,19 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-
+from enum import Enum
+from functools import lru_cache
 from time import strftime
 from typing import Optional
 
-# from chroma import rgb
 from stardust.config.chroma import rgb
-
-# from config.settings import get_setting
-from enum import Enum
+from stardust.config.log_display_setting import connect
 
 
 class loglvl(Enum):
     NOTSET = 0
     CREATED = 1
     MOVED = 2
+    TIMER = 3
     OFFLINE = 8
     STOPPED = 9
     DEBUG = 10
@@ -27,58 +26,11 @@ class loglvl(Enum):
     FAILURE = 51
 
 
-_levelToName = {
-    loglvl.NOTSET: "NOTSET",
-    loglvl.CREATED: "CREATED",
-    loglvl.MOVED: "MOVED",
-    loglvl.OFFLINE: "OFFLINE",
-    loglvl.STOPPED: "STOPPED",
-    loglvl.DEBUG: "DEBUG",
-    loglvl.MAXTIME: "MAXTIME",
-    loglvl.INFO: "INFO",
-    loglvl.SUCCESS: "SUCCESS",
-    loglvl.CAPTURING: "CAPTURING",
-    loglvl.WARNING: "WARNING",
-    loglvl.ERROR: "ERROR",
-    loglvl.FAILURE: "FAILURE",
-}
-
-_valueToName = {
-    loglvl.NOTSET.value: "NOTSET",
-    loglvl.CREATED.value: "CREATED",
-    loglvl.MOVED.value: "MOVED",
-    loglvl.OFFLINE.value: "OFFLINE",
-    loglvl.STOPPED.value: "STOPPED",
-    loglvl.DEBUG.value: "DEBUG",
-    loglvl.SUCCESS.value: "SUCCESS",
-    loglvl.MAXTIME.value: "MAXTIME",
-    loglvl.INFO.value: "INFO",
-    loglvl.CAPTURING.value: "CAPTURING",
-    loglvl.WARNING.value: "WARNING",
-    loglvl.ERROR.value: "ERROR",
-    loglvl.FAILURE.value: "FAILURE",
-}
-
-_msgToLevel = {
-    "NOTSET": loglvl.NOTSET,
-    "CREATED": loglvl.CREATED,
-    "MOVED": loglvl.MOVED,
-    "OFFLINE": loglvl.OFFLINE,
-    "STOPPED": loglvl.STOPPED,
-    "DEBUG": loglvl.DEBUG,
-    "SUCCESS": loglvl.SUCCESS,
-    "MAXTIME": loglvl.MAXTIME,
-    "INFO": loglvl.INFO,
-    "CAPTURING": loglvl.CAPTURING,
-    "WARNING": loglvl.WARNING,
-    "ERROR": loglvl.ERROR,
-    "FAILURE": loglvl.FAILURE,
-}
-
 LOG_COLORS = {
     "NOTSET": "",
     "CREATED": "cyan",
     "MOVED": "cyan",
+    "TIMER": "royal",
     "OFFLINE": "rust",
     "STOPPED": "yellow",
     "DEBUG": "orange",
@@ -119,13 +71,12 @@ class HelioLogger(HelioLoggerBase):
     """
     Custom logger for custom event formating and printing
         - low budget logger not replacement for builtin
-        - NOTSET allows display of all messages in the terminal. All messages will show in terminal
+        - NOTSET - all messages will show in terminal
         - leave level arg blank as shortcut to NOTSET
     """
 
     def __init__(
         self,
-        # log_level: loglvl = loglvl.NOTSET,
         log_db: Optional[str] = None,
         *,
         debug=False,
@@ -133,19 +84,10 @@ class HelioLogger(HelioLoggerBase):
         warning=False,
         error=False,
     ):
-        # self.label: Optional[str] = None
         self.log_level = self._set_level(debug, info, warning, error)
 
         self.log_db = log_db
-
-        # if self.log_db:
-        #     try:
-        #         db_path = get_db_setting().DB_FOLDER
-        #         if not db_path.exists():
-        #             db_path.exists()
-
-        #     except Exception as e:
-        #         print(e)
+        self.perms = get_log_perms()
 
     def _set_level(self, *args):
         custom_level = [name for name, value in locals().items() if value is True]
@@ -161,22 +103,27 @@ class HelioLogger(HelioLoggerBase):
         return loglvl.NOTSET
 
     def _tag(self, tag: str) -> str:
-        "Word appearing in brackets, identifies the message level"
+        "Word appearing in brackets, identifies the log type"
         return rgb(f"[{tag}]:", LOG_COLORS[tag])
 
     def _msg(self, tag, msg: str):
         return rgb(msg, LOG_COLORS[tag])
 
     def _level_name(self, level: loglvl):
-        return _levelToName[level]
+        return level.name
 
     def _level_value(self, level: int):
-        return _valueToName[level]
+        return loglvl(level).name
 
     def _msg_level(self, level: str):
-        return _msgToLevel[level.upper()]
+        return getattr(loglvl, level)
 
     def _log(self, level: int, msg: str):
+        permission = loglvl(level).name
+
+        if permission not in self.perms:
+            return None
+
         if self.log_level.value > level:
             return None
 
@@ -189,8 +136,12 @@ class HelioLogger(HelioLoggerBase):
         )
 
     def app(self, lvl: loglvl, msg: str, **kwargs):
-        lvl = _msgToLevel[lvl.name]
+        lvl = getattr(loglvl, lvl.name)
         self.data_format(lvl, msg)
+
+    def timer(self, msg: str, **kwargs):
+        level = loglvl.TIMER
+        self._log(level.value, self._msg(self._level_name(level), msg), **kwargs)
 
     def debug(self, msg: str, **kwargs):
         level = loglvl.DEBUG
@@ -218,9 +169,40 @@ def test():
     log.app(loglvl.CREATED, "created")
     log.app(loglvl.STOPPED, "stopped")
     log.app(loglvl.MAXTIME, "maxtime")
+    log.timer("timer")
+    log.info("info")
     log.debug("debug")
     log.error("error")
 
 
+@lru_cache(maxsize=None)
+def get_log_perms():
+    with connect() as conn:
+        sql = """
+            SELECT value
+            FROM log_perm
+            WHERE value IS NOT NULL;
+        """
+
+        cursor = conn.cursor()
+        cursor.execute(sql)
+        results = cursor.fetchall()
+        data = [x for (x,) in results]
+        return data
+
+
+@lru_cache(maxsize=None)
+def set_permission(level: str, value: str):
+    with connect() as conn:
+        data = (value, level)
+        sql = """
+            UPDATE log_perm
+            SET value = ?
+            WHERE level_ = ?
+            """
+        conn.execute(sql, data)
+
+
 if __name__ == "__main__":
+    set_permission("timer", None)
     test()
