@@ -40,9 +40,6 @@ py-modules = ["stardust"]
 exclude = ['**/_experiments', ".vscode/*.py", "**/site-packages/**/*.py", ".venv"]
 linetoolong = false
 
-[tool.ruff]
-exclude = ['_experiments']
-
 [tool.ruff.lint]
 # Avoid enforcing line-length violations
 ignore = ["E501"]
