@@ -46,6 +46,10 @@ LOG_COLORS = {
 
 class HelioLoggerBase(ABC):
     @abstractmethod
+    def timer(self, msg: str, **kwargs):
+        pass
+
+    @abstractmethod
     def debug(self, msg: str, **kwargs):
         pass
 
@@ -55,6 +59,10 @@ class HelioLoggerBase(ABC):
 
     @abstractmethod
     def warning(self, msg: str, **kwargs):
+        pass
+
+    @abstractmethod
+    def failure(self, msg: str, **kwargs):
         pass
 
     @abstractmethod
@@ -153,6 +161,10 @@ class HelioLogger(HelioLoggerBase):
 
     def warning(self, msg: str, **kwargs):
         level = loglvl.WARNING
+        self._log(level.value, self._msg(self._level_name(level), msg), **kwargs)
+
+    def failure(self, msg: str, **kwargs):
+        level = loglvl.FAILURE
         self._log(level.value, self._msg(self._level_name(level), msg), **kwargs)
 
     def error(self, msg: str | Exception, **kwargs):
