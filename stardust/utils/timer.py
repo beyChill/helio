@@ -1,6 +1,5 @@
 import functools
 import time
-from time import strftime
 from typing import Callable
 
 from stardust.config.chroma import rgb
@@ -14,6 +13,7 @@ def AppTimer(func: Callable):
 
     @functools.wraps(func)
     async def wrapper_timer(*args, **kwargs):
+        """Calculate the performance time of an a sync function"""
         start_time = time.perf_counter()
         function_name = func.__name__
         module_name = (func.__code__.co_filename).rsplit("/", maxsplit=1)[-1]
@@ -23,16 +23,14 @@ def AppTimer(func: Callable):
 
         elapsed_time = time.perf_counter() - start_time
         function = f"{rgb(function_name, 'blue')}{rgb('()', 'yellow')}"
-        print(
-            f"{strftime('%H:%M:%S')} {rgb(tag, 'green')}: {function} completed in {elapsed_time:0.7f}s"
-        )
+        log.timer(f"{rgb(tag, 'green')}: {function} completed in {elapsed_time:0.7f}s")
         return value
 
     return wrapper_timer
 
 
 def AppTimerSync(func: Callable):
-    """Provide the performance time of async function"""
+    """Calculate the performance time of a sync function"""
 
     @functools.wraps(func)
     def wrapper_timer(*args, **kwargs):
@@ -45,9 +43,7 @@ def AppTimerSync(func: Callable):
 
         elapsed_time = time.perf_counter() - start_time
         function = f"{rgb(function_name, 'blue')}{rgb('()', 'yellow')}"
-        print(
-            f"{strftime('%H:%M:%S')} {rgb(tag, 'green')}: {function} completed in {elapsed_time:0.7f}s"
-        )
+        log.timer(f"{rgb(tag, 'green')}: {function} completed in {elapsed_time:0.7f}s")
         return value
 
     return wrapper_timer
