@@ -37,6 +37,7 @@ start = "stardust.start:main"
 py-modules = ["stardust"]
 
 [tool.pyright]
+linetoolong = false
 typeCheckingMode = "off"
 ignore = ["*"]
 
