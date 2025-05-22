@@ -32,8 +32,10 @@ async def get_online_cb_streamers():
 
     urls_ = {url["url"] for url in urls}
 
-    streamer_url = [await HandleM3u8(url).cb_m3u8() for url in urls_]
+    all_url = {await HandleM3u8(url).cb_m3u8() for url in urls_ }
 
+    streamer_url = {x for x in all_url if x is not None}
+    
     online_data = {(name_, "cb", url) for url, name_, *_ in streamer_url}
 
     return online_data

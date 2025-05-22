@@ -61,7 +61,9 @@ class Chaturbate(CommandSet):
             log.warning(f"{name_} is {json_[-1]['room_status']}")
             return None
 
-        new_m3u8 = asyncio.run(HandleM3u8(url_).cb_m3u8())
+        if (new_m3u8 := asyncio.run(HandleM3u8(url_).cb_m3u8())) is None:
+            log.error(f"There is a proble with the m3u8 for {name_} {self.slug}")
+            return
 
         self.db.write_capture_url((new_m3u8))
 

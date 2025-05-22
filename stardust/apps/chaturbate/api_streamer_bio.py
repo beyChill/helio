@@ -39,7 +39,9 @@ async def handle_results(results: list[FailVideoContext | ChatVideoContext]):
     profile_data = process_json(success)
     db.write_api_data(profile_data)
     streamers_online = await get_m3u8(success)
-    streamers = list(streamers_online)
+    all_streamers = list(streamers_online)
+
+    streamers = [x for x in all_streamers if x is not None]
 
     db.write_capture_url(streamers)
 

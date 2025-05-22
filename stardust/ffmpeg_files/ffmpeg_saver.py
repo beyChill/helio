@@ -171,7 +171,9 @@ def get_restart_url(name_, slug):
             return None
 
         url = results[0]["url"]
-        data = asyncio.run(HandleM3u8(url).cb_m3u8())
+        if (data := asyncio.run(HandleM3u8(url).cb_m3u8())) is None:
+            return None
+        
         url, *_ = data
         return url
 
@@ -188,7 +190,8 @@ def get_restart_url(name_, slug):
 
         playlist_url = make_playlist(session, streamer_id)
 
-        url_m3u8 = asyncio.run(HandleM3u8(playlist_url).mfc_m3u8())
+        if (url_m3u8 := asyncio.run(HandleM3u8(playlist_url).mfc_m3u8())) is None:
+            return None
 
         HelioDB().write_capture_url((url_m3u8, name_, slug))
 

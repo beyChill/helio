@@ -64,7 +64,8 @@ class MyFreeCams(CommandSet):
 
         playlist_url = make_playlist(session, streamer_id)
 
-        m3u8 = asyncio.run(HandleM3u8(playlist_url).mfc_m3u8())
+        if (m3u8 := asyncio.run(HandleM3u8(playlist_url).mfc_m3u8())) is None:
+            return None
 
         self.db.write_capture_url((m3u8, name_, self.slug))
 
