@@ -35,3 +35,11 @@ start = "stardust.start:main"
 
 [tool.setuptools]
 py-modules = ["stardust"]
+
+[tool.pyright]
+typeCheckingMode = "off"
+ignore = ["*"]
+
+[tool.ruff.lint]
+# Avoid enforcing line-length violations
+ignore = ["E501"]
