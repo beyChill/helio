@@ -17,6 +17,9 @@ class HandleM3u8:
 
     async def get_playlist(self):
         resp: Response = await self.client.get(self.url)
+        if resp.status!=200:
+            log.failure(f"HandleM3u8 {self.url}")
+            return
         self.text = await resp.text()
 
     def get_m3u8(self):
@@ -30,8 +33,7 @@ class HandleM3u8:
 
     def get_top_bandwidth(self):
         if not self.m3u8.is_variant:
-
-            log.error("m3u8 playlist is invalid")
+            log.error("Encountered a problem with the m3u8")
             return self.url
 
         top_bw = max(
@@ -47,14 +49,16 @@ class HandleM3u8:
         return top_bw.uri
 
     async def cb_m3u8(self):
-        await self.get_playlist()
+        if await self.get_playlist() is None:
+            return 
         bw = self.get_m3u8()
         new_m3u8: str = self.url.replace("playlist.m3u8", str(bw))
         streamer_name: str = new_m3u8.rsplit("-sd-")[0].split("amlst:")[1]
         return (new_m3u8, streamer_name, str("CB"))
 
     async def mfc_m3u8(self):
-        await self.get_playlist()
+        if await self.get_playlist() is None:
+            return
         bw = self.get_m3u8()
         split_m3u8 = self.url.split("/").pop()
         new_url = self.url.replace(split_m3u8, str(bw))
