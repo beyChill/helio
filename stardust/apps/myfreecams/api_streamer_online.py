@@ -56,6 +56,7 @@ def build_m3u8s(data):
 
 
 async def organize_capture_data(playlist):
+    # just changing the sequence for function args
     m3u8 = []
     streamer_data = []
     for name_, url in playlist:
@@ -72,39 +73,49 @@ async def delay_():
     await asyncio.sleep(delay_)
 
 
-async def manage_seek_capture():
-    while True:
-        if not (seek_capture := db.query_site_streamers()):
-            log.warning("Zero MFC streamers to capture")
-            await delay_()
-            continue
+async def get_online_mfc_streamers():
+    if not (seek_capture := db.query_site_streamers()):
+        log.warning("Zero MFC streamers to capture")
+        return None
 
-        online_streamers = await get_online_streamers()
-        capture_streamers = seek_capture.intersection(online_streamers)
+    online_streamers = await get_online_streamers()
+    capture_streamers = seek_capture.intersection(online_streamers)
 
-        if len(capture_streamers) == 0:
-            log.warning("Zero MFC streamers to capture")
-            await delay_()
-            continue
-        # returns streamers having an update within past 6 minutes
+    if len(capture_streamers) == 0:
+        log.info(f"0 of {len(seek_capture)} MyFreeCams streamers online")
+        return None
+
+    # returns streamers having an update within past 6 minutes
+    m3u8_data = DbMfc("myfreecams").query_m3u8_data(capture_streamers)
+
+    # difference means the data in the table is probably outdated
+    if len(capture_streamers) != len(m3u8_data):
+        # Update database with recent data to generate m3u8s for streamers
+        # mitmproxy needs a thread, it will start a asyncio loop
+        thread = Thread(target=mitm_init, daemon=True)
+        thread.start()
+        thread.join()
+
+        # 2nd attempt to attain data to build the m3u8 playlist
         m3u8_data = DbMfc("myfreecams").query_m3u8_data(capture_streamers)
 
-        # difference means the data in the table is probably outdated
-        if len(capture_streamers) != len(m3u8_data):
-            # Update database with recent data for streamers
-            # mitmproxy need
-            thread = Thread(target=mitm_init, daemon=True)
-            thread.start()
-            thread.join()
+    if not m3u8_data:
+        log.info("Unable to acquire any MFC m3u8 data")
+        return None
 
-            # 2nd attempt to attain data to build the m3u8 playlist
-            m3u8_data = DbMfc("myfreecams").query_m3u8_data(capture_streamers)
+    playlist = build_m3u8s(m3u8_data)
+    m3u8s, streamer_data = await organize_capture_data(playlist)
+    db.write_capture_url(m3u8s)
 
-        playlist = build_m3u8s(m3u8_data)
-        m3u8s, streamer_data = await organize_capture_data(playlist)
+    return streamer_data
 
-        start_capture(streamer_data)
-        db.write_capture_url(m3u8s)
+
+async def manage_seek_capture():
+    while True:
+        online_streamers = await get_online_mfc_streamers()
+
+        if online_streamers:
+            start_capture(online_streamers)
 
         await delay_()
 
