@@ -132,8 +132,8 @@ def filter_not200(data):
             continue
 
         filtered_data.append(x)
-
-    db.write_not200(isnot200)
+    data = [(x.name_,x.site,x.code_,x.reason) for x in isnot200]
+    db.write_not200(data)
     return filtered_data
 
 def build_url_data(data: list[Lookup]):
