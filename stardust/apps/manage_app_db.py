@@ -5,7 +5,6 @@ from datetime import date, datetime, timedelta
 from enum import StrEnum, auto
 from pathlib import Path
 
-from stardust.apps.models_app import not200
 from stardust.utils.applogging import HelioLogger
 
 BASE_DIR = Path.cwd()
@@ -18,7 +17,7 @@ class GetRows(StrEnum):
     FETCHALL = auto()
 
 
-class HelioDB():
+class HelioDB:
     def __init__(self, db_name: str = "helio", slug=None):
         self.db_name = db_name
         self.slug = slug
@@ -80,7 +79,7 @@ class HelioDB():
             return tuple_removed
 
         return result
-    
+
     def mfc_query_seek(self):
         sql = f"""
             SELECT streamer_name
@@ -97,7 +96,7 @@ class HelioDB():
             FROM {self.db_name}
             WHERE process_id IS NOT NULL
         """
-        return self.execute_query(sql,GetRows.FETCHALL)
+        return self.execute_query(sql, GetRows.FETCHALL)
 
     def query_url(self, name_, slug):
         sql = (
@@ -194,7 +193,6 @@ class HelioDB():
 
     @contextmanager
     def connect_write(self):
-
         DB = f"{self.db_Path}/{self.db_name}.sqlite3"
 
         pragma_write = """
@@ -211,7 +209,6 @@ class HelioDB():
 
     # @AppTimerSync
     def execute_write(self, sql: str, args: tuple | list = []):
-
         with self.connect_write() as conn:
             try:
                 if isinstance(args, list):
