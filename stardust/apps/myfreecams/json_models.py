@@ -251,3 +251,27 @@ class BuildUrl(BaseModel):
     phase:str
     pid:int
     uid_:int
+
+class UserApi(BaseModel):
+    id: int
+    username: str
+    access_level: int
+    active: int
+    avatar: str
+    cam_score: float
+    camserv: Any
+    chat_color: str
+    chat_font: int
+    chat_opts: int
+    hide_cam_score: int
+    last_login: str
+    missmfc: Any
+    # profile: Profile
+    rank: Any
+    sid: Any
+    social: Any
+    user_id: int
+    vs: int
+    # attributes: List[Attribute]
+    # tags: List[str]
+    # share: Share
