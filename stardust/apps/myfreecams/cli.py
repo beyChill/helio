@@ -14,6 +14,7 @@ from stardust.apps.arg_parser import (
     cap_status,
     get_streamer,
     long_inactive,
+    stop_streamer,
 )
 from stardust.utils.applogging import HelioLogger
 from stardust.utils.general import chk_streamer_name
@@ -74,7 +75,7 @@ class MyFreeCams(CommandSet):
         if not start_capture([streamer_data]):
             log.error(f"Capture for {name_} failed")
 
-    @with_argparser(get_streamer())
+    @with_argparser(stop_streamer())
     def do_stop(self, arg: Namespace) -> None:
         """
         example:
