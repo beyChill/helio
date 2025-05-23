@@ -89,10 +89,10 @@ class CaptureStreamer:
         today_ = datetime.now().replace(microsecond=0)
         self.db.write_process_id((self.pid, today_, self.name_, self.slug))
 
-        thread = Thread(target=self.status_subprocess, daemon=True)
+        thread = Thread(target=self.subprocess_status, daemon=True)
         thread.start()
 
-    def status_subprocess(self):
+    def subprocess_status(self):
         log.app(loglvl.CAPTURING, f"{self.name_} [{self.slug}]")
         while True:
             if self.process.poll() is not None:
@@ -118,6 +118,7 @@ class CaptureStreamer:
             return False
 
         output = self.process.stdout.readline()
+
         if "out_time_ms" in (line := output.strip()):
             _, seconds_ = line.split("=")
             time_value = int(seconds_) / 1e6
@@ -133,13 +134,9 @@ class CaptureStreamer:
 
         calc_video_size(self.name_, self.data.file_, self.slug)
 
-        if not (cap_status := self.db.query_cap_status(self.name_)):
-            self.db.write_rm_process_id(self.pid)
-            return None
+        cap_status, block = self.db.query_cap_status(self.name_)
 
-        seek_capture, block = cap_status
-
-        if not seek_capture or block:
+        if not cap_status or block:
             self.db.write_rm_process_id(self.pid)
             return None
 
@@ -151,10 +148,10 @@ class CaptureStreamer:
             self.db.write_rm_process_id(self.pid)
             return None
 
-        self.db.write_rm_process_id(self.pid)
 
         data = FFmpegConfig(self.name_, self.slug, self.restart_url).return_data
 
+        self.db.write_rm_process_id(self.pid)
         CaptureStreamer(data)
 
 
