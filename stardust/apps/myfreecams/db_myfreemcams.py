@@ -10,11 +10,23 @@ class DbMfc(HelioDB):
     slug = "MFC"
 
     def query_test_names(self):
+        time = datetime.now().replace(microsecond=0) - timedelta(minutes=6)
         sql = f"""
-            SELECT streamer_name
-            FROM {self.table_streamer}
+            SELECT streamer_name, camserv, phase, pid, uid_
+            FROM {self.table_url}
+            WHERE updated_at > '{time}' 
+            AND vs = 0
             ORDER BY RANDOM()
-            LIMIT 100
+            LIMIT 40
+            """
+        return self.execute_query(sql, GetRows.FETCHALL)
+    
+    def query_test_uid(self):
+        sql = f"""
+            SELECT streamer_name,uid_
+            FROM {self.table_url}
+            ORDER BY RANDOM()
+            LIMIT 50
             """
         return self.execute_query(sql, GetRows.FETCHALL)
 
@@ -23,6 +35,7 @@ class DbMfc(HelioDB):
         name_ = tuple(streamers)
 
         arg = f" IN {name_}"
+
         if len(streamers) < 2:
             # Easier to proceed with a list
             streamers_list = list(streamers)
@@ -32,6 +45,7 @@ class DbMfc(HelioDB):
             SELECT streamer_name, camserv, phase, pid, uid_
             FROM {self.table_url}
             WHERE streamer_name {arg}
+            AND vs = 0
             AND updated_at > '{time}' 
             """
 
