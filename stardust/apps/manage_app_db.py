@@ -138,7 +138,7 @@ class HelioDB():
             f"SELECT seek_capture, block_date FROM {self.db_name} WHERE streamer_name = ?",
             (name_,),
         )
-        return self.clean_fetchone(sql)
+        return self.execute_query(sql)
 
     def query_active_capture(self, value):
         sql = f"""
@@ -236,7 +236,7 @@ class HelioDB():
                 # log.error(f"args: {args}")
                 log.error(f"{self.slug}")
 
-    def write_not200(self, data: list[not200]):
+    def write_not200(self, data: list[tuple]):
         sql = f"""
             INSERT INTO {self.db_name} (streamer_name, slug, http_code, http_text)
             VALUES (?, ?, ?, ?)
