@@ -41,7 +41,8 @@ class iNetMfc:
     async def get_user(self, name_: str):
         """This endpoint is less likely to return a rate limit with synchronous call
 
-        Run it inside a loop. MFC will burst resond to 5 call then slow response."""
+        Run it inside a loop. First 5 or 6 responses are immediate. The remainder
+        are ~0.5 seconds or less for each remaining individual request."""
         url = f"https://api-edge.myfreecams.com/usernameLookup/{name_}"
 
         resp: Response = await self.client.get(url)
