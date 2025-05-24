@@ -123,7 +123,7 @@ def handle_streamers_online(flow: HTTPFlow):
     df_url = df.iloc[:, :8]
     url_data: list = df_url.values.tolist()
 
-    # Again just keeping valued data from the 63 the api provides
+    # Again just keeping valued data from the 63 items the api provides
     other_data = df.loc[0:, [0, 11, 16, 17, 18, 19, 20, 21, 22]]
 
     # the dataframe to sql function (tosql) overwrites column heads in table.
@@ -243,30 +243,6 @@ def mitm_init():
     launch_sb_for_mfc(init_.proxy_address)
 
 
-def evaluate_steamers():
-    db = DbMfc("myfreecams")
-    videostate = db.query_count_recent_videostate()
-
-    # Using a list because list are easier to sorting.
-    summary = [(MFC_VIDEO_STATUS.get(key), int(total)) for key, total in videostate]
-
-    # total_streamers might be an inaccurate sum. It assumes there
-    # is not an overlap in status categories.
-    total_streamers = sum(x for _, x in summary)
-    log.info(f"{total_streamers} MFC streamers online")
-
-    head = [
-        "Status",
-        "Streamers",
-    ]
-    print(tabulate(summary, headers=head, tablefmt="pretty", colalign=("left", "left")))
-
-    seek, active = db.query_seek_compare()
-    if len(seek) > 0 and len(active) > 0:
-        online = seek.intersection(active)
-        return online
-
-
 async def get_mfc_online_json():
     # mitmproxy requires and event loop. It is simplier to
     # give the proxy it's own event loop in a separate thread.
@@ -277,8 +253,6 @@ async def get_mfc_online_json():
         thread = Thread(target=mitm_init, daemon=True)
         thread.start()
         thread.join()
-
-        evaluate_steamers()
 
         delay_, time_ = script_delay(309.07, 425.89)
         log.info(f"Next MFC streamer query: {time_}")
@@ -292,7 +266,7 @@ def exception_handler(loop, context) -> None:
 
 def loop_mfc_all_online():
     loop = asyncio.new_event_loop()
-    loop.set_exception_handler(exception_handler)
+    # loop.set_exception_handler(exception_handler)
     loop.create_task(get_mfc_online_json())
     loop.run_forever()
 
