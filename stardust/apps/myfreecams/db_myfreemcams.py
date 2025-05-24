@@ -85,6 +85,19 @@ class DbMfc(HelioDB):
 
         data: list[tuple[int, str]] = self.execute_query(sql, GetRows.FETCHALL)
         return data
+    
+    def query_total_recent_videostate(self):
+        time = datetime.now().replace(microsecond=0) - timedelta(minutes=1)
+        sql = f"""
+            SELECT vs, COUNT(vs)
+            FROM {self.table_url}
+            WHERE updated_at > '{time}'
+            """
+
+        data = self.execute_query(sql, GetRows.FETCHALL)
+        return data
+
+
 
     def query_for_img(self):
         """Hard limit of 60 to mimic mfc's cap for img push to clients.

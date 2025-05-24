@@ -3,7 +3,9 @@ from pathlib import Path
 
 import imagehash
 from PIL import Image
+from tabulate import tabulate
 
+from stardust.apps.myfreecams.db_myfreemcams import DbMfc
 from stardust.apps.myfreecams.json_models import Lookup, LookupSession
 from stardust.config.settings import get_setting
 from stardust.utils.applogging import HelioLogger, loglvl
@@ -95,3 +97,17 @@ def chk_online_status(streamer: Lookup, name_: str, slug: str):
     except Exception as e:
         log.error(e)
         return None
+
+
+def video_state_table(summary):
+    db = DbMfc("myfreecams")
+    videostate = db.query_count_recent_videostate()
+
+    # Using a list because list are easier to sorting.
+    summary = [(MFC_VIDEO_STATUS.get(key), int(total)) for key, total in videostate]
+    head = [
+        "Status",
+        "Streamers",
+    ]
+    print(tabulate(summary, headers=head, tablefmt="pretty", colalign=("left", "left")))
+
