@@ -20,7 +20,7 @@ class HandleM3u8:
     async def get_playlist(self):
         resp: Response = await self.client.get(self.url)
 
-        if resp.status == 403:
+        if resp.status == 403 or resp.status == 404:
             return
 
         if resp.status != 200:
