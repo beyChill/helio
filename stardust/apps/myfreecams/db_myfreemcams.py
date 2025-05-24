@@ -174,7 +174,7 @@ class DbMfc(HelioDB):
                 lv,
                 camserv,
                 phase )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (LOWER(?), ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT (streamer_name)
             DO UPDATE SET
                 sid_ = excluded.sid_,
