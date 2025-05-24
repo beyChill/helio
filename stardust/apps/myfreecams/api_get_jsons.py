@@ -10,10 +10,8 @@ from mitmproxy.http import HTTPFlow
 from mitmproxy.master import Master
 from mitmproxy.options import Options
 from seleniumbase import SB
-from tabulate import tabulate
 
 from stardust.apps.myfreecams.db_myfreemcams import DbMfc
-from stardust.apps.myfreecams.helper import MFC_VIDEO_STATUS
 from stardust.utils.applogging import HelioLogger
 from stardust.utils.general import script_delay
 from stardust.utils.timer import AppTimerSync
@@ -111,11 +109,9 @@ def handle_streamers_online(flow: HTTPFlow):
     if (body := flow.response.text) is None:
         return
 
-    # json.loads(body)["rdata"]
-    # might fail to receive or process data
-    # happened once randomly. Bug could the result
-    # of a different problem elsewhere. Keep watching
-    data = json.loads(body)["rdata"]
+    json_ = json.loads(body)
+    log.info(f"{json_['count']} MFC streamers online")
+    data = json_["rdata"]
     df = pd.DataFrame((data[1:]))
 
     # Not sure of simple method to include all data from api (63 columns)
