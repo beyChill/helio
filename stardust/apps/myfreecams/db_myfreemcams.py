@@ -148,10 +148,10 @@ class DbMfc(HelioDB):
                 country,
                 rank_,
                 rc )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (LOWER(?), DATETIME(?, 'unixepoch'), ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT (streamer_name)
             DO UPDATE SET
-                creation =DATETIME(excluded.creation, 'unixepoch') ,
+                creation =excluded.creation,
                 is_new = excluded.is_new,
                 missmfc = excluded.missmfc,
                 camscore = excluded.camscore,

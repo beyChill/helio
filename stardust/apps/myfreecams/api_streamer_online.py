@@ -78,7 +78,11 @@ async def get_online_mfc_streamers():
         log.warning("Zero MFC streamers to capture")
         return None
 
-    online_streamers = await get_online_streamers()
+    streamers = await get_online_streamers()
+
+    # lowercase names makes comparison easier. Database also has lower case conversion
+    online_streamers = {x.lower() for x in streamers }
+
     capture_streamers = seek_capture.intersection(online_streamers)
 
     if len(capture_streamers) == 0:
