@@ -96,7 +96,7 @@ class AppResponse:
         if url.__contains__("playlist"):
             log.info(f"response: {url}")
 
-        if url.endswith("debug=cams"):
+        if url.endswith("debug=cams"): 
             handle_streamers_online(flow)
             return
 
