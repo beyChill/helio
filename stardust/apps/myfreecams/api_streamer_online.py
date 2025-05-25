@@ -69,7 +69,7 @@ async def organize_capture_data(playlist):
 
 async def delay_():
     delay_, time_ = script_delay(300.07, 366.89)
-    log.info(f"Next MFC streamer query: {time_}")
+    log.query(f"MFC streamers @: {time_}")
     await asyncio.sleep(delay_)
 
 
@@ -86,7 +86,7 @@ async def get_online_mfc_streamers():
     capture_streamers = seek_capture.intersection(online_streamers)
 
     if len(capture_streamers) == 0:
-        log.info(f"0 of {len(seek_capture)} MyFreeCams streamers online")
+        log.query(f"0 of {len(seek_capture)} MyFreeCams streamers online")
         return None
 
     # returns streamers having an update within past 6 minutes

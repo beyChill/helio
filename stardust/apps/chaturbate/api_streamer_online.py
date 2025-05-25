@@ -24,7 +24,7 @@ async def get_online_cb_streamers():
         return []
 
     if not (results := await check_online_status(streamers)):
-        log.info(f"0 of {len(streamers)} Chaurbate streamers online")
+        log.query(f"0 of {len(streamers)} Chaurbate streamers online")
         return []
 
     online = process_results(results)
@@ -75,7 +75,7 @@ async def manage_seek_capture():
 
         delay_, time_ = script_delay(249.07, 395.89)
 
-        log.info(f"Seek CB streamers: {time_}")
+        log.query(f"CB streamers for capture @: {time_}")
 
         await asyncio.sleep(delay_)
 

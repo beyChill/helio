@@ -110,7 +110,7 @@ def handle_streamers_online(flow: HTTPFlow):
         return
 
     json_ = json.loads(body)
-    log.info(f"{json_['count']} MFC streamers online")
+    log.query(f"{json_['count']} MFC streamers online")
     data = json_["rdata"]
     df = pd.DataFrame((data[1:]))
 
@@ -251,7 +251,7 @@ async def get_mfc_online_json():
         thread.join()
 
         delay_, time_ = script_delay(309.07, 425.89)
-        log.info(f"Next MFC streamer query: {time_}")
+        log.query(f"MFC streamers @: {time_}")
         await asyncio.sleep(delay_)
 
 
