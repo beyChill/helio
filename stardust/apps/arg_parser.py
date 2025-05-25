@@ -71,6 +71,7 @@ def set_logs():
             "notset",
             "created",
             "moved",
+            "query",
             "timer",
             "offline",
             "stopped",
