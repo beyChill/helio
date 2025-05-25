@@ -8,6 +8,7 @@ from cmd2 import RgbFg, style
 def rgb(text: str, col: str | None = None):
     color: Dict[str, Callable] = {
         "white": functools.partial(style, fg=RgbFg(175, 175, 175)),
+        "banana": functools.partial(style, fg=RgbFg(255, 225, 53)),
         "yellow": functools.partial(style, fg=RgbFg(215, 215, 100)),
         "blue": functools.partial(style, fg=RgbFg(0, 90, 255)),
         "cyan": functools.partial(style, fg=RgbFg(0, 255, 255)),
@@ -26,7 +27,6 @@ def rgb(text: str, col: str | None = None):
         "slate_blue": functools.partial(style, fg=RgbFg(115, 124, 161)),
         "glaucous": functools.partial(style, fg=RgbFg(209, 208, 206)),
         "rust": functools.partial(style, fg=RgbFg(183, 65, 14)),
-        
     }
 
     if not col:

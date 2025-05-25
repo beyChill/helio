@@ -18,6 +18,7 @@ class loglvl(Enum):
     OFFLINE = 8
     STOPPED = 9
     DEBUG = 10
+    QUERY = 11
     MAXTIME = 12
     INFO = 20
     SUCCESS = 30
@@ -35,9 +36,10 @@ LOG_COLORS = {
     "OFFLINE": "rust",
     "STOPPED": "yellow",
     "DEBUG": "orange",
-    "SUCCESS": "green",
+    "QUERY": "banana",
     "MAXTIME": "teal",
     "INFO": "glaucous",
+    "SUCCESS": "green",
     "CAPTURING": "green",
     "WARNING": "yellow",
     "ERROR": "red",
@@ -46,6 +48,10 @@ LOG_COLORS = {
 
 
 class HelioLoggerBase(ABC):
+    @abstractmethod
+    def query(self, msg: str, **kwargs):
+        pass
+
     @abstractmethod
     def timer(self, msg: str, **kwargs):
         pass
@@ -153,6 +159,10 @@ class HelioLogger(HelioLoggerBase):
         level = loglvl.TIMER
         self._log(level.value, self._msg(self._level_name(level), msg), **kwargs)
 
+    def query(self, msg: str, **kwargs):
+        level = loglvl.QUERY
+        self._log(level.value, self._msg(self._level_name(level), msg), **kwargs)
+
     def debug(self, msg: str, **kwargs):
         level = loglvl.DEBUG
         self._log(level.value, self._msg(self._level_name(level), msg), **kwargs)
@@ -183,6 +193,7 @@ def test():
     log.app(loglvl.CREATED, "created")
     log.app(loglvl.STOPPED, "stopped")
     log.app(loglvl.MAXTIME, "maxtime")
+    log.query("query")
     log.timer("timer")
     log.info("info")
     log.debug("debug")

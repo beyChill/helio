@@ -41,6 +41,7 @@ def db_init():
                 ("offline", NULL),
                 ("stopped", NULL),
                 ("debug", NULL),
+                ("query", "QUERY"),
                 ("maxtime", NULL),
                 ("info", "INFO"),
                 ("success", NULL),
