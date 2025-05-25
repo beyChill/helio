@@ -23,7 +23,7 @@ def AppTimer(func: Callable):
 
         elapsed_time = time.perf_counter() - start_time
         function = f"{rgb(function_name, 'blue')}{rgb('()', 'yellow')}"
-        log.timer(f"{rgb(tag, 'green')}: {function} completed in {elapsed_time:0.7f}s")
+        log.timer(f"{rgb(tag, 'blue')}: {function} completed in {elapsed_time:0.7f}s")
         return value
 
     return wrapper_timer
@@ -43,7 +43,7 @@ def AppTimerSync(func: Callable):
 
         elapsed_time = time.perf_counter() - start_time
         function = f"{rgb(function_name, 'blue')}{rgb('()', 'yellow')}"
-        log.timer(f"{rgb(tag, 'green')}: {function} completed in {elapsed_time:0.7f}s")
+        log.timer(f"{rgb(tag, 'blue')}: {function} completed in {elapsed_time:0.7f}s")
         return value
 
     return wrapper_timer
