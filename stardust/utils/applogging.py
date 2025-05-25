@@ -187,7 +187,7 @@ def test():
     log.error("error")
 
 
-@lru_cache(maxsize=None)
+# @lru_cache(maxsize=None)
 def get_log_perms():
     with connect() as conn:
         sql = """
@@ -203,7 +203,7 @@ def get_log_perms():
         return data
 
 
-@lru_cache(maxsize=None)
+# @lru_cache(maxsize=None)
 def set_permission(level: str, value: str):
     with connect() as conn:
         data = (value, level)
