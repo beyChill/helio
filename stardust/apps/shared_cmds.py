@@ -42,7 +42,7 @@ def remove_pids(results:tuple):
     name_, slug, process_id = results
     try:
         os.kill(process_id, SIGTERM)
-        log.warning(f"Manually stopping {name_} [{slug}]")
+        log.app(loglvl.STOPPED,f"{name_} [{slug}]")
         db.write_rm_process_id(process_id)
         return None
     except OSError as e:
