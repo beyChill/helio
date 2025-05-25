@@ -20,7 +20,7 @@ class DbMfc(HelioDB):
             LIMIT 40
             """
         return self.execute_query(sql, GetRows.FETCHALL)
-    
+
     def query_test_uid(self):
         sql = f"""
             SELECT streamer_name,uid_
@@ -85,7 +85,7 @@ class DbMfc(HelioDB):
 
         data: list[tuple[int, str]] = self.execute_query(sql, GetRows.FETCHALL)
         return data
-    
+
     def query_total_recent_videostate(self):
         time = datetime.now().replace(microsecond=0) - timedelta(minutes=1)
         sql = f"""
@@ -96,8 +96,6 @@ class DbMfc(HelioDB):
 
         data = self.execute_query(sql, GetRows.FETCHALL)
         return data
-
-
 
     def query_for_img(self):
         """Hard limit of 60 to mimic mfc's cap for img push to clients.
@@ -124,7 +122,7 @@ class DbMfc(HelioDB):
             and vs = 0
             """
         data = self.execute_query(sql, GetRows.FETCHALL)
-        online:set=set(data)
+        online: set = set(data)
 
         seek = HelioDB(slug="MFC").query_site_streamers()
 
