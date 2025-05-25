@@ -14,7 +14,7 @@ def cmd_stop_process_id(name_: str, slug: str):
     if pid := db.query_process_id(name_, slug):
         try:
             os.kill(pid, SIGTERM)
-            log.warning(f"Manually stopping {name_} [{slug}]")
+            log.app(loglvl.STOPPED, f"Manually stopping {name_} [{slug}]")
             db.write_rm_seek_capture(name_, slug)
             return None
         except OSError as e:
@@ -37,7 +37,7 @@ def cmd_stop_all_captures():
         log.error(e)
 
 
-def remove_pids(results: map):
+def remove_pids(results:tuple):
 
     name_, slug, process_id = results
     try:
