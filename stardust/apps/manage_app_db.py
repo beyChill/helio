@@ -107,8 +107,8 @@ class HelioDB:
         return self.clean_fetchone(sql)
 
     def query_process_id(self, name_, slug):
-        sql = (
-            f"""SELECT process_id
+        sql = (f"""
+            SELECT process_id
             FROM {self.db_name} 
             WHERE streamer_name = ?
             AND slug = ?
@@ -122,7 +122,8 @@ class HelioDB:
         sql = f"""
             SELECT streamer_name
             FROM {self.db_name}
-            WHERE block_date IS NULL
+            WHERE seek_capture IS NOT NULL
+            AND block_date IS NULL
             AND category IS NULL
             AND process_id IS NULL
             AND slug = '{self.slug}'
@@ -153,7 +154,7 @@ class HelioDB:
         sql = f"""
             SELECT streamer_name, slug, last_broadcast, printf("%.4f", data_total) 
             FROM {self.db_name} 
-            WHERE process_id ISNULL
+            WHERE process_id IS NULL
             AND seek_capture IS NOT NULL 
             AND block_date ISNULL 
             ORDER BY {value}
@@ -280,7 +281,7 @@ class HelioDB:
         sql = f"""
             UPDATE {self.db_name}
             SET process_id = ?,
-            last_capture= ?
+            last_capture = ?
             WHERE streamer_name = ?
             AND slug = ?
             """
