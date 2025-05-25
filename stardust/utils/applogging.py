@@ -136,14 +136,11 @@ class HelioLogger(HelioLoggerBase):
 
     def _log(self, level: loglvl, msg: str):
         permission = loglvl(level).name
-
+        
         if permission not in self.perms:
             return None
 
         if self.log_level.value > level.value:
-            return None
-
-        if level.value < loglvl.NOTSET.value:
             return None
 
         tag = self._tag(level.name)
