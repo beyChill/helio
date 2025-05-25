@@ -1,5 +1,6 @@
+from random import choice
 import m3u8
-from rnet import Client, Response
+from rnet import Client, Impersonate, Response
 
 from stardust.apps.myfreecams.helper import MFC_VIDEO_STATUS
 from stardust.apps.myfreecams.json_models import UserApi
@@ -13,14 +14,24 @@ class HandleM3u8:
     text: str
     urls = set()
     client = Client()
+    browser = [
+        Impersonate.Chrome136,
+        Impersonate.Edge134,
+        Impersonate.Firefox136,
+        Impersonate.Safari18,
+    ]
 
     def __init__(self, url: str):
+        self.client.update(impersonate=choice(self.browser))
         self.url = url
 
     async def get_playlist(self):
         resp: Response = await self.client.get(self.url)
 
-        if resp.status == 403 or resp.status == 404:
+        # Each site responds differently to these codes.
+        # Need site specific handlers, which is activated by 
+        # a return of none to the caller
+        if resp.status in [403, 404]:
             return
 
         if resp.status != 200:
@@ -56,7 +67,7 @@ class HandleM3u8:
 
         return top_bw.uri
 
-    async def get_current_status(self):
+    async def handle_mfc_not200(self):
         """Extract user ID from the url. Then use the\n
         user api to gain current streamer status."""
         partial = self.url.rsplit(".f4v_")[0][-8:]
@@ -77,7 +88,7 @@ class HandleM3u8:
 
     async def mfc_m3u8(self):
         if await self.get_playlist() is None:
-            await self.get_current_status()
+            await self.handle_mfc_not200()
             return
         bw = self.get_m3u8()
         split_m3u8 = self.url.split("/").pop()
