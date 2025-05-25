@@ -49,35 +49,35 @@ LOG_COLORS = {
 
 class HelioLoggerBase(ABC):
     @abstractmethod
-    def query(self, msg: str, **kwargs):
+    def query(self, msg: str):
         pass
 
     @abstractmethod
-    def timer(self, msg: str, **kwargs):
+    def timer(self, msg: str):
         pass
 
     @abstractmethod
-    def debug(self, msg: str, **kwargs):
+    def debug(self, msg: str):
         pass
 
     @abstractmethod
-    def info(self, msg: str, **kwargs):
+    def info(self, msg: str):
         pass
 
     @abstractmethod
-    def warning(self, msg: str, **kwargs):
+    def warning(self, msg: str):
         pass
 
     @abstractmethod
-    def failure(self, msg: str, **kwargs):
+    def failure(self, msg: str):
         pass
 
     @abstractmethod
-    def error(self, msg: str | Exception, **kwargs):
+    def error(self, msg: str | Exception):
         pass
 
     @abstractmethod
-    def app(self, lvl: loglvl, msg: str, **kwargs):
+    def app(self, lvl: loglvl, msg: str):
         pass
 
 
@@ -103,7 +103,7 @@ class HelioLogger(HelioLoggerBase):
 
         self.log_db = log_db
         self.perms = get_log_perms()
-        self.lock=Lock()
+        self.lock = Lock()
 
     def _set_level(self, *args):
         custom_level = [name for name, value in locals().items() if value is True]
@@ -122,7 +122,7 @@ class HelioLogger(HelioLoggerBase):
         "Word appearing in brackets, identifies the log type"
         return rgb(f"[{tag}]:", LOG_COLORS[tag])
 
-    def _msg(self, tag, msg: str):
+    def _color_msg(self, msg: str, tag):
         return rgb(msg, LOG_COLORS[tag])
 
     def _level_name(self, level: loglvl):
@@ -134,58 +134,49 @@ class HelioLogger(HelioLoggerBase):
     def _msg_level(self, level: str):
         return getattr(loglvl, level)
 
-    def _log(self, level: int, msg: str):
+    def _log(self, level: loglvl, msg: str):
         permission = loglvl(level).name
 
         if permission not in self.perms:
             return None
 
-        if self.log_level.value > level:
+        if self.log_level.value > level.value:
             return None
 
-        if level < loglvl.NOTSET.value:
-            print(self._tag(self._level_value(level)), msg)
+        if level.value < loglvl.NOTSET.value:
             return None
 
-        tag = self._tag(self._level_value(level))
+        tag = self._tag(level.name)
+        msg_color = self._color_msg(msg, level.name)
 
-        applogger_print(tag, msg,self.lock)
+        applogger_print(tag, msg_color, self.lock)
 
     def app(self, lvl: loglvl, msg: str, **kwargs):
         lvl = getattr(loglvl, lvl.name)
-        self.data_format(lvl, msg)
+        self._log(lvl, msg)
 
     def timer(self, msg: str, **kwargs):
-        level = loglvl.TIMER
-        self._log(level.value, self._msg(self._level_name(level), msg), **kwargs)
+        self._log(loglvl.TIMER, msg)
 
-    def query(self, msg: str, **kwargs):
-        level = loglvl.QUERY
-        self._log(level.value, self._msg(self._level_name(level), msg), **kwargs)
+    def query(self, msg: str):
+        self._log(loglvl.QUERY, msg)
 
-    def debug(self, msg: str, **kwargs):
-        level = loglvl.DEBUG
-        self._log(level.value, self._msg(self._level_name(level), msg), **kwargs)
+    def debug(self, msg: str):
+        self._log(loglvl.DEBUG, msg)
 
     def info(self, msg: str, **kwargs):
-        level = loglvl.INFO
-        self._log(level.value, self._msg(self._level_name(level), msg), **kwargs)
+        self._log(loglvl.INFO, msg)
 
     def warning(self, msg: str, **kwargs):
-        level = loglvl.WARNING
-        self._log(level.value, self._msg(self._level_name(level), msg), **kwargs)
+        self._log(loglvl.WARNING, msg)
 
     def failure(self, msg: str, **kwargs):
-        level = loglvl.FAILURE
-        self._log(level.value, self._msg(self._level_name(level), msg), **kwargs)
+        self._log(loglvl.FAILURE, msg)
 
     def error(self, msg: str | Exception, **kwargs):
         level = loglvl.ERROR
+        self._log(level, str(msg))
         msg = str(msg)
-        self._log(level.value, self._msg(self._level_name(level), msg), **kwargs)
-
-    def data_format(self, level: loglvl, msg: str):
-        self._log(level.value, self._msg(self._level_name(level), msg))
 
 
 def test():
@@ -228,10 +219,11 @@ def set_permission(level: str, value: str | None):
         conn.execute(sql, data)
 
 
-def applogger_print(tag, msg,lock):
+def applogger_print(tag, msg, lock):
     lock.acquire()
     print(strftime("%H:%M:%S"), tag, msg)
     lock.release()
+
 
 if __name__ == "__main__":
     set_permission("timer", "TIMER")
