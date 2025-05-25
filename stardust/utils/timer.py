@@ -22,8 +22,8 @@ def AppTimer(func: Callable):
         value = await func(*args, **kwargs)
 
         elapsed_time = time.perf_counter() - start_time
-        function = f"{rgb(function_name, 'blue')}{rgb('()', 'yellow')}"
-        log.timer(f"{rgb(tag, 'blue')}: {function} completed in {elapsed_time:0.7f}s")
+        function = f"{rgb(function_name, 'royal')}{rgb('()', 'yellow')}"
+        log.timer(f"{rgb(tag, 'green')}: {function} completed in {elapsed_time:0.7f}s")
         return value
 
     return wrapper_timer
@@ -42,8 +42,8 @@ def AppTimerSync(func: Callable):
         value = func(*args, **kwargs)
 
         elapsed_time = time.perf_counter() - start_time
-        function = f"{rgb(function_name, 'blue')}{rgb('()', 'yellow')}"
-        log.timer(f"{rgb(tag, 'blue')}: {function} completed in {elapsed_time:0.7f}s")
+        function = f"{rgb(function_name, 'royal')}{rgb('()', 'yellow')}"
+        log.timer(f"{rgb(tag, 'green')}: {function} completed in {elapsed_time:0.7f}s")
         return value
 
     return wrapper_timer
