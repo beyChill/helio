@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
 from functools import lru_cache
+from threading import Lock
 from time import strftime
 from typing import Optional
 
@@ -96,6 +97,7 @@ class HelioLogger(HelioLoggerBase):
 
         self.log_db = log_db
         self.perms = get_log_perms()
+        self.lock=Lock()
 
     def _set_level(self, *args):
         custom_level = [name for name, value in locals().items() if value is True]
@@ -139,9 +141,9 @@ class HelioLogger(HelioLoggerBase):
             print(self._tag(self._level_value(level)), msg)
             return None
 
-        print(
-            strftime("%H:%M:%S"), self._tag(self._level_value(level)), msg, flush=True
-        )
+        tag = self._tag(self._level_value(level))
+
+        applogger_print(tag, msg,self.lock)
 
     def app(self, lvl: loglvl, msg: str, **kwargs):
         lvl = getattr(loglvl, lvl.name)
@@ -204,7 +206,7 @@ def get_log_perms():
 
 
 # @lru_cache(maxsize=None)
-def set_permission(level: str, value: str):
+def set_permission(level: str, value: str | None):
     with connect() as conn:
         data = (value, level)
         sql = """
@@ -215,6 +217,11 @@ def set_permission(level: str, value: str):
         conn.execute(sql, data)
 
 
+def applogger_print(tag, msg,lock):
+    lock.acquire()
+    print(strftime("%H:%M:%S"), tag, msg)
+    lock.release()
+
 if __name__ == "__main__":
-    set_permission("timer", None)
+    set_permission("timer", "TIMER")
     test()
