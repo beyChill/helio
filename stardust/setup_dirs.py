@@ -1,9 +1,8 @@
 from pathlib import Path
 
 from config.settings import get_setting
+from stardust.config.log_display_setting import log_permissions_init
 from utils.applogging import HelioLogger, loglvl
-
-log = HelioLogger()
 
 
 def create_init_folders():
@@ -15,20 +14,23 @@ def create_init_folders():
         dir_.DIR_SELENIUM_PROFILE,
         dir_.DIR_VIDEO_SHORT,
         dir_.DIR_VIDEO_REVIEW,
-        dir_.DIR_KEEP_PATH
+        dir_.DIR_KEEP_PATH,
     ]
 
     _ = [create_folder(path_) for path_ in dirs if not path_.exists()]
 
 
 def create_folder(folder: Path):
+    log = HelioLogger()
     log.info("Creating app directories")
     folder.mkdir(parents=True, exist_ok=True)
     log.app(loglvl.CREATED, f"{folder.name} folder...")
-    print(" " * 2, str(folder))
+    msg = f"{' ' * 2, str(folder)}"
+    log.app(loglvl.CREATED, msg)
 
 
 def main():
+    log_permissions_init()
     create_init_folders()
 
 
