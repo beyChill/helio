@@ -25,8 +25,7 @@ def create_folder(folder: Path):
     log.info("Creating app directories")
     folder.mkdir(parents=True, exist_ok=True)
     log.app(loglvl.CREATED, f"{folder.name} folder...")
-    msg = f"{' ' * 2, str(folder)}"
-    log.app(loglvl.CREATED, msg)
+    log.app(loglvl.CREATED, str(folder))
 
 
 def main():
