@@ -23,7 +23,7 @@ def connect():
         yield conn
 
 
-def db_init():
+def log_permissions_init():
     if not DB.exists():
         sqls = """
             CREATE TABLE IF NOT EXISTS log_perm (
@@ -58,4 +58,4 @@ def db_init():
 
 
 if __name__ == "__main__":
-    db_init()
+    log_permissions_init()
