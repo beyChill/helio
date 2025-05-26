@@ -40,29 +40,29 @@ class Settings(BaseSettings):
     COOKIE_CB_NAME: str = "cb_browser_cookies.py"
     COOKIE_CB_PATH: Path = COOKIE_DIR / COOKIE_CB_NAME
     DIR_SSD: Path = Path(f"{env.get('SSD_PATH', f'{APP_DIR}/helio')}")
+    DIR_SELENIUM_PROFILE: Path = APP_DIR / "browser/user_profile"
     DIR_IMG_PATH: Path = Path(
-        f"{env.get('SSD_PATH_IMAGES', f'{APP_DIR}/helio/images')}"
+        f"{env.get('SSD_PATH_IMAGES', f'{APP_DIR}/capture/images')}"
     )
     DIR_PROCESS_CONTACTSHEET: Path = Path(
-        f"{env.get('DIR_PROCESS_CONTACTSHEET', f'{APP_DIR}/video_contactsheet')}"
+        f"{env.get('DIR_PROCESS_CONTACTSHEET', f'{APP_DIR}/capture/video_contactsheet')}"
     )
-    DIR_SELENIUM_PROFILE: Path = APP_DIR / "browser/user_profile"
     DIR_VIDEO_PATH: Path = Path(
-        f"{env.get('SSD_PATH_VIDEOS', f'{APP_DIR}/helio/videos')}"
+        f"{env.get('SSD_PATH_VIDEOS', f'{APP_DIR}/capture/videos')}"
     )
     DIR_VIDEO_REVIEW: Path = Path(
-        f"{env.get('DIR_VIDEO_REVIEW', f'{APP_DIR}/video_review')}"
+        f"{env.get('DIR_VIDEO_REVIEW', f'{APP_DIR}/capture/video_review')}"
     )
     DIR_VIDEO_SHORT: Path = Path(
-        f"{env.get('DIR_VIDEO_SHORT', f'{APP_DIR}/video_short')}"
+        f"{env.get('DIR_VIDEO_SHORT', f'{APP_DIR}/capture/video_short')}"
     )
+    DIR_KEEP_PATH: Path = Path(f"{APP_DIR}/capture/video_keep")
     FFMPEG_DEGUB: bool = False
     VIDEO_EXT: str = "mkv"
     VIDEO_LENGTH_SECONDS: int = 1800
     LOCAL_STORAGE: list[Path] = _storage("long")
     LOCAL_STORAGE.append(DIR_VIDEO_PATH)
     DIR_STORAGE_LOCATIONS: list[Path] = LOCAL_STORAGE
-    DIR_KEEP_PATH: Path = Path(f"{APP_DIR}/video_keep")
     KEEP_STORAGE: list[Path] = _storage("keep")
     KEEP_STORAGE.append(DIR_KEEP_PATH)
     DIR_KEEP_VIDEOS: list[Path] = KEEP_STORAGE
