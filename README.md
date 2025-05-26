@@ -82,17 +82,22 @@ sudo dnf install xorg-x11-server-Xvfb
     
 
 <p>Clone from github</p>
+**Optional, populate .env with string.  An example is in the root directory** 
+    - env_example
+
+Expect Helio to create folders and databases.
+Seleniumbase will download everyting it needs to be functional
 
 ```bash
-git clone https://github.com/beyChill/helio.git <project name>
-cd <project name>
-uv run main.py
+git clone https://github.com/beyChill/helio.git
+cd helio
+uv venv .venv
 source .venv/bin/activate
-uv pip install -e .
 uv sync
+uv pip install -e .
+uv run stardust/setup_dirs.py
 ```
 
-**Update ``Helio`` from a GitHub clone:**
 
 ```bash
 git pull
@@ -159,7 +164,7 @@ sudo trust anchor mitmproxy-ca-cert.pem
 
 
 <p>
-    Windows compatibility: <b style="color:red">ZERO interest</b>.<br/> Any user is free to modify this software for use on platforms outside of Linus
+    Windows compatibility: <b style="color:red">ZERO interest</b>.<br/> Any user is free to modify this software for use on platforms outside of Linux
 </p>
 
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
@@ -178,11 +183,11 @@ sudo trust anchor mitmproxy-ca-cert.pem
 Knowledge share for some packages in Helio's tech stack
 <ul>
     <li><a href="https://github.com/python-cmd2/cmd2">cmd2: </a>Cli</li>
-    <li><a href="https://github.com/0x676e67/rnet">rnet: </a>internet stuff</li>
-    <li><a href="https://github.com/PyGithub/PyGithub">pygithub: </a>github api</li>
-    <li><a href="https://github.com/theskumar/python-dotenv">python-dotenv: </a>.env stuff</li>
-    <li><a href="https://mitmproxy.org">mitmproxy: </a>browser stuff</li>
-    <li><a href="https://mitmproxy.org">mitmproxy: </a>Seleniumbase automated browser</li>
+    <li><a href="https://github.com/0x676e67/rnet">rnet: </a>TLS/HTTP2 client</li>
+    <li><a href="https://github.com/PyGithub/PyGithub">pygithub: </a>Access GitHub api</li>
+    <li><a href="https://github.com/theskumar/python-dotenv">python-dotenv: </a>Environment variables</li>
+    <li><a href="https://mitmproxy.org">mitmproxy: </a>Intercept http request</li>
+    <li><a href="https://github.com/seleniumbase">seleniumbase: </a>Chrome development tools</li>
 </ul>
 </p>
 </div>
@@ -202,7 +207,7 @@ Knowledge share for some packages in Helio's tech stack
     <ul>
         <li>Chaturbate: active</li>
         <li>StripChat: planning</li>
-        <li>MyFreeCams: 83%</li>
+        <li>MyFreeCams: active</li>
         <li>StreaMate: planning</li>
     </ul>
 </div>
@@ -246,22 +251,30 @@ $ source .venv/bin/activate
 Run start script from stardust directory.<br/>
 ( help screen is visible after entering the help command )
 
-```bash
+```python
 (helio) $ uv run stardust/start.py
 Helio--> help
-Helio--> app cb
+Helio--> load cb
 chaturbate interactions are ready
 CB--> help
-CB--> unapp cb
-Helio--> app mfc
+CB--> unload cb
+Helio--> load mfc
 myfreecams interactions are ready
 MFC--> help
-MFC--> unapp mfc
+MFC--> unload mfc
 Helio--> quit
 ```
 ***IMPORTANT***
 <p>The different sites cli (cb, mfc, sc, etc.) use commands with identical names.</br>
-Issue the 'unapp' command before activating another site to prevent an error.</p>
+Issue the 'load' command for the specific site to obtain the desired results.</p>
+
+```python
+helio--> load mfc
+myfreecams interactions are ready
+MFC--> get adysweet
+05:18:56 [CAPTURING]: adysweet [MFC]
+
+```
 
 ***IMPORTANT***
 <p>Capitalization is very important with MyFreeCams streamer's names. The MFC app has lowercased streamer names.</br>
