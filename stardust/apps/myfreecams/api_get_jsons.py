@@ -12,11 +12,9 @@ from mitmproxy.options import Options
 from seleniumbase import SB
 
 from stardust.apps.myfreecams.db_myfreemcams import DbMfc
-from stardust.utils.applogging import HelioLogger
+import stardust.utils.heliologger  as log
 from stardust.utils.general import script_delay
 from stardust.utils.timer import AppTimerSync
-
-log = HelioLogger()
 
 # BLOCK_WORDS and BLOCK_EXTENSIONS limit the reponses handled by mitmproxy
 BLOCK_WORDS = [
