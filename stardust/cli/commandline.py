@@ -16,14 +16,13 @@ from stardust.apps.myfreecams.cli import MyFreeCams
 from stardust.apps.shared_cmds import cmd_stop_all_captures
 from stardust.apps.stripchat.cli import StripChat
 from stardust.config.chroma import rgb
-from stardust.utils.applogging import HelioLogger, set_permission
+import stardust.utils.heliologger as log
 from stardust.utils.general import (
     check_helio_github_version,
     get_app_name,
     get_app_slugs,
 )
-
-log = HelioLogger()
+from stardust.utils.heliologger import set_permission
 
 
 def run_async_in_thread(coro):
