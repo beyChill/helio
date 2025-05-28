@@ -2,14 +2,13 @@ import asyncio
 import re
 from datetime import datetime
 
+import stardust.utils.heliologger as log
 from stardust.apps.chaturbate.db_chaturbate import DbCb
 from stardust.apps.chaturbate.handleurls import iNetCb
 from stardust.apps.chaturbate.models import ChatVideoContext, FailVideoContext
-from stardust.utils.applogging import HelioLogger, loglvl
 from stardust.utils.handle_m3u8 import HandleM3u8
 from stardust.utils.timer import AppTimer
 
-log = HelioLogger()
 processed: list[str] = []
 db = DbCb("chaturbate")
 
@@ -38,7 +37,7 @@ async def handle_results(results: list[FailVideoContext | ChatVideoContext]):
 
     profile_data = process_json(success)
     db.write_api_data(profile_data)
-    
+
     if (streamers_online := await get_m3u8(success)) is None:
         return None
 
@@ -111,7 +110,7 @@ async def manage_api_query():
     streamers_online = await handle_results(results)
     api_fail = [item for item in names if item not in processed]
 
-    log.app(loglvl.SUCCESS, f"{len(streamers) - len(api_fail)} of {len(names)} queries")
+    log.success(f"{len(streamers) - len(api_fail)} of {len(names)} queries")
     if not streamers_online:
         return None
 

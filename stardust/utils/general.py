@@ -7,14 +7,13 @@ from string import ascii_lowercase, digits
 from rnet import Client, Response
 
 import stardust
+import stardust.utils.heliologger as log
 from stardust.apps import __apps__ as helio_apps
 from stardust.apps.manage_app_db import HelioDB
 from stardust.apps.models_app import not200
 from stardust.apps.myfreecams.json_models import Lookup
 from stardust.config.settings import get_setting
-from stardust.utils.applogging import HelioLogger, loglvl
 
-log = HelioLogger()
 IMG_PATH = get_setting().DIR_IMG_PATH
 
 
@@ -103,7 +102,7 @@ async def check_helio_github_version():
         return False
 
     if stardust.__version__ >= latest_version:
-        log.app(loglvl.SUCCESS, "Helio is current")
+        log.success("Helio is current")
 
     return True
 
@@ -132,9 +131,10 @@ def filter_not200(data):
             continue
 
         filtered_data.append(x)
-    data = [(x.name_,x.site,x.code_,x.reason) for x in isnot200]
+    data = [(x.name_, x.site, x.code_, x.reason) for x in isnot200]
     db.write_not200(data)
     return filtered_data
+
 
 def build_url_data(data: list[Lookup]):
     table_data = []

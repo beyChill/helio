@@ -3,10 +3,9 @@ from signal import SIGTERM
 
 from tabulate import tabulate
 
+import stardust.utils.heliologger as log
 from stardust.apps.manage_app_db import HelioDB
-from stardust.utils.applogging import HelioLogger, loglvl
 
-log = HelioLogger()
 db = HelioDB()
 
 
@@ -14,7 +13,7 @@ def cmd_stop_process_id(name_: str, slug: str):
     if pid := db.query_process_id(name_, slug):
         try:
             os.kill(pid, SIGTERM)
-            log.app(loglvl.STOPPED, f"Manually stopping {name_} [{slug}]")
+            log.stopped(f"Manually stopping {name_} [{slug}]")
             db.write_rm_seek_capture(name_, slug)
             return None
         except OSError as e:
@@ -37,12 +36,11 @@ def cmd_stop_all_captures():
         log.error(e)
 
 
-def remove_pids(results:tuple):
-
+def remove_pids(results: tuple):
     name_, slug, process_id = results
     try:
         os.kill(process_id, SIGTERM)
-        log.app(loglvl.STOPPED,f"{name_} [{slug}]")
+        log.stopped(f"{name_} [{slug}]")
         db.write_rm_process_id(process_id)
         return None
     except OSError as e:
@@ -79,7 +77,7 @@ def cmd_long(num):
         log.warning("Zero streamers for inactive check")
         return
 
-    log.app(loglvl.SUCCESS, f"Checked inactivity for {len(streamers)} streamers")
+    log.success(f"Checked inactivity for {len(streamers)} streamers")
     db.write_last_broadcast(streamers)
 
 

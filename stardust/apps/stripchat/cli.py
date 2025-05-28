@@ -1,9 +1,5 @@
 from cmd2 import CommandSet
 
-from stardust.utils.applogging import HelioLogger
-
-log = HelioLogger()
-
 
 class StripChat(CommandSet):
     prompt = "SC-->"

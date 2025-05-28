@@ -2,7 +2,7 @@ from pathlib import Path
 
 from config.settings import get_setting
 from config.log_display_setting import log_permissions_init
-from utils.applogging import HelioLogger, loglvl
+import stardust.utils.heliologger as log
 
 
 def create_init_folders():
@@ -21,11 +21,10 @@ def create_init_folders():
 
 
 def create_folder(folder: Path):
-    log = HelioLogger()
     log.info("Creating app directories")
     folder.mkdir(parents=True, exist_ok=True)
-    log.app(loglvl.CREATED, f"{folder.name} folder...")
-    log.app(loglvl.CREATED, str(folder))
+    log.created(f"{folder.name} folder...")
+    log.created(str(folder))
 
 
 def main():

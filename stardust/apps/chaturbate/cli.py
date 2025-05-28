@@ -7,6 +7,7 @@ from cmd2 import (
     with_argparser,
 )
 
+import stardust.utils.heliologger as log
 from stardust.apps.arg_parser import (
     block_reason,
     cap_status,
@@ -18,7 +19,6 @@ from stardust.apps.chaturbate.handleurls import iNetCb
 from stardust.apps.manage_app_db import HelioDB
 from stardust.apps.manage_capture import start_capture
 from stardust.apps.shared_cmds import cmd_cap, cmd_long, cmd_off, cmd_stop_process_id
-from stardust.utils.applogging import HelioLogger
 from stardust.utils.general import chk_streamer_name
 from stardust.utils.handle_m3u8 import HandleM3u8
 
@@ -26,8 +26,6 @@ from stardust.utils.handle_m3u8 import HandleM3u8
 It appears single argparse, nargs=1, creates a list.
 select first in list for arg.name inputs ie. [0]
 """
-
-log = HelioLogger()
 
 
 class Chaturbate(CommandSet):

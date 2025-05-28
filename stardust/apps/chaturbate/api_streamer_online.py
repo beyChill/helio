@@ -3,16 +3,15 @@ from pathlib import Path
 
 from rnet import Response
 
+import stardust.utils.heliologger as log
 from stardust.apps.chaturbate.handleurls import iNetCb
 from stardust.apps.manage_app_db import HelioDB
 from stardust.apps.manage_capture import start_capture
-from stardust.utils.applogging import HelioLogger
 from stardust.utils.general import make_image_dir, script_delay
 from stardust.utils.handle_m3u8 import HandleM3u8
 from stardust.utils.timer import AppTimer
 
 APP_SITE = "chaturbate"
-log = HelioLogger()
 iNet = iNetCb()
 
 
@@ -32,10 +31,10 @@ async def get_online_cb_streamers():
 
     urls_ = {url["url"] for url in urls}
 
-    all_url = {await HandleM3u8(url).cb_m3u8() for url in urls_ }
+    all_url = {await HandleM3u8(url).cb_m3u8() for url in urls_}
 
     streamer_url = {x for x in all_url if x is not None}
-    
+
     online_data = {(name_, "cb", url) for url, name_, *_ in streamer_url}
 
     return online_data

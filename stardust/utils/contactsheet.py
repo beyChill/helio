@@ -1,15 +1,13 @@
-from pathlib import Path
 import shutil
 import subprocess
 from itertools import groupby
 from os.path import dirname
+from pathlib import Path
 
+import stardust.utils.heliologger as log
 from stardust.apps.models_app import ContactSheetModel
-from stardust.utils.applogging import HelioLogger, loglvl
 from stardust.config.settings import get_setting
 from stardust.utils.timer import AppTimerSync
-
-log = HelioLogger()
 
 
 def get_folders():
@@ -50,7 +48,7 @@ def get_video_duration(video_path: list[list[Path]]):
             # auto remove files less than 10 Mib
             if file_size < 10:
                 shutil.move(path_, new_location)
-                log.app(loglvl.MOVED, f"Tiny file: {path_.name} to {str(new_dir)}")
+                log.moved(f"Tiny file: {path_.name} to {str(new_dir)}")
 
                 continue
 
@@ -81,7 +79,7 @@ def get_video_duration(video_path: list[list[Path]]):
                 # short video is <= 300 seconds (5 min)
                 if video_duration_seconds <= 300:
                     shutil.move(path_, new_location)
-                    log.app(loglvl.MOVED, f"Moved {path_.name} to {str(new_dir)}")
+                    log.moved(f"Moved {path_.name} to {str(new_dir)}")
                     continue
 
                 interval = max_image(video_duration_seconds)
@@ -93,7 +91,7 @@ def get_video_duration(video_path: list[list[Path]]):
                 )
             except (subprocess.CalledProcessError, ValueError):
                 shutil.move(path_, new_location)
-                log.app(loglvl.FAILURE, f"Broken file: {path_}\n**ffprobe read error")
+                log.failure(f"Broken file: {path_}\n**ffprobe read error")
 
         if len(video_durations) > 0:
             video_data.append(video_durations)
@@ -176,16 +174,15 @@ def create_contactsheet(data: ContactSheetModel):
 def loop_contactsheet_list(video_data):
     for files in video_data:
         for q, a in enumerate(files, 1):
-            log.app(
-                loglvl.SUCCESS,
-                f"\rprocessing {q} of {len(files)} for {a.input_path.parts[-2]}",
+            log.success(
+                f"\rprocessing {q} of {len(files)} for {a.input_path.parts[-2]}"
             )
             create_contactsheet(a)
 
 
 @AppTimerSync
 def manage_contactsheet():
-    log.app(loglvl.CREATED, "Generating contact sheet(s)")
+    log.created("Generating contact sheet(s)")
     videos = get_videos()
     video_data = get_video_duration(videos)
     loop_contactsheet_list(video_data)

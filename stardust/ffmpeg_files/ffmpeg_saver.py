@@ -6,6 +6,7 @@ from threading import Thread
 from time import sleep
 from typing import Any
 
+import stardust.utils.heliologger as log
 from stardust.apps.chaturbate.handleurls import iNetCb
 from stardust.apps.manage_app_db import HelioDB
 from stardust.apps.models_app import DataFFmpeg
@@ -13,11 +14,9 @@ from stardust.apps.myfreecams.handleurls import iNetMfc
 from stardust.apps.myfreecams.helper import chk_online_status, make_playlist
 from stardust.config.settings import get_setting
 from stardust.ffmpeg_files.ffmpeg_data import FFmpegConfig
-from stardust.utils.applogging import HelioLogger, loglvl
 from stardust.utils.general import calc_video_size
 from stardust.utils.handle_m3u8 import HandleM3u8
 
-log = HelioLogger()
 config = get_setting()
 
 
@@ -59,10 +58,10 @@ class CaptureStreamer:
         self.process.terminate()
 
     def subprocess_poll_end(self):
-        log.app(loglvl.STOPPED, f"{self.name_} [{self.slug}]")
+        log.stopped(f"{self.name_} [{self.slug}]")
 
     def video_duration_end(self):
-        log.app(loglvl.MAXTIME, f"{self.name_} [{self.slug}]")
+        log.maxtime(f"{self.name_} [{self.slug}]")
 
     def activate(self):
         if self.db.query_process_id(self.name_, self.slug):
@@ -93,7 +92,7 @@ class CaptureStreamer:
         thread.start()
 
     def subprocess_status(self):
-        log.app(loglvl.CAPTURING, f"{self.name_} [{self.slug}]")
+        log.capturing(f"{self.name_} [{self.slug}]")
         while True:
             if self.process.poll() is not None:
                 self._terminate()
@@ -148,7 +147,6 @@ class CaptureStreamer:
             self.db.write_rm_process_id(self.pid)
             return None
 
-
         data = FFmpegConfig(self.name_, self.slug, self.restart_url).return_data
 
         self.db.write_rm_process_id(self.pid)
@@ -161,16 +159,16 @@ def get_restart_url(name_, slug):
 
         if not results[0]["url"]:
             if results[0]["room_status"] == "offline":
-                log.app(loglvl.OFFLINE, f"{name_} [{slug}]")
+                log.offline(f"{name_} [{slug}]")
                 return None
 
-            log.app(loglvl.STOPPED, f"{name_} [{slug}] is {results[0]['room_status']}")
+            log.stopped(f"{name_} [{slug}] is {results[0]['room_status']}")
             return None
 
         url = results[0]["url"]
         if (data := asyncio.run(HandleM3u8(url).cb_m3u8())) is None:
             return None
-        
+
         url, *_ = data
         return url
 

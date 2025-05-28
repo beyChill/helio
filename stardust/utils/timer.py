@@ -2,10 +2,8 @@ import functools
 import time
 from typing import Callable
 
+import stardust.utils.heliologger as log
 from stardust.config.chroma import rgb
-from stardust.utils.applogging import HelioLogger
-
-log = HelioLogger(debug=True)
 
 
 def AppTimer(func: Callable):

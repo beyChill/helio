@@ -2,17 +2,16 @@ import asyncio
 import random
 from threading import Thread
 
+import stardust.utils.heliologger as log
 from stardust.apps.manage_app_db import HelioDB
 from stardust.apps.manage_capture import start_capture
 from stardust.apps.myfreecams.api_get_jsons import mitm_init
 from stardust.apps.myfreecams.db_myfreemcams import DbMfc
 from stardust.apps.myfreecams.handleurls import iNetMfc
 from stardust.apps.myfreecams.helper import mfc_server_offset
-from stardust.utils.applogging import HelioLogger
 from stardust.utils.general import script_delay
 from stardust.utils.handle_m3u8 import HandleM3u8
 
-log = HelioLogger()
 iNet = iNetMfc()
 db = HelioDB(slug="MFC")
 

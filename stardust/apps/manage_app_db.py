@@ -5,11 +5,9 @@ from datetime import date, datetime, timedelta
 from enum import StrEnum, auto
 from pathlib import Path
 
-from stardust.utils.applogging import HelioLogger
+import stardust.utils.heliologger as log
 
 BASE_DIR = Path.cwd()
-
-log = HelioLogger()
 
 
 class GetRows(StrEnum):
@@ -107,7 +105,8 @@ class HelioDB:
         return self.clean_fetchone(sql)
 
     def query_process_id(self, name_, slug):
-        sql = (f"""
+        sql = (
+            f"""
             SELECT process_id
             FROM {self.db_name} 
             WHERE streamer_name = ?

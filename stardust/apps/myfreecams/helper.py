@@ -5,12 +5,11 @@ import imagehash
 from PIL import Image
 from tabulate import tabulate
 
+import stardust.utils.heliologger as log
 from stardust.apps.myfreecams.db_myfreemcams import DbMfc
 from stardust.apps.myfreecams.json_models import Lookup, LookupSession
 from stardust.config.settings import get_setting
-from stardust.utils.applogging import HelioLogger, loglvl
 
-log = HelioLogger()
 REF_IMG_DIR = get_setting().DIR_HASH_REF
 
 
@@ -84,15 +83,20 @@ MFC_VIDEO_STATUS = {
 def chk_online_status(streamer: Lookup, name_: str, slug: str):
     try:
         if not streamer.result.user.sessions:
-            log.app(loglvl.OFFLINE, f"{name_} [{slug}]")
+            log.offline(f"{name_} [{slug}]")
             return None
 
-        status = MFC_VIDEO_STATUS.get(streamer.result.user.sessions[-1].vstate, "unknown")
-        
+        status = MFC_VIDEO_STATUS.get(
+            streamer.result.user.sessions[-1].vstate, "unknown"
+        )
+
         if status != "public":
+            if status == "offline":
+                log.offline(f"{name_} [{slug}]")
+                return None
             log.warning(f"{name_} {slug} is {status}")
             return None
-        
+
         return streamer
     except Exception as e:
         log.error(e)
@@ -110,4 +114,3 @@ def video_state_table(summary):
         "Streamers",
     ]
     print(tabulate(summary, headers=head, tablefmt="pretty", colalign=("left", "left")))
-

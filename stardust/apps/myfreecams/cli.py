@@ -3,12 +3,7 @@ from argparse import Namespace
 
 from cmd2 import CommandSet, categorize, with_argparser
 
-from stardust.apps.manage_app_db import HelioDB
-from stardust.apps.manage_capture import start_capture
-from stardust.apps.myfreecams.handleurls import iNetMfc
-
-from stardust.apps.myfreecams.helper import chk_online_status, make_playlist
-from stardust.apps.shared_cmds import cmd_cap, cmd_long, cmd_off, cmd_stop_process_id
+import stardust.utils.heliologger as log
 from stardust.apps.arg_parser import (
     block_reason,
     cap_status,
@@ -16,11 +11,13 @@ from stardust.apps.arg_parser import (
     long_inactive,
     stop_streamer,
 )
-from stardust.utils.applogging import HelioLogger
+from stardust.apps.manage_app_db import HelioDB
+from stardust.apps.manage_capture import start_capture
+from stardust.apps.myfreecams.handleurls import iNetMfc
+from stardust.apps.myfreecams.helper import chk_online_status, make_playlist
+from stardust.apps.shared_cmds import cmd_cap, cmd_long, cmd_off, cmd_stop_process_id
 from stardust.utils.general import chk_streamer_name
 from stardust.utils.handle_m3u8 import HandleM3u8
-
-log = HelioLogger()
 
 
 class MyFreeCams(CommandSet):

@@ -1,22 +1,23 @@
-from pathlib import Path
 import sqlite3
 from contextlib import contextmanager
-from stardust.config.settings import get_db_setting
-from stardust.utils.applogging import HelioLogger, loglvl
-from stardust.apps import __apps__ as helio_apps
+from pathlib import Path
 
-log = HelioLogger()
+import stardust.utils.heliologger as log
+from stardust.apps import __apps__ as helio_apps
+from stardust.config.settings import get_db_setting
 
 DB_SQL_FOLDER = get_db_setting().DB_SQL_FOLDER
 
+
 def get_db_names():
     names = set()
-    names.add('helio')
+    names.add("helio")
     for app in dir(helio_apps):
         if app.startswith("app_"):
             app_data = getattr(helio_apps, app)
             names.add(app_data[1])
     return names
+
 
 @contextmanager
 def init_connect(file: Path):
@@ -37,15 +38,19 @@ def init_connect(file: Path):
         conn.executescript(pragma_initial)
         yield conn
 
+
 def db_init() -> None:
     APP_NAMES = get_db_names()
-    DB_FILES=[Path(Path.cwd() / f"stardust/database/db/{name_}.sqlite3") for name_ in APP_NAMES]
+    DB_FILES = [
+        Path(Path.cwd() / f"stardust/database/db/{name_}.sqlite3")
+        for name_ in APP_NAMES
+    ]
 
     missing_files = {(path.stem, path) for path in DB_FILES if not Path(path).exists()}
 
     if not missing_files:
         {optimize_db(file) for file in DB_FILES}
-        log.info('Databases are ready')
+        log.info("Databases are ready")
         return None
 
     {x.parent.mkdir(parents=True, exist_ok=True) for _, x in missing_files}
@@ -53,11 +58,13 @@ def db_init() -> None:
     try:
         for name_, file in missing_files:
             with init_connect(file) as conn:
-                with open(f"{DB_SQL_FOLDER}/{name_}.sql", "r", encoding="utf-8") as file:
+                with open(
+                    f"{DB_SQL_FOLDER}/{name_}.sql", "r", encoding="utf-8"
+                ) as file:
                     conn.executescript(file.read())
-                log.app(loglvl.CREATED, f"{name_} database")
+                log.created(f"{name_} database")
 
-        log.app(loglvl.SUCCESS, "Database operations complete")
+        log.success("Database operations complete")
     except sqlite3.OperationalError as e:
         msg = f"{Path(__file__).parts[-1]} {__name__}() {e}"
         log.error(msg)
@@ -70,6 +77,7 @@ def optimize_db(file):
     with init_connect(file) as conn:
         conn.executescript(pragma_optimize)
     return None
+
 
 def display_pragma(sqlite3_connect):
     pragma_query = [

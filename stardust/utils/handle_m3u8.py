@@ -1,12 +1,11 @@
 from random import choice
+
 import m3u8
 from rnet import Client, Impersonate, Response
 
+import stardust.utils.heliologger as log
 from stardust.apps.myfreecams.helper import MFC_VIDEO_STATUS
 from stardust.apps.myfreecams.json_models import UserApi
-from stardust.utils.applogging import HelioLogger
-
-log = HelioLogger()
 
 
 class HandleM3u8:
