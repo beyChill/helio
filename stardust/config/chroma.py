@@ -27,6 +27,7 @@ def rgb(text: str, col: str | None = None):
         "slate_blue": functools.partial(style, fg=RgbFg(115, 124, 161)),
         "glaucous": functools.partial(style, fg=RgbFg(209, 208, 206)),
         "rust": functools.partial(style, fg=RgbFg(183, 65, 14)),
+        "rose": functools.partial(style, fg=RgbFg(255,40,162)),
     }
 
     if not col:
