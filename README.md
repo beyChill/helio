@@ -79,14 +79,18 @@
 ```bash
 sudo dnf install xorg-x11-server-Xvfb
 ```
-    
 
-<p>Clone from github</p>
-**Optional, populate .env with string.  An example is in the root directory** 
-    - env_example
+**Optional, populate .env with applicable strings.   
 
-Expect Helio to create folders and databases.
+An example is in the root directory.   
+- env_example
+
+Expect Helio to create folders and databases.   
 Seleniumbase will download everyting it needs to be functional
+- the folder appears in the root directory as 'downloaded_files'
+
+<p>Clone Helio from github</p>
+Recommended install steps
 
 ```bash
 git clone https://github.com/beyChill/helio.git
@@ -99,10 +103,6 @@ uv run stardust/setup_dirs.py
 ```
 
 
-```bash
-git pull
-uv pip install -e .
-```
 
 
 <p>
