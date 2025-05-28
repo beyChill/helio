@@ -12,10 +12,7 @@ from stardust.apps.myfreecams.json_models import (
     MfcModelEx,
     Tags,
 )
-from stardust.utils.applogging import HelioLogger
 from stardust.utils.general import filter_not200
-
-log = HelioLogger()
 
 headers = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0"
