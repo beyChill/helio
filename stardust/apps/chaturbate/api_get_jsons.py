@@ -4,14 +4,12 @@ import asyncio
 from datetime import datetime
 from sqlite3 import Date
 
+import stardust.utils.heliologger as log
 from stardust.apps.chaturbate.db_chaturbate import DbCb
 from stardust.apps.chaturbate.handleurls import iNetCb
 from stardust.apps.chaturbate.models import CBRoom, cb_param
-from stardust.utils.applogging import HelioLogger
 from stardust.utils.general import script_delay
 from stardust.utils.timer import AppTimer
-
-log = HelioLogger(debug=True)
 
 
 def url_param(category=cb_param.FEMALE, tag=cb_param.TAG.NONE):
