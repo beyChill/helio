@@ -1,5 +1,6 @@
 import asyncio
 import json
+import time
 from pathlib import Path
 from random import choice
 from threading import Thread
@@ -12,11 +13,13 @@ from mitmproxy.options import Options
 from seleniumbase import SB
 
 from stardust.apps.myfreecams.db_myfreemcams import DbMfc
-import stardust.utils.heliologger  as log
+from stardust.utils.applogging import HelioLogger
 from stardust.utils.general import script_delay
 from stardust.utils.timer import AppTimerSync
 
-# BLOCK_WORDS and BLOCK_EXTENSIONS limit the reponses handled by mitmproxy
+log = HelioLogger()
+
+
 BLOCK_WORDS = [
     "assets",
     "favicon",
@@ -24,6 +27,8 @@ BLOCK_WORDS = [
     "google-analytics",
     "mobile",
     "snap.mfcimg",
+    "gstatic",
+    "gvt1",
 ]
 
 BLOCK_EXTENSIONS = [
@@ -68,37 +73,6 @@ class AppDirs:
         return self.data
 
 
-class AppRequest:
-    def __init__(self):
-        pass
-
-    def request(self, flow: http.HTTPFlow) -> None:
-        del flow.request.headers["accept-encoding"]
-        flow.request.headers["accept-encoding"] = "gzip"
-        url = flow.request.pretty_url
-
-        if url.__contains__("playlist"):
-            log.info(f"Request: {url}")
-
-        block_extension = any(url.endswith(ext) for ext in BLOCK_EXTENSIONS)
-        block_words = any(block in url for block in BLOCK_WORDS)
-
-        if block_extension or block_words:
-            return
-
-
-class AppResponse:
-    def response(self, flow: http.HTTPFlow) -> None:
-        url = flow.request.pretty_url
-
-        if url.__contains__("playlist"):
-            log.info(f"response: {url}")
-
-        if url.endswith("debug=cams"): 
-            handle_streamers_online(flow)
-            return
-
-
 def handle_streamers_online(flow: HTTPFlow):
     db = DbMfc("myfreecams")
     if flow.response is None:
@@ -130,80 +104,90 @@ def handle_streamers_online(flow: HTTPFlow):
     return None
 
 
-class MitmServer:
+class MFCaddon:
+    def request(self, flow: http.HTTPFlow) -> None:
+        del flow.request.headers["accept-encoding"]
+        flow.request.headers["accept-encoding"] = "gzip"
+
+    def response(self, flow: http.HTTPFlow) -> None:
+        url = flow.request.pretty_url
+        block_extension = any(url.endswith(ext) for ext in BLOCK_EXTENSIONS)
+        block_words = any(block in url for block in BLOCK_WORDS)
+
+        if block_extension or block_words:
+            return
+
+        if url.endswith("debug=cams"):
+            handle_streamers_online(flow)
+            return
+
+
+class Proxy(Thread):
     def __init__(self):
-        self.ip_address = None
-        self._ssl_insecure = True
-        self._thread_loop()
-        self._master_proxy()
-        asyncio.run(self.start())
+        self.loop = asyncio.new_event_loop()
+        self.local_host = "127.0.0.1"
+        self.port = 0
+        self.config()
         super().__init__()
 
-    def _master_proxy(self):
-        opts = Options()
-        Master(opts, self.loop)
-        handlers = [*addons.default_addons(), AppResponse(), AppRequest()]
-        _ = [ctx.master.addons.add(handle) for handle in handlers]
-
-        opts.update(
+    def config(self):
+        opts = Options(
             confdir=str(AppDirs().mitm_dir()),
-            listen_host="localhost",
+            # setting local host to IPv4 prevents
+            # generation of IPv6 address
+            listen_host=self.local_host,
+            # listen_port=0 instructs mitmproxy to select
+            # a random available port,
             listen_port=0,
             ssl_insecure=True,
         )
 
-    def _thread_loop(self):
-        self.loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(self.loop)
+        Master(opts, self.loop)
+        handlers = [*addons.default_addons(), MFCaddon()]
+        _ = {ctx.master.addons.add(handle) for handle in handlers}
 
-        thread = Thread(target=self.loop.run_forever, daemon=True)
-        thread.start()
+    def run(self) -> None:
+        self.loop.run_until_complete(ctx.master.run())
 
-    def _has_proxy_address(self):
-        if not (ipaddress := ctx.master.addons.lookup["proxyserver"].listen_addrs()):
-            return None
+    def get_port(self):
+        _, self.port = ctx.master.addons.lookup["proxyserver"].listen_addrs()[0]
 
-        if len(ipaddress[0]) == 2:
-            addr, port = ipaddress[0]
-            self.ip_address = f"{addr}:{port}"
-            return self.ip_address
+    def stopServer(self):
+        # server is enabled by default via the
+        # mitmproxy import of Options()
+        ctx.options.update(server=False)
 
-        addr, port = ipaddress[1]
-        self.ip_address = f"{addr}:{port}"
+    def __enter__(self):
+        self.start()
+        time.sleep(0.009)
+        self.get_port()
+        return self
 
-        # Seleniumbase using Chrome browser doesn't support IPv6 Proxy/
-        # Review SeleniumBase's code, GitHub: SeleniumBase / seleniumbase / core / proxy_helper.py
-        # Selenium supports IPv6. Leaving the code just incase seleniumbase is not a solution.
-
-        # addr, port, *_ = ipaddress[0]
-        # self.ip_address = f"[{addr}]:{port}"
-
-        return self.ip_address
-
-    async def start(self):
-        asyncio.run_coroutine_threadsafe(ctx.master.run(), self.loop)
-
-        # mitmproxy needs an instance in time to start
-        while not self._has_proxy_address():
-            await asyncio.sleep(0.009)
+    def __exit__(self, *_) -> None:
+        ctx.master.event_loop.call_soon_threadsafe(self.stopServer)
+        ctx.master.shutdown()
+        self.join()
+        self.loop.close()
+        print("exit")
 
     @property
     def proxy_address(self):
-        return self.ip_address
+        sb_proxy = f"{self.local_host}:{self.port}"
+        return sb_proxy
 
 
 @AppTimerSync
-def launch_sb_for_mfc(proxy):
+def launch_sb_for_mfc(sb_proxy):
     """
     Launch seleniumbase on myfreecams.com
     MyFreeCams api sends a json containing all online
     streamers. The api auto generates online streamer
-    data. This data return is easier and has more reliable
+    data. This data returned is easier and has more reliable
     access vs generating a http get request for this specific
     data. Manually creating the api request is not straight forward.
     """
 
-    # add these args to view (unhide) the web brower
+    # change these args to view (unhide) the web brower
     headed = True
     headless2 = (False,)
 
@@ -217,7 +201,7 @@ def launch_sb_for_mfc(proxy):
     with SB(
         uc=True,
         locale="en",
-        proxy=proxy,
+        proxy=sb_proxy,
         headed=headed,
         headless2=headless2,
         window_size=(f"{window_size}"),
@@ -226,43 +210,26 @@ def launch_sb_for_mfc(proxy):
         url = "https://www.myfreecams.com"
         sb.activate_cdp_mode(url)
 
-        # delay for myfreecams api to respond,api seems a bit slow
-        # refactor to probably recieve a site trigger.
+        # delay for myfreecams api to provide json data.
+        # TODO: terminate SeleniumBase after desired data is received.
         asyncio.run(asyncio.sleep(2))
 
 
-@AppTimerSync
 def mitm_init():
-    init_ = MitmServer()
-    launch_sb_for_mfc(init_.proxy_address)
+    with Proxy() as w:
+        proxy_address = w.proxy_address
+        launch_sb_for_mfc(proxy_address)
 
 
-async def get_mfc_online_json():
-    # mitmproxy requires and event loop. It is simplier to
-    # give the proxy it's own event loop in a separate thread.
-    # Allowing for the inital to run forever as a means
-    # to continually query myfreecams for data.
-
+def loop_mfc_all_online():
     while True:
         thread = Thread(target=mitm_init, daemon=True)
         thread.start()
         thread.join()
 
-        delay_, time_ = script_delay(309.07, 425.89)
-        log.query(f"MFC streamers @: {time_}")
-        await asyncio.sleep(delay_)
-
-
-def exception_handler(loop, context) -> None:
-    log.error(context["exception"])
-    log.error(context["message"])
-
-
-def loop_mfc_all_online():
-    loop = asyncio.new_event_loop()
-    # loop.set_exception_handler(exception_handler)
-    loop.create_task(get_mfc_online_json())
-    loop.run_forever()
+        delay_, time_ = script_delay(329.07, 542.89)
+        log.query(f"MFC streamers @ {time_}")
+        asyncio.run(asyncio.sleep(delay_))
 
 
 if __name__ == "__main__":
