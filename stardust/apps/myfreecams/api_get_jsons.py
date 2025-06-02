@@ -120,23 +120,23 @@ class Proxy(Thread):
     def get_port(self):
         _, self.port = ctx.master.addons.lookup["proxyserver"].listen_addrs()[0]
 
-    def stopServer(self):
+    def stop_server(self):
         # server is enabled by default via the
         # mitmproxy import of Options()
         ctx.options.update(server=False)
 
     def __enter__(self):
+        # start is from threading.Thread, it will triggers the run method
         self.start()
         time.sleep(0.009)
         self.get_port()
         return self
 
     def __exit__(self, *_) -> None:
-        ctx.master.event_loop.call_soon_threadsafe(self.stopServer)
+        ctx.master.event_loop.call_soon_threadsafe(self.stop_server)
         ctx.master.shutdown()
         self.join()
         self.loop.close()
-        print("exit")
 
     @property
     def proxy_address(self):
@@ -184,8 +184,8 @@ def launch_sb_for_mfc(sb_proxy):
 
 
 def mitm_init():
-    with Proxy() as w:
-        proxy_address = w.proxy_address
+    with Proxy() as mitm:
+        proxy_address = mitm.proxy_address
         launch_sb_for_mfc(proxy_address)
 
 
@@ -195,7 +195,7 @@ def loop_mfc_all_online():
         thread.start()
         thread.join()
 
-        delay_, time_ = script_delay(329.07, 542.89)
+        delay_, time_ = script_delay(329.07, 742.89)
         log.query(f"MFC streamers @ {time_}")
         asyncio.run(asyncio.sleep(delay_))
 
