@@ -15,6 +15,8 @@ def create_init_folders():
         dir_.DIR_VIDEO_SHORT,
         dir_.DIR_VIDEO_REVIEW,
         dir_.DIR_KEEP_PATH,
+        dir_.DIR_MITM_CONFIG,
+        dir_.DIR_MITM_DATA,
     ]
 
     _ = [create_folder(path_) for path_ in dirs if not path_.exists()]

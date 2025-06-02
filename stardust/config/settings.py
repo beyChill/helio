@@ -1,10 +1,34 @@
 from functools import lru_cache
 from pathlib import Path
-from pydantic_settings import BaseSettings
+
 from dotenv import dotenv_values, find_dotenv
+from pydantic_settings import BaseSettings
 
 find_env = find_dotenv(".env")
 env = dotenv_values(find_env)
+
+
+class MitmProxyDirs:
+    def __init__(self):
+        self.parent = ".helio"
+        self.base = self._find_base_dir()
+        self.conf = self.create_config()
+        self.data = self.create_data()
+
+    def _find_base_dir(self):
+        home = Path("~/")
+        base = Path.expanduser(home)
+        return base
+
+    def create_config(self):
+        conf = Path(self.base / self.parent / "mitmproxy")
+        conf.mkdir(parents=True, exist_ok=True)
+        return conf
+
+    def create_data(self):
+        data = Path(self.base / self.parent / "data")
+        data.mkdir(parents=True, exist_ok=True)
+        return data
 
 
 def _storage(vid_type: str):
@@ -57,6 +81,8 @@ class Settings(BaseSettings):
         f"{env.get('DIR_VIDEO_SHORT', f'{APP_DIR}/capture/video_short')}"
     )
     DIR_KEEP_PATH: Path = Path(f"{APP_DIR}/capture/video_keep")
+    DIR_MITM_CONFIG: Path = MitmProxyDirs().create_config()
+    DIR_MITM_DATA: Path = MitmProxyDirs().create_data()
     FFMPEG_DEGUB: bool = False
     VIDEO_EXT: str = "mkv"
     VIDEO_LENGTH_SECONDS: int = 1800

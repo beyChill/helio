@@ -1,7 +1,6 @@
 import asyncio
 import json
 import time
-from pathlib import Path
 from random import choice
 from threading import Thread
 
@@ -13,12 +12,13 @@ from mitmproxy.options import Options
 from seleniumbase import SB
 
 from stardust.apps.myfreecams.db_myfreemcams import DbMfc
+from stardust.config.settings import get_setting
 from stardust.utils.applogging import HelioLogger
 from stardust.utils.general import script_delay
 from stardust.utils.timer import AppTimerSync
 
 log = HelioLogger()
-
+dir_ = get_setting()
 
 BLOCK_WORDS = [
     "assets",
@@ -40,37 +40,6 @@ BLOCK_EXTENSIONS = [
     ".svg",
     ".webp",
 ]
-
-
-class AppDirs:
-    def __init__(self):
-        self.base = self._find_base_dir()
-        self.certs = self._create_mitm_dir()
-        self.data = self._create_data_dir()
-
-    def _find_base_dir(self):
-        home = Path("~/")
-        base = Path.expanduser(home)
-        return base
-
-    def _create_mitm_dir(self):
-        certs = Path(self.base / ".helio/mitmproxy")
-        certs.mkdir(parents=True, exist_ok=True)
-        return certs
-
-    def _create_data_dir(self):
-        data = Path(self.base / ".helio/data")
-        data.mkdir(parents=True, exist_ok=True)
-        return data
-
-    def base_dir(self):
-        return self.base
-
-    def mitm_dir(self):
-        return self.certs
-
-    def data_dir(self):
-        return self.data
 
 
 def handle_streamers_online(flow: HTTPFlow):
@@ -132,7 +101,7 @@ class Proxy(Thread):
 
     def config(self):
         opts = Options(
-            confdir=str(AppDirs().mitm_dir()),
+            confdir=str(dir_.DIR_MITM_CONFIG),
             # setting local host to IPv4 prevents
             # generation of IPv6 address
             listen_host=self.local_host,
@@ -141,7 +110,6 @@ class Proxy(Thread):
             listen_port=0,
             ssl_insecure=True,
         )
-
         Master(opts, self.loop)
         handlers = [*addons.default_addons(), MFCaddon()]
         _ = {ctx.master.addons.add(handle) for handle in handlers}
