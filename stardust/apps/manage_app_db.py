@@ -279,7 +279,7 @@ class HelioDB:
 
         self.execute_write(sql, data)
 
-    def write_process_id(
+    def write_active_capture(
         self,
         data: tuple[int, datetime, str, str] | list[tuple[int, datetime, str, str]],
     ):
