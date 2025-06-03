@@ -80,7 +80,7 @@ async def get_online_mfc_streamers():
     streamers = await get_online_streamers()
 
     # lowercase names makes comparison easier. Database also has lower case conversion
-    online_streamers = {x.lower() for x in streamers }
+    online_streamers = {x.lower() for x in streamers}
 
     capture_streamers = seek_capture.intersection(online_streamers)
 
@@ -103,7 +103,7 @@ async def get_online_mfc_streamers():
         m3u8_data = DbMfc("myfreecams").query_m3u8_data(capture_streamers)
 
     if not m3u8_data:
-        log.info("Unable to acquire any MFC m3u8 data")
+        log.warning("Unable to acquire any MFC m3u8 data")
         return None
 
     playlist = build_m3u8s(m3u8_data)
