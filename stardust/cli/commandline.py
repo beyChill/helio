@@ -78,7 +78,7 @@ class HelioCli(Cmd):
         if self.instance_:
             self.do_unload(self.slug)
 
-        if not self._get_app_info(ns.app):
+        if not self._get_cli_prompt(ns.app):
             return
 
         self.app_prompt = self.slug
@@ -99,7 +99,7 @@ class HelioCli(Cmd):
     @with_argparser(load_parser)
     def do_unload(self, ns: argparse.Namespace):
         """Make the app cli inactive, threaded functions using asyncio.run_forever() will continue to run"""
-        if not self._get_app_info(ns.app):
+        if not self._get_cli_prompt(ns.app):
             return
 
         self.instance_ = getattr(self, self.name_)
@@ -136,10 +136,10 @@ class HelioCli(Cmd):
         """Compare app version with GitHub version"""
         asyncio.run(check_helio_github_version())
 
-    def _get_app_info(self, app: str):
+    def _get_cli_prompt(self, app: str):
         data = get_app_name(app)
         if not data:
-            return None
+            return False
 
         slug, name_, color = data
         self.slug = slug
