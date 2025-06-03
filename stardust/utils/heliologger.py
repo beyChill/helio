@@ -122,10 +122,10 @@ class HelioLogger:
     def isPrintable(self, level: loglvl):
         perms = get_db_perms()
         if level.name not in perms:
-            return None
+            return False
 
         if level.value < self.log_level.value:
-            return None
+            return False
 
         return True
 
