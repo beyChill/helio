@@ -131,11 +131,17 @@ class HelioDB:
         result = {x for (x,) in data}
         return result
 
-    def query_cap_status(self, name_: str):
+    def query_cap_status(self, name_: str, slug: str):
         """Info for determining streamer capture"""
         sql = (
-            f"SELECT seek_capture, block_date FROM {self.db_name} WHERE streamer_name = ?",
-            (name_,),
+            f"""
+               SELECT seek_capture, block_date
+               FROM {self.db_name} 
+               WHERE streamer_name = ?
+               AND slug = ?
+               
+               """,
+            (name_, slug),
         )
         return self.execute_query(sql)
 
@@ -296,6 +302,17 @@ class HelioDB:
             """
         self.execute_write(sql, values)
 
+    def write_null_process_id(self, name_, slug):
+        sql = f"""
+            UPDATE {self.db_name}
+            SET process_id = ?
+            WHERE streamer_name = ?
+            AND slug = ?
+            """
+        args = (None, name_, slug)
+
+        self.execute_write(sql, args)
+
     def write_rm_process_id(self, value: int):
         sql = f"""
             UPDATE {self.db_name}
@@ -303,7 +320,9 @@ class HelioDB:
             WHERE process_id = ?
             """
 
-        self.execute_write(sql, (None, value))
+        arg = (None, value)
+
+        self.execute_write(sql, arg)
 
     def write_rm_seek_capture(self, name_: str, slug: str):
         sql = f"""

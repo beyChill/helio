@@ -13,13 +13,13 @@ def cmd_stop_process_id(name_: str, slug: str):
     if pid := db.query_process_id(name_, slug):
         try:
             os.kill(pid, SIGTERM)
-            log.stopped(f"Manually stopping {name_} [{slug}]")
+            log.stopped(name_, f"[{slug}]")
             db.write_rm_seek_capture(name_, slug)
             return None
         except OSError as e:
             db.write_rm_seek_capture(name_, slug)
             if e.errno == 3:
-                log.error(f"No such process id for {name_} [{slug}]")
+                log.error(f"Invalid process id for {name_} [{slug}]")
                 return None
 
             msg = f"A problem occurred while stopping {name_} [{slug}]"
@@ -36,6 +36,25 @@ def cmd_stop_all_captures():
         log.error(e)
 
 
+def is_process_active():
+    """
+    Function will not remove an active capture.
+        There, at capture's end the streamer will
+        require a manual restart (get cmd) or wait
+        for timed site query for streamer status.
+    """
+    if not (results := db.query_all_db_process_id()):
+        return None
+    {check_process_ids(result) for result in results}
+
+
+def check_process_ids(results: tuple):
+    name_, slug, process_id = results
+    try:
+        os.kill(process_id, 0)
+    except OSError as e:
+        handle_process_id_error(name_, slug,process_id, e)
+
 def remove_pids(results: tuple):
     name_, slug, process_id = results
     try:
@@ -44,12 +63,14 @@ def remove_pids(results: tuple):
         db.write_rm_process_id(process_id)
         return None
     except OSError as e:
+        handle_process_id_error(name_, slug,process_id, e)
+
+def handle_process_id_error(name_, slug,process_id, e:OSError):
         db.write_rm_process_id(process_id)
         if e.errno == 3:
-            log.warning(f"Invalid process ID for {name_} [{slug}]. Removed ID")
+            log.stopped(f"Invalid capture for {name_} [{slug}]. Removed ID")
             return None
-        log.error(f"Unknown error while removing process id for {name_} [{slug}]")
-
+        log.error(f"Unknown error with process id for {name_} [{slug}]")
 
 def cmd_cap(sort_opt):
     sort = sort_options(sort_opt)

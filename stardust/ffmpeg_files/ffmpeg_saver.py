@@ -82,7 +82,7 @@ class CaptureStreamer:
 
         if self.process.poll() is not None:
             log.warning(f"Unable to capture {self.name_}")
-            self.db.write_rm_process_id(self.process.pid)
+            self.db.write_null_process_id(self.name_, self.slug)
             return
 
         today_ = datetime.now().replace(microsecond=0)
@@ -133,23 +133,24 @@ class CaptureStreamer:
 
         calc_video_size(self.name_, self.data.file_, self.slug)
 
-        cap_status, block = self.db.query_cap_status(self.name_)
+        cap_status, block = self.db.query_cap_status(self.name_, self.slug)
 
         if not cap_status or block:
-            self.db.write_rm_process_id(self.pid)
+            self.db.write_null_process_id(self.name_, self.slug)
             return None
 
         if not self.max_time:
             sleep(self.delay_)
             self.restart_url = get_restart_url(self.name_, self.slug)
+            print("restart_url",self.restart_url)
 
         if self.restart_url is None:
-            self.db.write_rm_process_id(self.pid)
+            self.db.write_null_process_id(self.name_, self.slug)
             return None
 
         data = FFmpegConfig(self.name_, self.slug, self.restart_url).return_data
 
-        self.db.write_rm_process_id(self.pid)
+        self.db.write_null_process_id(self.name_, self.slug)
         CaptureStreamer(data)
 
 
@@ -157,7 +158,7 @@ def get_restart_url(name_, slug):
     if slug == "CB":
         results = asyncio.run(iNetCb().get_ajax_url([name_]))
 
-        if not results[0]["url"]:
+        if not (url := results[0]["url"]):
             if results[0]["room_status"] == "offline":
                 log.offline(f"{name_} [{slug}]")
                 return None
@@ -165,12 +166,11 @@ def get_restart_url(name_, slug):
             log.stopped(f"{name_} [{slug}] is {results[0]['room_status']}")
             return None
 
-        url = results[0]["url"]
         if (data := asyncio.run(HandleM3u8(url).cb_m3u8())) is None:
             return None
 
-        url, *_ = data
-        return url
+        m3u8_url, *_ = data
+        return m3u8_url
 
     if slug == "MFC":
         if (data := asyncio.run(iNetMfc().get_all_status([name_]))) is None:
