@@ -13,11 +13,10 @@ from seleniumbase import SB
 
 from stardust.apps.myfreecams.db_myfreemcams import DbMfc
 from stardust.config.settings import get_setting
-from stardust.utils.applogging import HelioLogger
 from stardust.utils.general import script_delay
+import stardust.utils.heliologger as log
 from stardust.utils.timer import AppTimerSync
 
-log = HelioLogger()
 dir_ = get_setting()
 
 BLOCK_WORDS = [
