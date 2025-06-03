@@ -45,11 +45,11 @@ def make_playlist(session: LookupSession, streamer_id: int):
     # 8 is mininum number of digits for a url's id
     id = str(streamer_id).zfill(8)
 
-    session_name = "".join([phase, pid, id])
+    session_id = "".join([phase, pid, id])
 
     nc_value = random.random()
 
-    url = f"https://edgevideo.myfreecams.com/llhls/NxServer/{server}/ngrp:mfc_{session_name}.f4v_cmaf/playlist.m3u8?nc={nc_value}&v=1.97.23"
+    url = f"https://edgevideo.myfreecams.com/llhls/NxServer/{server}/ngrp:mfc_{session_id}.f4v_cmaf/playlist.m3u8?nc={nc_value}&v=1.97.23"
     return url
 
 
