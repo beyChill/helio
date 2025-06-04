@@ -11,7 +11,7 @@ from mitmproxy.master import Master
 from mitmproxy.options import Options
 from seleniumbase import SB
 
-from stardust.apps.myfreecams.db_myfreemcams import DbMfc
+from stardust.apps.myfreecams.db_myfreecams import DbMfc
 from stardust.config.settings import get_setting
 from stardust.utils.general import script_delay
 import stardust.utils.heliologger as log

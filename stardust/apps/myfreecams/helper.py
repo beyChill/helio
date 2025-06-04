@@ -6,7 +6,7 @@ from PIL import Image
 from tabulate import tabulate
 
 import stardust.utils.heliologger as log
-from stardust.apps.myfreecams.db_myfreemcams import DbMfc
+from stardust.apps.myfreecams.db_myfreecams import DbMfc
 from stardust.apps.myfreecams.json_models import Lookup, LookupSession
 from stardust.config.settings import get_setting
 

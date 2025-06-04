@@ -124,7 +124,7 @@ class DbMfc(HelioDB):
         data = self.execute_query(sql, GetRows.FETCHALL)
         online: set = set(data)
 
-        seek = HelioDB(slug="MFC").query_site_streamers()
+        seek = HelioDB(slug="MFC").query_streamers_for_capture()
 
         return (online, seek)
 
