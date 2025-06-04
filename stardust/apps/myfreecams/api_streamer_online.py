@@ -75,7 +75,7 @@ async def delay_():
 async def get_online_mfc_streamers():
     if not (seek_capture := db.query_site_streamers()):
         log.warning("Zero MFC streamers to capture")
-        return None
+        return []
 
     streamers = await get_online_streamers()
 
@@ -86,7 +86,7 @@ async def get_online_mfc_streamers():
 
     if len(capture_streamers) == 0:
         log.query(f"0 of {len(seek_capture)} MyFreeCams streamers online")
-        return None
+        return []
 
     # returns streamers having an update within past 6 minutes
     m3u8_data = DbMfc("myfreecams").query_m3u8_data(capture_streamers)
@@ -104,7 +104,7 @@ async def get_online_mfc_streamers():
 
     if not m3u8_data:
         log.warning("Unable to acquire any MFC m3u8 data")
-        return None
+        return []
 
     playlist = build_m3u8s(m3u8_data)
     m3u8s, streamer_data = await organize_capture_data(playlist)
