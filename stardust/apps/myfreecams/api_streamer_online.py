@@ -67,13 +67,13 @@ async def organize_capture_data(playlist):
 
 
 async def delay_():
-    delay_, time_ = script_delay(300.07, 366.89)
+    delay_, time_ = script_delay(285.27, 396.89)
     log.query(f"MFC streamers @: {time_}")
     await asyncio.sleep(delay_)
 
 
 async def get_online_mfc_streamers():
-    if not (seek_capture := db.query_site_streamers()):
+    if not (seek_capture := db.query_streamers_for_capture()):
         log.warning("Zero MFC streamers to capture")
         return []
 

@@ -117,7 +117,7 @@ class HelioDB:
 
         return self.clean_fetchone(sql)
 
-    def query_site_streamers(self):
+    def query_streamers_for_capture(self):
         sql = f"""
             SELECT streamer_name
             FROM {self.db_name}

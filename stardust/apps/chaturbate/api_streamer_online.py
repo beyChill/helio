@@ -18,7 +18,7 @@ iNet = iNetCb()
 @AppTimer
 async def get_online_cb_streamers():
     db = HelioDB(slug="CB")
-    if not (streamers := db.query_site_streamers()):
+    if not (streamers := db.query_streamers_for_capture()):
         log.warning("Zero Chaturbate streamers to capture")
         return []
 
