@@ -61,7 +61,7 @@ class Chaturbate(CommandSet):
             return None
 
         if (new_m3u8 := asyncio.run(HandleM3u8(url_).cb_m3u8())) is None:
-            log.error(f"There is a proble with the m3u8 for {name_} {self.slug}")
+            log.error(f"Problem with the m3u8 for {name_} {self.slug}")
             return
 
         self.db.write_capture_url((new_m3u8))
