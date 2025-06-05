@@ -36,7 +36,7 @@ class MyFreeCams(CommandSet):
 
         name_ = str(arg.name).lower()
 
-        if not chk_streamer_name(name_, self.slug):
+        if not chk_streamer_name(name_):
             log.error("Use lower case, digits, and _")
             return
 
@@ -79,7 +79,7 @@ class MyFreeCams(CommandSet):
         MFC--> stop <streamer's_name>
         """
         name_ = str(arg.name).lower()
-        if not chk_streamer_name(name_, self.slug):
+        if not chk_streamer_name(name_):
             return None
 
         cmd_stop_process_id(name_, self.slug)
@@ -87,7 +87,7 @@ class MyFreeCams(CommandSet):
     @with_argparser(block_reason())
     def do_block(self, arg: Namespace) -> None:
         name_ = str(arg.name).lower()
-        if not chk_streamer_name(name_, self.slug):
+        if not chk_streamer_name(name_):
             return None
 
         reason = "".join(arg.reason)

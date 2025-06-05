@@ -44,8 +44,8 @@ class Chaturbate(CommandSet):
         """
         name_ = str(arg.name)
 
-        if not chk_streamer_name(name_, self.slug):
-            log.error("Use letters, digits, or _ in the name")
+        if not chk_streamer_name(name_):
+            log.error("Use lower case letters, digits, or _ in the name")
             return None
 
         if self.db.query_process_id(name_, self.slug):
@@ -80,7 +80,7 @@ class Chaturbate(CommandSet):
         CB--> stop <streamer's_name>
         """
         name_ = str(arg.name)
-        if not chk_streamer_name(name_, self.slug):
+        if not chk_streamer_name(name_):
             return None
 
         cmd_stop_process_id(name_, self.slug)
@@ -88,7 +88,7 @@ class Chaturbate(CommandSet):
     @with_argparser(block_reason())
     def do_block(self, arg: Namespace) -> None:
         name_ = str(arg.name)
-        if not chk_streamer_name(name_, self.slug):
+        if not chk_streamer_name(name_):
             return None
 
         reason = "".join(arg.reason)

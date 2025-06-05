@@ -17,7 +17,7 @@ from stardust.config.settings import get_setting
 IMG_PATH = get_setting().DIR_IMG_PATH
 
 
-def chk_streamer_name(name_: str, site: str):
+def chk_streamer_name(name_: str):
     valid_lower = "".join([ascii_lowercase, digits, "_"])
 
     return all(chars in valid_lower for chars in name_)
