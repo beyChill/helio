@@ -85,7 +85,8 @@ class Settings(BaseSettings):
     DIR_MITM_DATA: Path = MitmProxyDirs().create_data()
     FFMPEG_DEGUB: bool = False
     VIDEO_EXT: str = "mkv"
-    VIDEO_LENGTH_SECONDS: int = 1800
+    VIDEO_MAX_SECONDS: int = 1800
+    VIDEO_LENGTH_OVERLAP: int = 15
     LOCAL_STORAGE: list[Path] = _storage("long")
     LOCAL_STORAGE.append(DIR_VIDEO_PATH)
     DIR_STORAGE_LOCATIONS: list[Path] = LOCAL_STORAGE

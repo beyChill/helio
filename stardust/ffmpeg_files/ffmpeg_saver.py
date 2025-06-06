@@ -21,7 +21,7 @@ config = get_setting()
 
 
 @dataclass(slots=True)
-class CaptureStreamer:
+class CaptureStreamer(Thread):
     """
     Start and monitor FFmpeg live stream capture
     """
@@ -31,9 +31,10 @@ class CaptureStreamer:
     name_: str = field(init=False)
     site: str = field(init=False)
     slug: str = field(init=False)
+    max_flag: bool = field(init=False)
     process: Popen[str] = field(init=False)
     pid: int = field(default=0, init=False)
-    delay_: int = field(init=False)
+    delay_: int = field(default=12, init=False)
     max_time: bool = field(default=False, init=False)
     restart_url: Any = field(init=False)
 
@@ -42,7 +43,7 @@ class CaptureStreamer:
         self.name_ = self.data.name_
         self.slug = self.data.slug.upper()
         self.db = HelioDB()
-        self.delay_ = 12
+        self.max_flag = False
         self.activate()
 
     def _std_out(self):
@@ -50,18 +51,12 @@ class CaptureStreamer:
             return open(f"{self.data.file_.parent}/stdout.log", "w+", encoding="utf-8")
         return PIPE
 
-    def set_delay(self, seconds: int):
+    def set_delay(self, seconds: int = 0):
         self.delay_ = seconds
 
-    def _terminate(self):
-        self.process.wait()
+    def process_stop(self):
         self.process.terminate()
-
-    def subprocess_poll_end(self):
-        log.stopped(f"{self.name_} [{self.slug}]")
-
-    def video_duration_end(self):
-        log.maxtime(f"{self.name_} [{self.slug}]")
+        self.process.wait()
 
     def activate(self):
         if self.db.query_process_id(self.name_, self.slug):
@@ -86,7 +81,7 @@ class CaptureStreamer:
             return
 
         today_ = datetime.now().replace(microsecond=0)
-        self.db.write_process_id((self.pid, today_, self.name_, self.slug))
+        self.db.write_active_capture((self.pid, today_, self.name_, self.slug))
 
         thread = Thread(target=self.subprocess_status, daemon=True)
         thread.start()
@@ -95,23 +90,25 @@ class CaptureStreamer:
         log.capturing(f"{self.name_} [{self.slug}]")
         while True:
             if self.process.poll() is not None:
-                self._terminate()
+                self.process_stop()
+
+                # allow various api's time to process a streamers
+                # current status. Time varies amoung sites, so
+                # chose a general use delay
+                log.debug(f"{self.name_} [{self.slug}] subprocess stopped")
                 self.set_delay(9)
-                self.subprocess_poll_end()
                 break
 
             if self.check_video_duration():
-                self._terminate()
-                self.set_delay(0)
-                self.video_duration_end()
+                self.process_stop()
                 self.max_time = True
-                self.restart_url = self.db.query_url(self.name_, self.slug)
+                log.maxtime(f"{self.name_} [{self.slug}]")
                 break
 
         self.manage_cap_restart()
 
     def check_video_duration(self):
-        time_value = 0
+        current_video_time = 0
 
         if self.process.stdout is None:
             return False
@@ -120,38 +117,62 @@ class CaptureStreamer:
 
         if "out_time_ms" in (line := output.strip()):
             _, seconds_ = line.split("=")
-            time_value = int(seconds_) / 1e6
+            current_video_time = int(seconds_) / 1e6
 
-        if time_value >= config.VIDEO_LENGTH_SECONDS:
+        # Start a simultaneous capture x seconds prior to max video length
+        # The beginning of video have a studder. An overlap allows for restitching
+        # without the stutter.
+        if (
+            not self.max_flag
+            and current_video_time
+            >= config.VIDEO_MAX_SECONDS - config.VIDEO_LENGTH_OVERLAP
+        ):
+            self.max_flag = True
+            if not self.continue_capture():
+                return False
+            
+            self.restart_url = get_restart_url(self.name_, self.slug)
+
+        if current_video_time >= config.VIDEO_MAX_SECONDS:
             return True
 
         return False
 
+    def continue_capture(self):
+        cap_status, block = self.db.query_cap_status(self.name_, self.slug)
+
+        if not cap_status or block:
+            self.db.write_null_process_id(self.name_, self.slug)
+            return False
+        return True
+
     def manage_cap_restart(self):
+        self.max_flag = False
         if not self.data.file_.is_file():
             return None
 
         calc_video_size(self.name_, self.data.file_, self.slug)
 
-        cap_status, block = self.db.query_cap_status(self.name_, self.slug)
-
-        if not cap_status or block:
-            self.db.write_null_process_id(self.name_, self.slug)
+        if not self.continue_capture():
             return None
 
         if not self.max_time:
             sleep(self.delay_)
             self.restart_url = get_restart_url(self.name_, self.slug)
-            print("restart_url",self.restart_url)
 
         if self.restart_url is None:
             self.db.write_null_process_id(self.name_, self.slug)
             return None
 
-        data = FFmpegConfig(self.name_, self.slug, self.restart_url).return_data
+        restart_capture(self.name_, self.slug, self.restart_url, self.db)
 
-        self.db.write_null_process_id(self.name_, self.slug)
-        CaptureStreamer(data)
+
+# circular import issues with intergrating with Helio's primary capture function
+def restart_capture(name_, slug, restart_url, db):
+    data = FFmpegConfig(name_, slug, restart_url).return_data
+
+    db.write_null_process_id(name_, slug)
+    CaptureStreamer(data)
 
 
 def get_restart_url(name_, slug):
