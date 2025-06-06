@@ -123,9 +123,11 @@ class Proxy(Thread):
         # server is enabled by default via the
         # mitmproxy import of Options()
         ctx.options.update(server=False)
+        self.loop.close()
 
     def __enter__(self):
-        # start is from threading.Thread, it will triggers the run method
+        # start is from threading.Thread,
+        # it will trigger the run method
         self.start()
         time.sleep(0.009)
         self.get_port()
@@ -135,7 +137,6 @@ class Proxy(Thread):
         ctx.master.event_loop.call_soon_threadsafe(self.stop_server)
         ctx.master.shutdown()
         self.join()
-        self.loop.close()
 
     @property
     def proxy_address(self):
@@ -146,12 +147,12 @@ class Proxy(Thread):
 @AppTimerSync
 def launch_sb_for_mfc(sb_proxy):
     """
-    Launch seleniumbase on myfreecams.com
+    Open myfreecams.com
     MyFreeCams api sends a json containing all online
-    streamers. The api auto generates online streamer
-    data. This data returned is easier and has more reliable
-    access vs generating a http get request for this specific
-    data. Manually creating the api request is not straight forward.
+    streamers. The api auto generates the data for browsers.
+    A browser grants more reliable access to the data vs
+    generating a http get request. Manually creating the api
+    request is not straight forward.
     """
 
     # change these args to view (unhide) the web brower
