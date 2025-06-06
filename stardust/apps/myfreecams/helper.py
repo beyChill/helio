@@ -69,7 +69,7 @@ def mfc_server_offset(server: int):
     raise ValueError("Offset calc for MyFreeCams server failed")
 
 
-MFC_VIDEO_STATUS = {
+MFC_STREAMER_STATUS = {
     0: "public",
     2: "away",
     12: "private",
@@ -86,7 +86,7 @@ def chk_online_status(streamer: Lookup, name_: str, slug: str):
             log.offline(f"{name_} [{slug}]")
             return None
 
-        status = MFC_VIDEO_STATUS.get(
+        status = MFC_STREAMER_STATUS.get(
             streamer.result.user.sessions[-1].vstate, "unknown"
         )
 
@@ -94,7 +94,7 @@ def chk_online_status(streamer: Lookup, name_: str, slug: str):
             if status == "offline":
                 log.offline(f"{name_} [{slug}]")
                 return None
-            log.warning(f"{name_} {slug} is {status}")
+            log.stopped(f"{name_} [{slug}] is {status}")
             return None
 
         return streamer
@@ -107,8 +107,8 @@ def video_state_table(summary):
     db = DbMfc("myfreecams")
     videostate = db.query_count_recent_videostate()
 
-    # Using a list because list are easier to sorting.
-    summary = [(MFC_VIDEO_STATUS.get(key), int(total)) for key, total in videostate]
+    # list have sort method.
+    summary = [(MFC_STREAMER_STATUS.get(key), int(total)) for key, total in videostate]
     head = [
         "Status",
         "Streamers",
