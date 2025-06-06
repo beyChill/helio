@@ -38,7 +38,7 @@ class HelioCli(Cmd):
     Manage cli to interact with several sites.
     """
 
-    intro = log.info("Type help or ? for command infomation.\n")
+    intro = log.info("Type help or ? for command infomation")
     app_prompt = ""
     slug = ""
     name_ = ""
