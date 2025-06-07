@@ -83,7 +83,9 @@ class CaptureStreamer(Thread):
         today_ = datetime.now().replace(microsecond=0)
         self.db.write_active_capture((self.pid, today_, self.name_, self.slug))
 
-        thread = Thread(target=self.subprocess_status, daemon=True)
+        thread = Thread(
+            target=self.subprocess_status, name=f"thread: {self.name_}", daemon=True
+        )
         thread.start()
 
     def subprocess_status(self):
@@ -130,7 +132,7 @@ class CaptureStreamer(Thread):
             self.max_flag = True
             if not self.continue_capture():
                 return False
-            
+
             self.restart_url = get_restart_url(self.name_, self.slug)
 
         if current_video_time >= config.VIDEO_MAX_SECONDS:
