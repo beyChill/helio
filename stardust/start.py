@@ -3,8 +3,8 @@ from threading import Thread
 
 from stardust.apps.chaturbate.api_get_jsons import loop_cb_all_online
 from stardust.apps.chaturbate.api_streamer_online import loop_cb_seek_capture
-from stardust.apps.myfreecams.api_get_jsons import loop_mfc_all_online
 from stardust.apps.myfreecams.api_streamer_online import loop_mfc_seek_capture
+from stardust.apps.myfreecams.api_ws_json import loop_mfc_online_streamers
 from stardust.apps.shared_cmds import  is_process_active
 from stardust.cli.commandline import HelioCli
 from stardust.database.db_base import db_init
@@ -12,8 +12,8 @@ from stardust.database.db_base import db_init
 threads = {
     Thread(target=loop_cb_all_online, daemon=True),
     Thread(target=loop_cb_seek_capture, daemon=True),
-    Thread(target=loop_mfc_all_online, daemon=True),
     Thread(target=loop_mfc_seek_capture, daemon=True),
+    Thread(target=loop_mfc_online_streamers, daemon=True),
 }
 
 def run_threads():

@@ -76,16 +76,11 @@ async def get_socket_api_url():
         send_task = asyncio.create_task(send_message(ws))
         receive_task = asyncio.create_task(receive_message(ws, server))
 
-        async def close_ws():
-            await ws.close()
-            send_task.cancel()
-            receive_task.cancel()
-
-        loop = asyncio.get_event_loop()
-        for sig in (signal.SIGINT, signal.SIGTERM):
-            loop.add_signal_handler(sig, lambda: asyncio.create_task(close_ws()))
-
         _, api_url = await asyncio.gather(send_task, receive_task)
+        
+        await ws.close()
+        send_task.cancel()
+        receive_task.cancel()
 
     return api_url
 
