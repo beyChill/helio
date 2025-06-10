@@ -1,18 +1,16 @@
 import asyncio
 import random
-from threading import Thread
+import time
 
 import stardust.utils.heliologger as log
 from stardust.apps.manage_app_db import HelioDB
 from stardust.apps.manage_capture import start_capture
-from stardust.apps.myfreecams.api_get_jsons import mitm_init
 from stardust.apps.myfreecams.db_myfreecams import DbMfc
 from stardust.apps.myfreecams.handleurls import iNetMfc
 from stardust.apps.myfreecams.helper import mfc_server_offset
 from stardust.utils.general import script_delay
 from stardust.utils.handle_m3u8 import HandleM3u8
 
-iNet = iNetMfc()
 db = HelioDB(slug="MFC")
 
 
@@ -20,6 +18,7 @@ async def get_online_streamers():
     """An api request providing minimal data
     Relevant data is the streamer's username
     """
+    iNet = iNetMfc()
     response = await iNet.get_tagged_streamers()
     data = response.result.data
 
@@ -66,12 +65,6 @@ async def organize_capture_data(playlist):
     return (m3u8, streamer_data)
 
 
-async def delay_():
-    delay_, time_ = script_delay(285.27, 396.89)
-    log.query(f"MFC streamers @: {time_}")
-    await asyncio.sleep(delay_)
-
-
 async def get_online_mfc_streamers():
     if not (seek_capture := db.query_streamers_for_capture()):
         log.warning("Zero MFC streamers to capture")
@@ -79,7 +72,9 @@ async def get_online_mfc_streamers():
 
     streamers = await get_online_streamers()
 
-    # lowercase names makes comparison easier. Database also has lower case conversion
+    # Lowercase names makes comparison easier. 
+    # Upper case names should not be possible but...
+    # just in case.
     online_streamers = {x.lower() for x in streamers}
 
     capture_streamers = seek_capture.intersection(online_streamers)
@@ -89,22 +84,9 @@ async def get_online_mfc_streamers():
         return []
 
     # returns streamers having an update within past 6 minutes
+    # 6 minutes is within timeframe for fetching new data from api.
+    # shorter than 6 min
     m3u8_data = DbMfc("myfreecams").query_m3u8_data(capture_streamers)
-
-    # difference means the data in the table is probably outdated
-    if len(capture_streamers) != len(m3u8_data):
-        # Update database with recent data to generate m3u8s for streamers
-        # mitmproxy needs a thread, it will start a asyncio loop
-        thread = Thread(target=mitm_init, daemon=True)
-        thread.start()
-        thread.join()
-
-        # 2nd attempt to attain data to build the m3u8 playlist
-        m3u8_data = DbMfc("myfreecams").query_m3u8_data(capture_streamers)
-
-    if not m3u8_data:
-        log.warning("Unable to acquire any MFC m3u8 data")
-        return []
 
     playlist = build_m3u8s(m3u8_data)
     m3u8s, streamer_data = await organize_capture_data(playlist)
@@ -113,21 +95,30 @@ async def get_online_mfc_streamers():
     return streamer_data
 
 
-async def manage_seek_capture():
+def manage_seek_capture():
     while True:
-        online_streamers = await get_online_mfc_streamers()
+        online_streamers = asyncio.run(get_online_mfc_streamers())
 
         if online_streamers:
             start_capture(online_streamers)
 
-        await delay_()
+        delay_, time_ = script_delay(285.27, 396.89)
+        log.query(f"MFC streamers @: {time_}")
+        time.sleep(delay_)
 
 
 def loop_mfc_seek_capture():
+    # This script depends on the data from
+    # another script (MFC: api_ws_json).
+    # Delaying allows for api call and
+    # data acquistion, which takes about
+    # a second. 5 seconds is a good buffer
+    # TODO consider combining the two scripts
+    time.sleep(5)
     loop = asyncio.new_event_loop()
     loop.create_task(manage_seek_capture())
     loop.run_forever()
 
 
 if __name__ == "__main__":
-    loop_mfc_seek_capture()
+    manage_seek_capture()
