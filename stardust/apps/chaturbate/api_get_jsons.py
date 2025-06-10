@@ -94,7 +94,7 @@ async def manage_cb_room_list():
         if json_data is not None:
             db_data = prep_db_entries(json_data)
             db.write_db_streamers(db_data)
-        log.query(f"{len(json_data)} chaturbate steamers online")
+        log.info(f"{len(json_data)} chaturbate steamers online")
         # Delay reduces api queries per timeframe
         delay_, time_ = script_delay(609.07, 1095.89)
         log.query(f"CB streamers @: {time_}")
