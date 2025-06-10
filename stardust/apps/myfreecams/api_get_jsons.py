@@ -123,7 +123,6 @@ class Proxy(Thread):
         # server is enabled by default via the
         # mitmproxy import of Options()
         ctx.options.update(server=False)
-        self.loop.close()
 
     def __enter__(self):
         # start is from threading.Thread,
@@ -136,6 +135,8 @@ class Proxy(Thread):
     def __exit__(self, *_) -> None:
         ctx.master.event_loop.call_soon_threadsafe(self.stop_server)
         ctx.master.shutdown()
+        if not self.loop.is_running:
+            self.loop.close()
         self.join()
 
     @property
@@ -144,7 +145,7 @@ class Proxy(Thread):
         return sb_proxy
 
 
-@AppTimerSync
+# @AppTimerSync
 def launch_sb_for_mfc(sb_proxy):
     """
     Open myfreecams.com
@@ -166,15 +167,17 @@ def launch_sb_for_mfc(sb_proxy):
         window_position = f"{choice(range(101, 412))},{choice(range(121, 563))}"
         window_size = f"{choice(range(201, 311))}, {choice(range(222, 343))}"
 
-    with SB(
-        uc=True,
-        locale="en",
-        proxy=sb_proxy,
-        headed=headed,
-        headless2=headless2,
-        window_size=(f"{window_size}"),
-        window_position=window_position,
-    ) as sb:
+    opts = {
+        "uc": True,
+        "locale": "en",
+        "proxy": sb_proxy,
+        "headed": headed,
+        "headless2": headless2,
+        "window_size": (f"{window_size}"),
+        "window_position": window_position,
+    }
+    
+    with SB(**opts) as sb:
         url = "https://www.myfreecams.com"
         sb.activate_cdp_mode(url)
 
