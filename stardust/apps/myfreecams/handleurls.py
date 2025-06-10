@@ -145,3 +145,9 @@ class iNetMfc:
 
         result = Tags(**await resp.json())
         return result
+
+    async def get_all_online_streamers(self, url):
+        resp: Response = await self.client.get(url)
+
+        result = await resp.json()
+        return result
