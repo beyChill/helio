@@ -3,7 +3,6 @@ import asyncio
 import json
 import random
 import re
-import signal
 import time
 from urllib.parse import unquote
 
