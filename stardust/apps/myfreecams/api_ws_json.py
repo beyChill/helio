@@ -122,7 +122,7 @@ def manage_websocket():
         json_ = asyncio.run(iNet.get_all_online_streamers(api_url))
         handle_streamers_online(json_)
 
-        delay_, time_ = script_delay(19.07, 42.89)
+        delay_, time_ = script_delay(302.47, 425.389)
         log.query(f"MFC streamers @ {time_}")
         time.sleep(delay_)
 
