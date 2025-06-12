@@ -15,14 +15,16 @@ db = HelioDB(slug="MFC")
 
 
 async def get_online_streamers():
-    """An api request providing minimal data
-    Relevant data is the streamer's username
+    """An api request providing minimal data.
+    Relevant data is the streamer's username.
+    Also converts names to lower case to ease 
+    comparison.
     """
     iNet = iNetMfc()
     response = await iNet.get_tagged_streamers()
     data = response.result.data
 
-    return {streamer.username for streamer in data}
+    return {streamer.username.lower() for streamer in data}
 
 
 def build_m3u8s(data):
@@ -70,12 +72,7 @@ async def get_online_mfc_streamers():
         log.warning("Zero MFC streamers to capture")
         return []
 
-    streamers = await get_online_streamers()
-
-    # Lowercase names makes comparison easier. 
-    # Upper case names should not be possible but...
-    # just in case.
-    online_streamers = {x.lower() for x in streamers}
+    online_streamers = await get_online_streamers()
 
     capture_streamers = seek_capture.intersection(online_streamers)
 
@@ -83,10 +80,10 @@ async def get_online_mfc_streamers():
         log.query(f"0 of {len(seek_capture)} MyFreeCams streamers online")
         return []
 
-    # returns streamers having an update within past 6 minutes
+    # returns streamers having an update within past 6 minutes are most likely online 
     # 6 minutes is within timeframe for fetching new data from api.
-    # shorter than 6 min
-    m3u8_data = DbMfc("myfreecams").query_m3u8_data(capture_streamers)
+    if not (m3u8_data := DbMfc("myfreecams").query_m3u8_data(capture_streamers)):
+        return []
 
     playlist = build_m3u8s(m3u8_data)
     m3u8s, streamer_data = await organize_capture_data(playlist)
