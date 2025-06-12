@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS streamer_data(
     missmfc         INTEGER DEFAULT NULL,
     camscore        INTEGER DEFAULT NULL,
     continent       VARCHAR(30) DEFAULT NULL,
-    country         VARCHAR(4) DEFAULT NULL,
+    flags           VARCHAR(4) DEFAULT NULL,
     rank_           INTEGER DEFAULT NULL,
     rc              INTEGER DEFAULT NULL,
     tags            TEXT,

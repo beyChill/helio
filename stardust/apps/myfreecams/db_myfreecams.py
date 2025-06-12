@@ -31,6 +31,7 @@ class DbMfc(HelioDB):
         return self.execute_query(sql, GetRows.FETCHALL)
 
     def query_m3u8_data(self, streamers: list[str] | set[str]):
+        """Data for constructing m3u8 playlist"""
         time = datetime.now().replace(microsecond=0) - timedelta(minutes=6)
         name_ = tuple(streamers)
 
@@ -143,7 +144,7 @@ class DbMfc(HelioDB):
                 missmfc,
                 camscore,
                 continent,
-                country,
+                flags,
                 rank_,
                 rc )
             VALUES (LOWER(?), DATETIME(?, 'unixepoch'), ?, ?, ?, ?, ?, ?, ?)
@@ -154,7 +155,7 @@ class DbMfc(HelioDB):
                 missmfc = excluded.missmfc,
                 camscore = excluded.camscore,
                 continent = excluded.continent,
-                country = excluded.country,
+                flags excluded.flags,
                 rank_ = excluded.rank_,
                 rc = excluded.rc
                 """

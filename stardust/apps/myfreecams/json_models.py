@@ -26,7 +26,7 @@ class LookupProfile(BaseModel):
     age: Optional[str] = None
     gender: Optional[str] = None
     city: Optional[str] = None
-    country: Optional[str] = None
+    flags: Optional[str] = None
     birthdate: Optional[str] = None
     sexual_preference: Optional[str] = None
     marital_status: Optional[str] = None
@@ -115,7 +115,7 @@ class AppProfile(BaseModel):
     age: Optional[str] = None
     gender: Optional[str] = None
     city: Optional[str] = None
-    country: Optional[str] = None
+    flags: Optional[str] = None
     birthdate: Optional[str] = None
     sexual_preference: Optional[str] = None
     marital_status: Optional[str] = None
@@ -246,11 +246,12 @@ class Tags(BaseModel):
 
 
 class BuildUrl(BaseModel):
-    name_:str
-    server:int
-    phase:str
-    pid:int
-    uid_:int
+    name_: str
+    server: int
+    phase: str
+    pid: int
+    uid_: int
+
 
 class UserApi(BaseModel):
     id: int
