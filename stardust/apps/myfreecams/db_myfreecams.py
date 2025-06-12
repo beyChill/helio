@@ -155,7 +155,7 @@ class DbMfc(HelioDB):
                 missmfc = excluded.missmfc,
                 camscore = excluded.camscore,
                 continent = excluded.continent,
-                flags excluded.flags,
+                flags = excluded.flags,
                 rank_ = excluded.rank_,
                 rc = excluded.rc
                 """
