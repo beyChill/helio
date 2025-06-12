@@ -118,6 +118,7 @@ class HelioDB:
         return self.clean_fetchone(sql)
 
     def query_streamers_for_capture(self):
+        """Query streamers waiting for capture"""
         sql = f"""
             SELECT streamer_name
             FROM {self.db_name}
