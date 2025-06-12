@@ -1,3 +1,6 @@
+# Primary purpose is to use websockets to obtain
+# the data to build api url to acquire json 
+# containting all online streamers
 # The generated url expires after 2-3 minutes
 import asyncio
 import json
@@ -86,13 +89,13 @@ def handle_streamers_online(json_):
     data = json_["rdata"]
 
     # populate table with only data used for m3u8 creation
-    # ["nm", "sid", "uid", "vs", "pid", "lv", "camserv", "phase"]
+    # json columns headers: ["nm", "sid", "uid", "vs", "pid", "lv", "camserv", "phase"]
     url_data = [x[0:8] for x in data[1:-1]]
 
     # api returns tons of data Helio doesn't use. Picking and
     # choosing the desired data columns
-    # ["nm", "creation" "new_model", "missmfc", "camscore", "continent", "flags", "rank", "rc"]
-    # i.e. ['ArtemisArte', 1725448438, 0, 0, 78.2, 'EU', 33897504, 0, 4]
+    # json columns headers: ["nm", "creation" "new_model", "missmfc", "camscore", "continent", "flags", "rank", "rc"]
+    # json data: ['ArtemisArte', 1725448438, 0, 0, 78.2, 'EU', 33897504, 0, 4]
     streamer_data = [[x[0], x[11], *x[16:23]] for x in data[1:-1]]
 
     db.write_streamer_data(streamer_data)
@@ -108,7 +111,7 @@ def manage_websocket():
         json_ = asyncio.run(iNet.get_all_online_streamers(api_url))
         handle_streamers_online(json_)
 
-        delay_, time_ = script_delay(17.47, 21.389)
+        delay_, time_ = script_delay(317.47, 421.389)
         log.query(f"MFC streamers @ {time_}")
         time.sleep(delay_)
 
