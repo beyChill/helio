@@ -1,7 +1,6 @@
-import argparse
 import asyncio
 import sys
-
+from argparse import Namespace
 from cmd2 import (
     Cmd,
     Cmd2ArgumentParser,
@@ -9,11 +8,11 @@ from cmd2 import (
     with_argparser,
 )
 
-from stardust.apps.arg_parser import set_logs
+from stardust.apps.arg_parser import cap_status, set_logs
 from stardust.apps.camsoda.cli import CamSoda
 from stardust.apps.chaturbate.cli import Chaturbate
 from stardust.apps.myfreecams.cli import MyFreeCams
-from stardust.apps.shared_cmds import cmd_stop_all_captures
+from stardust.apps.shared_cmds import cmd_cap, cmd_off, cmd_stop_all_captures
 from stardust.apps.stripchat.cli import StripChat
 from stardust.config.chroma import rgb
 import stardust.utils.heliologger as log
@@ -71,7 +70,7 @@ class HelioCli(Cmd):
             self.prompt = rgb("Helio--> ", "green")
 
     @with_argparser(load_parser)
-    def do_load(self, ns: argparse.Namespace):
+    def do_load(self, ns: Namespace):
         """Activate the cli for a given site"""
 
         # automating do_unload
@@ -97,7 +96,7 @@ class HelioCli(Cmd):
             self.poutput(f"{self.name_} already loaded")
 
     @with_argparser(load_parser)
-    def do_unload(self, ns: argparse.Namespace):
+    def do_unload(self, ns: Namespace):
         """Make the app cli inactive, threaded functions using asyncio.run_forever() will continue to run"""
         if not self._get_cli_prompt(ns.app):
             return
@@ -114,7 +113,7 @@ class HelioCli(Cmd):
         self.prompt = rgb("Helio--> ", "green")
 
     @with_argparser(set_logs())
-    def do_log(self, arg: argparse.Namespace):
+    def do_log(self, arg: Namespace):
         level = arg.level.lower()
         value = ""
 
@@ -147,8 +146,17 @@ class HelioCli(Cmd):
         self.color = color
         return True
 
+    @with_argparser(cap_status())
+    def do_cap(self, arg: Namespace) -> None:
+        cmd_cap(arg.sort)
+
+    @with_argparser(cap_status())
+    def do_off(self, arg: Namespace) -> None:
+        cmd_off(arg.sort)
+
     categorize(
-        (do_load, do_unload, do_log, do_version, do_quit, do_version), "Helio commands"
+        (do_load, do_unload, do_log, do_version, do_quit, do_version, do_cap, do_off),
+        "Helio commands",
     )
 
 
