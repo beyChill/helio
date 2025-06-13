@@ -27,6 +27,7 @@ def get_videos():
     ]
     paths.sort()
     video_paths = [list(g) for _, g in groupby(paths, dirname)]
+    log.debug(video_paths)
 
     return video_paths
 
@@ -34,13 +35,13 @@ def get_videos():
 def get_video_duration(video_path: list[list[Path]]):
     log.info("calculating video durations")
     video_duration_seconds = 0
-    new_dir = get_setting().DIR_VIDEO_SHORT
+    dir_video_short = get_setting().DIR_VIDEO_SHORT
     video_durations: list[ContactSheetModel] = []
     video_data: list[list[ContactSheetModel]] = []
 
     for v_path in video_path:
         for path_ in v_path:
-            new_location = Path(new_dir / path_.name)
+            new_location = Path(dir_video_short / path_.name)
 
             fs = path_.stat().st_size
             file_size = round(fs / (1024**2), 4)
@@ -48,7 +49,7 @@ def get_video_duration(video_path: list[list[Path]]):
             # auto remove files less than 10 Mib
             if file_size < 10:
                 shutil.move(path_, new_location)
-                log.moved(f"Tiny file: {path_.name} to {str(new_dir)}")
+                log.moved(f"Tiny file: {path_.name} to {str(dir_video_short)}")
 
                 continue
 
@@ -79,7 +80,7 @@ def get_video_duration(video_path: list[list[Path]]):
                 # short video is <= 300 seconds (5 min)
                 if video_duration_seconds <= 300:
                     shutil.move(path_, new_location)
-                    log.moved(f"Moved {path_.name} to {str(new_dir)}")
+                    log.moved(f"Moved {path_.name} to {str(dir_video_short)}")
                     continue
 
                 interval = max_image(video_duration_seconds)
