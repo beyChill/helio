@@ -100,16 +100,16 @@ def manage_seek_capture():
             start_capture(online_streamers)
 
         delay_, time_ = script_delay(285.27, 396.89)
-        log.query(f"MFC streamers @: {time_}")
+        log.query(f"MFC streamers for capture @: {time_}")
         time.sleep(delay_)
 
 
 def loop_mfc_seek_capture():
     # This script depends on the data from
     # another script (MFC: api_ws_json).
-    # Delaying allows for api call and
+    # Delaying start allows for api call and
     # data acquistion, which takes about
-    # a second. 5 seconds is a good buffer
+    # a second. Five seconds is a good buffer
     # TODO consider combining the two scripts
     time.sleep(5)
     loop = asyncio.new_event_loop()
