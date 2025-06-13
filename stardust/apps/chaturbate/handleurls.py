@@ -3,6 +3,7 @@ from random import choice
 
 from rnet import Client, Impersonate, Response
 
+import stardust.utils.heliologger as log
 from stardust.apps.chaturbate.models import CBModel, ChatVideoContext
 from stardust.apps.models_app import not200
 from stardust.utils.general import filter_not200
@@ -109,10 +110,11 @@ class iNetCb:
             form=params,
             headers=headers,
         )
-
-        data = await resp.json()
-
-        return data
+        try: 
+            data = await resp.json()
+            return data
+        except Exception as e:
+            log.error(f"{__file__}: {e}")
 
     def filter_json_urls(self, data):
         filtered_data = [x for x in data if not isinstance(x, not200)]
