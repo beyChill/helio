@@ -287,7 +287,8 @@ class HelioDB:
         sql = f"""
             UPDATE {self.db_name}
             SET process_id = ?,
-            last_capture = ?
+            last_capture = ?,
+            last_broadcast = last_capture
             WHERE streamer_name = ?
             AND slug = ?
             """
