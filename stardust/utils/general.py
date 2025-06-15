@@ -4,7 +4,7 @@ from pathlib import Path
 from random import uniform
 from string import ascii_lowercase, digits
 
-from rnet import Client, Impersonate, ImpersonateOption, Response
+from rnet import Client, Response
 
 import stardust
 import stardust.utils.heliologger as log
