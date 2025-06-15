@@ -4,7 +4,7 @@ from pathlib import Path
 from random import uniform
 from string import ascii_lowercase, digits
 
-from rnet import Client, Response
+from rnet import Client, Impersonate, ImpersonateOption, Response
 
 import stardust
 import stardust.utils.heliologger as log
@@ -73,7 +73,7 @@ async def check_helio_github_version():
 
     log.info("Checking Helio version")
     repo_path = stardust.__repo_path__
-    client = Client()
+    iNet = Client()
     latest_version = ""
     try:
         headers = {
@@ -82,7 +82,7 @@ async def check_helio_github_version():
             "X-GitHub-Api-Version": "2022-11-28",
         }
 
-        resp: Response = await client.get(
+        resp: Response = await iNet.get(
             f"https://api.github.com/repos/{repo_path}/releases/latest",
             headers=headers,
         )
