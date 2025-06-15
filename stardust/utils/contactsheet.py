@@ -175,16 +175,15 @@ def create_contactsheet(data: ContactSheetModel):
 def loop_contactsheet_list(video_data):
     for files in video_data:
         for q, a in enumerate(files, 1):
-            log.success(
-                f"\rprocessing {q} of {len(files)} for {a.input_path.parts[-2]}"
-            )
+            log.debug(f"processing {a.input_path.parts[-2]}")
             create_contactsheet(a)
 
 
 @AppTimerSync
-def manage_contactsheet():
-    log.created("Generating contact sheet(s)")
-    videos = get_videos()
+def manage_contactsheet(videos=None):
+    log.debug("Contact sheet generation")
+    if not videos:
+        videos = get_videos()
     video_data = get_video_duration(videos)
     loop_contactsheet_list(video_data)
 

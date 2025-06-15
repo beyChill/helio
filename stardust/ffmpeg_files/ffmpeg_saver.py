@@ -6,6 +6,7 @@ from threading import Thread
 from time import sleep
 from typing import Any
 
+from stardust.utils.contactsheet import manage_contactsheet
 import stardust.utils.heliologger as log
 from stardust.apps.chaturbate.handleurls import iNetCb
 from stardust.apps.manage_app_db import HelioDB
@@ -154,7 +155,10 @@ class CaptureStreamer(Thread):
             return None
 
         calc_video_size(self.name_, self.data.file_, self.slug)
-
+        
+        contact_sheet = Thread(target=manage_contactsheet([[self.data.file_]]), daemon=True)
+        contact_sheet.start()
+        
         if not self.continue_capture():
             return None
 
