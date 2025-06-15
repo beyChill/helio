@@ -95,14 +95,6 @@ class Chaturbate(CommandSet):
 
         self.db.write_block_reason((name_, self.slug, reason))
 
-    @with_argparser(cap_status())
-    def do_cap(self, arg: Namespace) -> None:
-        cmd_cap(arg.sort)
-
-    @with_argparser(cap_status())
-    def do_off(self, arg: Namespace) -> None:
-        cmd_off(arg.sort)
-
     @with_argparser(long_inactive())
     def do_long(self, num: Namespace):
         cmd_long(num)
@@ -117,4 +109,4 @@ class Chaturbate(CommandSet):
         return data
 
     categorize((do_get, do_stop, do_block), "Chaturbate Streamer")
-    categorize((do_cap, do_long, do_off), "Site Streamer Status")
+    categorize((do_long), "Site Streamer Status")

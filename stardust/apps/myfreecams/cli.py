@@ -94,17 +94,10 @@ class MyFreeCams(CommandSet):
 
         self.db.write_block_reason((name_, reason))
 
-    @with_argparser(cap_status())
-    def do_cap(self, arg: Namespace) -> None:
-        cmd_cap(arg.sort)
-
-    @with_argparser(cap_status())
-    def do_off(self, arg: Namespace) -> None:
-        cmd_off(arg.sort)
 
     @with_argparser(long_inactive())
     def do_long(self, num: Namespace):
         cmd_long(num)
 
     categorize((do_get, do_stop, do_block), "MyFreeCams Streamer")
-    categorize((do_cap, do_long, do_off), "Streamer Status")
+    categorize((do_long), "Streamer Status")
