@@ -5,8 +5,13 @@
 <link rel="stylesheet" href="github-markdown.css">
 
 <p id="top" align="center">
-    <b><h1 align="center">Helio</h1></b>
+    <b><h1 align="center">Helio ...paused (2025-06-22)</h1></b>
 </p>
+
+<p align="center">Having recently viewed some rust code. I decided on impulse to take Helio into rusty land.</br> Therefore, a pure python Helio is lower on time allocation list.</br>Follow as I learn rust.
+<p align="center"><h1 align="center">look for rHelio ...soon</h1></p>
+
+
 
 <p align="center">An educational app for testing and comprehending python's
     <br/> capabilities to interact, monitor, and capture stream data
@@ -47,20 +52,19 @@
 
 - Fast storage (SSD) for real-time access
 - Whatever long term storage for videos
-- mitmproxy (for web browser intercepts) provides the certificates for <b style="color:orange;">https</b> access when active
-    - <a title="mitmproxy" href="https://docs.mitmproxy.org/stable/concepts-certificates/">mitmproxy</a>
+<!-- - mitmproxy (for web browser intercepts) provides the certificates for <b style="color:orange;">https</b> access when active
+  - <a title="mitmproxy" href="https://docs.mitmproxy.org/stable/concepts-certificates/">mitmproxy</a> -->
 
 <!-- <ul>
     <li>Fast storage (SSD) for real-time access</li>
     <li>Whatever long term storage for videos</li>
     <li>mitmproxy provides the certificates for <b style="color:orange;">https</b> access</li>
-    <span><a title="mitmproxy" href="https://docs.mitmproxy.org/stable/concepts-certificates/">mitmproxy</a></span>            
+    <span><a title="mitmproxy" href="https://docs.mitmproxy.org/stable/concepts-certificates/">mitmproxy</a></span>
 </ul> -->
 
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
 
 <hr style="height:2px;border-width:0;color:gray;">
-
 
 <div id="toc" align="center">
     <ul style="list-style: none;">
@@ -70,23 +74,25 @@
     </ul>
 </div>
 
-
 <h3>Prerequisite</h3>
 
 - uv - An ultra fast project and package manager.
-    - <a title="uv by Atrfal" href="https://docs.astral.sh/uv/getting-started/installation/">uv Astral</a>
+  - <a title="uv by Atrfal" href="https://docs.astral.sh/uv/getting-started/installation/">uv Astral</a>
 - Some versions of linux (Fedora) require Xvfb install to use Seleniumbase without display error messages in the console
+
 ```bash
 sudo dnf install xorg-x11-server-Xvfb
 ```
 
-**Optional, populate .env with applicable strings.   
+\*\*Optional, populate .env with applicable strings.
 
-An example is in the root directory.   
+An example is in the root directory.
+
 - env_example
 
-Expect Helio to create folders and databases.   
+Expect Helio to create folders and databases.  
 Seleniumbase will download everyting it needs to be functional
+
 - the folder appears in the root directory as 'downloaded_files'
 
 <p>Clone Helio from github</p>
@@ -102,9 +108,6 @@ uv pip install -e .
 uv run stardust/setup_dirs.py
 ```
 
-
-
-
 <p>
     After the inital run security certificates will be install in ~/.mitmproxy
 </p>
@@ -112,7 +115,7 @@ uv run stardust/setup_dirs.py
 <span>Ubuntu/Debian</span>
 <span> <a title="Install a root CA certificate in the trust store" href="https://documentation.ubuntu.com/server/how-to/security/install-a-root-ca-certificate-in-the-trust-store/index.html">(Detailed instructions)</a></span>
 
-```bash
+<!-- ```bash
 mv mitmproxy-ca-cert.pem /usr/local/share/ca-certificates/mitmproxy.crt
 sudo update-ca-certificates
 ```
@@ -123,14 +126,13 @@ sudo update-ca-certificates
 ```bash
 mv mitmproxy-ca-cert.pem /etc/pki/ca-trust/source/anchors/
 sudo update-ca-trust
-```
+``` -->
 
-<span>Arch Linux</span><span> <a title="Transport Layer Security" href="https://wiki.archlinux.org/title/Transport_Layer_Security#Add_a_certificate_to_a_trust_store">(Detailed instructions)</a></span>
+<!-- <span>Arch Linux</span><span> <a title="Transport Layer Security" href="https://wiki.archlinux.org/title/Transport_Layer_Security#Add_a_certificate_to_a_trust_store">(Detailed instructions)</a></span>
 
 ```bash
 sudo trust anchor mitmproxy-ca-cert.pem
-```
-
+``` -->
 
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
 <hr style="height:2px;border-width:0;color:gray;">
@@ -162,7 +164,6 @@ sudo trust anchor mitmproxy-ca-cert.pem
     </ul>
 </div>
 
-
 <p>
     Windows compatibility: <b style="color:red">ZERO interest</b>.<br/> Any user is free to modify this software for use on platforms outside of Linux
 </p>
@@ -186,8 +187,8 @@ Knowledge share for some packages in Helio's tech stack
     <li><a href="https://github.com/0x676e67/rnet">rnet: </a>TLS/HTTP2 client</li>
     <li><a href="https://github.com/PyGithub/PyGithub">pygithub: </a>Access GitHub api</li>
     <li><a href="https://github.com/theskumar/python-dotenv">python-dotenv: </a>Environment variables</li>
-    <li><a href="https://mitmproxy.org">mitmproxy: </a>Intercept http request</li>
-    <li><a href="https://github.com/seleniumbase">seleniumbase: </a>Chrome development tools</li>
+    <!-- <li><a href="https://mitmproxy.org">mitmproxy: </a>Intercept http request</li>
+    <li><a href="https://github.com/seleniumbase">seleniumbase: </a>Chrome development tools</li> -->
 </ul>
 </p>
 </div>
@@ -201,7 +202,6 @@ Knowledge share for some packages in Helio's tech stack
     </summary>
     </ul>
 </div>
-
 
 <div>
     <ul>
@@ -226,7 +226,6 @@ Knowledge share for some packages in Helio's tech stack
     </ul>
 </div>
 
-
 <div >
 <p>beyChill <b style="color:red">does not</b> provide any warranty of any kind, expressed or implied, relating to the open-source Helio and its use.  beyChill <b style="color:red">disclaims</b> all expressed and/or implied warranties and conditions pertaining in any way to any open-source integrated into Helio code. beyChill <b style="color:red">does not</b> warrant that Helio will integrate error-free with other software running on any machine. Helio may become <b style="color:red">abandoned</b> at any time. beyChill <b style="color:red">is not</b> required to provide prior notice for Helio <b style="color:red">depreciated support</b>. Use of Helio will <b style="color:red">never</b> require any monetary exchange. beyChill will <b style="color:red">never</b> request any donation and/or compensation for Helio.</p></div>
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
@@ -246,6 +245,7 @@ Knowledge share for some packages in Helio's tech stack
 $ source .venv/bin/activate
 (helio) $
 ```
+
 <p>Run setup_dirs.py from stardust directory prior to accessing cli.</p>
 
 Run start script from stardust directory.<br/>
@@ -264,7 +264,9 @@ MFC--> help
 MFC--> unload mfc
 Helio--> quit
 ```
-***IMPORTANT***
+
+**_IMPORTANT_**
+
 <p>The different sites cli (cb, mfc, sc, etc.) use commands with identical names.</br>
 Issue the 'load' command for the specific site to obtain the desired results.</p>
 
@@ -276,7 +278,8 @@ MFC--> get adysweet
 
 ```
 
-***IMPORTANT***
+<!-- **_IMPORTANT_**
+
 <p>Capitalization is very important with MyFreeCams streamer's names. The MFC app has lowercased streamer names.</br>
 Please ensure correct capitalization otherwise database will contain duplicate streamers</p>
-<p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
+<p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p> -->
