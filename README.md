@@ -5,11 +5,11 @@
 <link rel="stylesheet" href="github-markdown.css">
 
 <p id="top" align="center">
-    <b><h1 align="center">Helio ...paused (2025-06-22)</h1></b>
+    <b><h1 align="center">Helio ...new direction (2025-06-30)</h1></b>
 </p>
 
 <p align="center">Having recently viewed some rust code. I decided on impulse to take Helio into rusty land.</br> Therefore, a pure python Helio is lower on time allocation list.</br>Follow as I learn rust.
-<p align="center"><h1 align="center">look for rHelio ...soon</h1></p>
+<p align="center"><h1 align="center">look for a new repository ...soon</h1></p>
 
 
 
@@ -37,7 +37,7 @@
     <img style="margin-right:15px;" alt="Static Badge" src="https://img.shields.io/badge/MIT-orange?style=for-the-badge&label=license&labelColor=blue">
     <img style="margin-right:15px;" alt="GitHub last commit" src="https://img.shields.io/github/last-commit/beyChill/helio?style=for-the-badge&labelColor=blue">
     <img style="margin-right:15px;" alt="GitHub Release Date" src="https://img.shields.io/github/release-date/beyChill/helio?style=for-the-badge&labelColor=blue">
-    <img alt="GitHub Downloads (all assets, all releases)" src="https://img.shields.io/github/downloads/beyChill/helio/total?style=for-the-badge&labelColor=blue">
+    <!-- <img alt="GitHub Downloads (all assets, all releases)" src="https://img.shields.io/github/downloads/beyChill/helio/total?style=for-the-badge&labelColor=blue"> -->
 </div>
 
 <hr style="height:2px;border-width:0;color:gray;">
@@ -78,11 +78,6 @@
 
 - uv - An ultra fast project and package manager.
   - <a title="uv by Atrfal" href="https://docs.astral.sh/uv/getting-started/installation/">uv Astral</a>
-- Some versions of linux (Fedora) require Xvfb install to use Seleniumbase without display error messages in the console
-
-```bash
-sudo dnf install xorg-x11-server-Xvfb
-```
 
 \*\*Optional, populate .env with applicable strings.
 
@@ -91,14 +86,17 @@ An example is in the root directory.
 - env_example
 
 Expect Helio to create folders and databases.  
-Seleniumbase will download everyting it needs to be functional
 
-- the folder appears in the root directory as 'downloaded_files'
+<h3>Clone Helio from github</h3>
+<h4>Recommended install steps</h4>
 
-<p>Clone Helio from github</p>
-Recommended install steps
+
+- Note: The uv cache location impacts performance.
+
+    - A cache on a drive separate from the project may generate uv errors
 
 ```bash
+export UV_CACHE_DIR=<place on same drive as project>
 git clone https://github.com/beyChill/helio.git
 cd helio
 uv venv .venv
