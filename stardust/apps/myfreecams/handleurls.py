@@ -1,9 +1,8 @@
 import asyncio
 import time
-from random import choice
 from typing import Callable
 
-from rnet import Client, Impersonate, Response
+from rnet import Client, ImpersonateOption, Response
 
 from stardust.apps.models_app import not200
 from stardust.apps.myfreecams.json_models import (
@@ -14,20 +13,17 @@ from stardust.apps.myfreecams.json_models import (
 )
 from stardust.utils.general import filter_not200
 
-headers = {
-    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0"
-}
-
 
 class iNetMfc:
     # Unicode Character in the response will cause print to fail
+    # Some modules use unicode in their description fields.
     # Add the data to a base class prior to printing
-    browser = [Impersonate.Firefox136, Impersonate.Chrome134, Impersonate.Edge131]
+    browser = ImpersonateOption.random()
     client = Client()
     slug = "MFC"
 
     def __init__(self):
-        self.client.update(impersonate=choice(self.browser), headers=headers)
+        self.client.update(impersonate=self.browser)
 
     async def get_user_profile(self, names_: set[str]):
         tasks = {self.get_user(name_) for name_ in names_}

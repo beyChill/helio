@@ -15,7 +15,7 @@ def cmd_stop_process_id(name_: str, slug: str):
             os.kill(pid, SIGTERM)
             log.stopped(name_, f"[{slug}]")
             db.write_rm_seek_capture(name_, slug)
-            return None
+            
         except OSError as e:
             db.write_rm_seek_capture(name_, slug)
             if e.errno == 3:
@@ -24,6 +24,8 @@ def cmd_stop_process_id(name_: str, slug: str):
 
             msg = f"A problem occurred while stopping {name_} [{slug}]"
             log.error(msg)
+            
+    return None
 
 
 def cmd_stop_all_captures():
@@ -75,7 +77,7 @@ def handle_process_id_error(name_, slug,process_id, e:OSError):
 def cmd_cap(sort_opt):
     sort = sort_options(sort_opt)
     if not (query := db.query_active_capture(sort)):
-        log.warning("Presently capturing zero streamers")
+        log.info("Presently capturing zero streamers")
         return None
 
     head = ["Streamers", "Site", "Capturing", "Data (GB)"]

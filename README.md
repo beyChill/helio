@@ -51,16 +51,8 @@
 </div>
 
 - Fast storage (SSD) for real-time access
+    - Helio can capture as many streams as your system can handle
 - Whatever long term storage for videos
-<!-- - mitmproxy (for web browser intercepts) provides the certificates for <b style="color:orange;">https</b> access when active
-  - <a title="mitmproxy" href="https://docs.mitmproxy.org/stable/concepts-certificates/">mitmproxy</a> -->
-
-<!-- <ul>
-    <li>Fast storage (SSD) for real-time access</li>
-    <li>Whatever long term storage for videos</li>
-    <li>mitmproxy provides the certificates for <b style="color:orange;">https</b> access</li>
-    <span><a title="mitmproxy" href="https://docs.mitmproxy.org/stable/concepts-certificates/">mitmproxy</a></span>
-</ul> -->
 
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
 
@@ -113,24 +105,6 @@ uv run stardust/setup_dirs.py
 <span>Ubuntu/Debian</span>
 <span> <a title="Install a root CA certificate in the trust store" href="https://documentation.ubuntu.com/server/how-to/security/install-a-root-ca-certificate-in-the-trust-store/index.html">(Detailed instructions)</a></span>
 
-<!-- ```bash
-mv mitmproxy-ca-cert.pem /usr/local/share/ca-certificates/mitmproxy.crt
-sudo update-ca-certificates
-```
-
-<span>Fedora</span>
-<span> <a title="Using Shared System Certificates" href="https://docs.fedoraproject.org/en-US/quick-docs/using-shared-system-certificates/#proc_adding-new-certificates">(Detailed instructions)</a></span>
-
-```bash
-mv mitmproxy-ca-cert.pem /etc/pki/ca-trust/source/anchors/
-sudo update-ca-trust
-``` -->
-
-<!-- <span>Arch Linux</span><span> <a title="Transport Layer Security" href="https://wiki.archlinux.org/title/Transport_Layer_Security#Add_a_certificate_to_a_trust_store">(Detailed instructions)</a></span>
-
-```bash
-sudo trust anchor mitmproxy-ca-cert.pem
-``` -->
 
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
 <hr style="height:2px;border-width:0;color:gray;">
@@ -249,16 +223,21 @@ $ source .venv/bin/activate
 Run start script from stardust directory.<br/>
 ( help screen is visible after entering the help command )
 
-```python
+```bash
 (helio) $ uv run stardust/start.py
+
+# use help command to access features
 Helio--> help
+
+# use load command to switch sites
 Helio--> load cb
 chaturbate interactions are ready
-CB--> help
-CB--> unload cb
-Helio--> load mfc
+CB-->  get ann456
+22:02:56 [CAPTURING]: ann456 [CB]
+CB-->  load mfc
 myfreecams interactions are ready
-MFC--> help
+MFC--> get emma_hot
+05:49:56 [CAPTURING]: emma_hot [MFC]
 MFC--> unload mfc
 Helio--> quit
 ```
@@ -276,8 +255,3 @@ MFC--> get adysweet
 
 ```
 
-<!-- **_IMPORTANT_**
-
-<p>Capitalization is very important with MyFreeCams streamer's names. The MFC app has lowercased streamer names.</br>
-Please ensure correct capitalization otherwise database will contain duplicate streamers</p>
-<p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p> -->
