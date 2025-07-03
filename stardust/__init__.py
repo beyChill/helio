@@ -1,4 +1,4 @@
-__version__ = "0.3.379"
+__version__ = "0.3.380"
 __author__ = "beyChill"
 __description__ = "Capture video streams"
 __repo_name__ = "helio"

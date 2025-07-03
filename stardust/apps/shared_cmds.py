@@ -10,14 +10,13 @@ db = HelioDB()
 
 
 def cmd_stop_process_id(name_: str, slug: str):
+    db.write_rm_seek_capture(name_, slug)
     if pid := db.query_process_id(name_, slug):
         try:
             os.kill(pid, SIGTERM)
             log.stopped(name_, f"[{slug}]")
-            db.write_rm_seek_capture(name_, slug)
             
         except OSError as e:
-            db.write_rm_seek_capture(name_, slug)
             if e.errno == 3:
                 log.error(f"Invalid process id for {name_} [{slug}]")
                 return None

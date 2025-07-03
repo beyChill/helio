@@ -80,7 +80,9 @@ class Chaturbate(CommandSet):
         CB--> stop <streamer's_name>
         """
         name_ = str(arg.name)
+
         if not chk_streamer_name(name_):
+            print("oops")
             return None
 
         cmd_stop_process_id(name_, self.slug)

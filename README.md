@@ -8,7 +8,7 @@
     <b><h1 align="center">Helio ...new direction (2025-06-30)</h1></b>
 </p>
 
-<p align="center">Having recently viewed some rust code. I decided on impulse to take Helio into rusty land.</br> Therefore, a pure python Helio is lower on time allocation list.</br>Follow as I learn rust.
+<p align="center">Having recently viewed some rust code. I decided on impulse to take Helio into rusty land.</br> Therefore, a pure python Helio is lower on the time allocation list.</br>Follow as I learn rust.
 <p align="center"><h1 align="center">look for a new repository ...soon</h1></p>
 
 
