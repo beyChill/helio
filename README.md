@@ -4,20 +4,23 @@
 <meta property="og:keywords" content="Python, stream, ffmpeg, download, record, video, chaturbate, adult, cmd2, stripchat, curl_cffi, screenshots, jpgs, images"/>
 <link rel="stylesheet" href="github-markdown.css">
 
+
+
 <p id="top" align="center">
-    <b><h1 align="center">Helio ...new direction (2025-06-30)</h1></b>
+    <b><h1 align="center">Helio</h1></b>
 </p>
 
-<p align="center">Having recently viewed some rust code. I decided on impulse to take Helio into rusty land.</br> Therefore, a pure python Helio is lower on the time allocation list.</br>Follow as I learn rust.
-<p align="center"><h1 align="center">look for a new repository ...soon</h1></p>
-
-
-
-<p align="center">An educational app for testing and comprehending python's
-    <br/> capabilities to interact, monitor, and capture stream data
-    <br/> for a small number of specific internet sites.
+<p align="center">An educational app for testing and comprehending python
+    <br/> and rust capabilities to interact, monitor, and capture stream
+    <br/> data for a small number of specific internet sites.
     <br/> (primarliy mature / adult sites)
 </p>
+
+<p align="center">
+    <b><h2 align="center">Helio ...new direction (2025-06-30)</h2></b>
+</p>
+
+<p align="center">Having recently viewed some rust code. I decided on impulse to take Helio into rusty land.</br> Therefore, a pure python Helio is lower on the time allocation list.</br>Follow as I learn and implement rust.
 
 <p align='center' >
     <a href="#considerations">Considerations</a> |
