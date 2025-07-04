@@ -1,5 +1,4 @@
 import random
-from pathlib import Path
 
 from tabulate import tabulate
 
