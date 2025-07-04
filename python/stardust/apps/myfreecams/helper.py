@@ -1,31 +1,11 @@
 import random
 from pathlib import Path
 
-import imagehash
-from PIL import Image
 from tabulate import tabulate
 
 import stardust.utils.heliologger as log
 from stardust.apps.myfreecams.db_myfreecams import DbMfc
 from stardust.apps.myfreecams.json_models import Lookup, LookupSession
-from stardust.config.settings import get_setting
-
-REF_IMG_DIR = get_setting().DIR_HASH_REF
-
-
-# Couldn't determine a method to get average_hash
-# from a list comprehension. Using __str__()
-# has benefits that work.
-HASH_REFS = [
-    (imagehash.average_hash(Image.open(path_)).__str__())
-    for path_ in REF_IMG_DIR.glob("*.jpg")
-]
-
-
-def calc_img_hash(image: Path):
-    hash = imagehash.average_hash(Image.open(image))
-    return hash
-
 
 def get_name_url(streamer: Lookup):
     name_ = streamer.method.split("/")[-1]

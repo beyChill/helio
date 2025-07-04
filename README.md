@@ -101,14 +101,6 @@ uv pip install -e .
 uv run stardust/setup_dirs.py
 ```
 
-<p>
-    After the inital run security certificates will be install in ~/.mitmproxy
-</p>
-
-<span>Ubuntu/Debian</span>
-<span> <a title="Install a root CA certificate in the trust store" href="https://documentation.ubuntu.com/server/how-to/security/install-a-root-ca-certificate-in-the-trust-store/index.html">(Detailed instructions)</a></span>
-
-
 <p style="font-size:30px"><a href="#top" title="Move to page top">⬆️</a></p>
 <hr style="height:2px;border-width:0;color:gray;">
 
@@ -162,8 +154,7 @@ Knowledge share for some packages in Helio's tech stack
     <li><a href="https://github.com/0x676e67/rnet">rnet: </a>TLS/HTTP2 client</li>
     <li><a href="https://github.com/PyGithub/PyGithub">pygithub: </a>Access GitHub api</li>
     <li><a href="https://github.com/theskumar/python-dotenv">python-dotenv: </a>Environment variables</li>
-    <!-- <li><a href="https://mitmproxy.org">mitmproxy: </a>Intercept http request</li>
-    <li><a href="https://github.com/seleniumbase">seleniumbase: </a>Chrome development tools</li> -->
+
 </ul>
 </p>
 </div>

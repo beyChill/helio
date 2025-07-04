@@ -8,29 +8,6 @@ find_env = find_dotenv(".env")
 env = dotenv_values(find_env)
 
 
-class MitmProxyDirs:
-    def __init__(self):
-        self.parent = ".helio"
-        self.base = self._find_base_dir()
-        self.conf = self.create_config()
-        self.data = self.create_data()
-
-    def _find_base_dir(self):
-        home = Path("~/")
-        base = Path.expanduser(home)
-        return base
-
-    def create_config(self):
-        conf = Path(self.base / self.parent / "mitmproxy")
-        conf.mkdir(parents=True, exist_ok=True)
-        return conf
-
-    def create_data(self):
-        data = Path(self.base / self.parent / "data")
-        data.mkdir(parents=True, exist_ok=True)
-        return data
-
-
 def _storage(vid_type: str):
     loc = {"long": env.get("DIR_STORAGE_LOCATIONS"), "keep": env.get("DIR_KEEP_VIDEOS")}
     locations = loc.get(vid_type)
@@ -43,7 +20,8 @@ def _storage(vid_type: str):
 
 # class HelioSettings(BaseSettings):
 APP_NAME: str = "stardust"
-APP_DIR: Path = Path.cwd() / "python" / APP_NAME
+SAVE_ROOT_DIR:Path = Path.cwd()
+APP_DIR: Path = SAVE_ROOT_DIR / "python" / APP_NAME
 
 print(APP_DIR)
 class DBSettings(BaseSettings):
@@ -57,33 +35,22 @@ class DBSettings(BaseSettings):
 
 
 class Settings(BaseSettings):
-    BROWSER_PATH: str = "/usr/bin/google-chrome-stable"
-    BROWSER_PROFILE: str = str(Path(APP_DIR, "browser/profile"))
     CLI_PROMPT: str = "$"
-    COOKIE_DIR: Path = APP_DIR / "browser/app_cookies/"
-    COOKIE_CB_NAME: str = "cb_browser_cookies.py"
-    COOKIE_CB_PATH: Path = COOKIE_DIR / COOKIE_CB_NAME
     DIR_SSD: Path = Path(f"{env.get('SSD_PATH', f'{APP_DIR}/helio')}")
-    DIR_SELENIUM_PROFILE: Path = APP_DIR / "browser/user_profile"
     DIR_IMG_PATH: Path = Path(
-        f"{env.get('SSD_PATH_IMAGES', f'{APP_DIR}/capture/images')}"
+        f"{env.get('SSD_PATH_IMAGES', f'{SAVE_ROOT_DIR}/capture/images')}"
     )
-    DIR_PROCESS_CONTACTSHEET: Path = Path(
-        f"{env.get('DIR_PROCESS_CONTACTSHEET', f'{APP_DIR}/capture/video_contactsheet')}"
-    )
+    DIR_KEEP_PATH: Path = Path(f"{SAVE_ROOT_DIR}/capture/video_keep")
     DIR_VIDEO_PATH: Path = Path(
-        f"{env.get('SSD_PATH_VIDEOS', f'{APP_DIR}/capture/videos')}"
+        f"{env.get('SSD_PATH_VIDEOS', f'{SAVE_ROOT_DIR}/capture/videos')}"
     )
     DIR_VIDEO_REVIEW: Path = Path(
-        f"{env.get('DIR_VIDEO_REVIEW', f'{APP_DIR}/capture/video_review')}"
+        f"{env.get('DIR_VIDEO_REVIEW', f'{SAVE_ROOT_DIR}/capture/video_review')}"
     )
     DIR_VIDEO_SHORT: Path = Path(
-        f"{env.get('DIR_VIDEO_SHORT', f'{APP_DIR}/capture/video_short')}"
+        f"{env.get('DIR_VIDEO_SHORT', f'{SAVE_ROOT_DIR}/capture/video_short')}"
     )
-    DIR_KEEP_PATH: Path = Path(f"{APP_DIR}/capture/video_keep")
-    DIR_MITM_CONFIG: Path = MitmProxyDirs().create_config()
-    DIR_MITM_DATA: Path = MitmProxyDirs().create_data()
-    FFMPEG_DEGUB: bool = False
+    FFMPEG_STDOUT: bool = False
     VIDEO_EXT: str = "mkv"
     VIDEO_MAX_SECONDS: int = 1800
     VIDEO_LENGTH_OVERLAP: int = 15
@@ -93,7 +60,7 @@ class Settings(BaseSettings):
     KEEP_STORAGE: list[Path] = _storage("keep")
     KEEP_STORAGE.append(DIR_KEEP_PATH)
     DIR_KEEP_VIDEOS: list[Path] = KEEP_STORAGE
-    DIR_HASH_REF: Path = APP_DIR / "apps" / "myfreecams" / "assets" / "hash"
+    # DIR_HASH_REF: Path = APP_DIR / "apps" / "myfreecams" / "assets" / "hash"
 
 
 @lru_cache(maxsize=None)

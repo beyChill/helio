@@ -48,7 +48,7 @@ class CaptureStreamer(Thread):
         self.activate()
 
     def _std_out(self):
-        if config.FFMPEG_DEGUB:
+        if config.FFMPEG_STDOUT:
             return open(f"{self.data.file_.parent}/stdout.log", "w+", encoding="utf-8")
         return PIPE
 

@@ -9,17 +9,14 @@ def create_init_folders():
     dir_ = get_setting()
 
     dirs = [
-        dir_.COOKIE_DIR,
-        dir_.DIR_PROCESS_CONTACTSHEET,
-        dir_.DIR_SELENIUM_PROFILE,
-        dir_.DIR_VIDEO_SHORT,
-        dir_.DIR_VIDEO_REVIEW,
+        dir_.DIR_IMG_PATH,
         dir_.DIR_KEEP_PATH,
-        dir_.DIR_MITM_CONFIG,
-        dir_.DIR_MITM_DATA,
+        dir_.DIR_VIDEO_PATH,
+        dir_.DIR_VIDEO_REVIEW,
+        dir_.DIR_VIDEO_SHORT,
     ]
 
-    _ = [create_folder(path_) for path_ in dirs if not path_.exists()]
+    _ = [create_folder(path_) for path_ in dirs]
 
 
 def create_folder(folder: Path):

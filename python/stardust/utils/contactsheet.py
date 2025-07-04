@@ -11,14 +11,14 @@ from stardust.utils.timer import AppTimerSync
 
 
 def get_folders():
-    contactsheet_dir = get_setting().DIR_PROCESS_CONTACTSHEET
+    contactsheet_dir = get_setting().DIR_VIDEO_PATH
     folders = [path_ for path_ in contactsheet_dir.iterdir()]
 
     return folders
 
 
 def get_videos():
-    streamer = get_setting().DIR_PROCESS_CONTACTSHEET
+    streamer = get_setting().DIR_VIDEO_PATH
     log.info(f"{streamer}")
     paths = [
         path_.resolve()
