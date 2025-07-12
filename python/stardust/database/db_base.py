@@ -42,7 +42,7 @@ def init_connect(file: Path):
 def db_init() -> None:
     APP_NAMES = get_db_names()
     DB_FILES = [
-        Path(Path.cwd() / f"stardust/database/db/{name_}.sqlite3")
+        Path(Path.cwd() / f"python/stardust/database/db/{name_}.sqlite3")
         for name_ in APP_NAMES
     ]
 

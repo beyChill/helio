@@ -22,7 +22,7 @@ def run_threads():
 def main():
     db_init()
     is_process_active()
-    run_threads()
+    # run_threads()
     cli = HelioCli()
     sys.exit(cli.cmdloop())
 

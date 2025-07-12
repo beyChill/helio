@@ -20,7 +20,7 @@ class HelioDB:
         self.db_name = db_name
         self.slug = slug
         self.conn = None
-        self.db_Path = BASE_DIR / "stardust/database/db"
+        self.db_Path = BASE_DIR / "python/stardust/database/db"
 
     #############################
     # database queries
@@ -163,7 +163,7 @@ class HelioDB:
             WHERE process_id IS NULL
             AND seek_capture IS NOT NULL 
             AND block_date ISNULL 
-            ORDER BY {value}
+            ORDER BY {value}, streamer_name
             """
 
         result = self.execute_query(sql, GetRows.FETCHALL)
@@ -330,11 +330,10 @@ class HelioDB:
         sql = f"""
             UPDATE {self.db_name}
             SET seek_capture = ?,
-            process_id = ?
             WHERE streamer_name = ?
             AND slug = ?
             """
-        args = (None, None, name_, slug)
+        args = (None, name_, slug)
 
         self.execute_write(sql, args)
 

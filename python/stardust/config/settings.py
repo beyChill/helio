@@ -23,7 +23,6 @@ APP_NAME: str = "stardust"
 SAVE_ROOT_DIR:Path = Path.cwd()
 APP_DIR: Path = SAVE_ROOT_DIR / "python" / APP_NAME
 
-print(APP_DIR)
 class DBSettings(BaseSettings):
     DB_SQL_FOLDER: Path = APP_DIR / "database"
     CS_CONFIG: Path = DB_SQL_FOLDER / "camsoda.sql"
