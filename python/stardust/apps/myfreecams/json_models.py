@@ -87,7 +87,7 @@ class LookupUser(BaseModel):
     hide_cam_score: int
     last_login: str
     missmfc: Any
-    profile: LookupProfile
+    profile: Optional[LookupProfile]=None
     rank: Any
     sid: Optional[int] = None
     share: Optional[LookupShare] = None
