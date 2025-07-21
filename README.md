@@ -71,8 +71,11 @@
 
 <h3>Prerequisite</h3>
 
+- Rust
+  - <a title="Rust" href="https://www.rust-lang.org/tools/install">Rust install instructions</a>
+
 - uv - An ultra fast project and package manager.
-  - <a title="uv by Atrfal" href="https://docs.astral.sh/uv/getting-started/installation/">uv Astral</a>
+  - <a title="uv by Astral" href="https://docs.astral.sh/uv/getting-started/installation/">uv install instructions</a>
 
 \*\*Optional, populate .env with applicable strings.
 
@@ -94,7 +97,7 @@ Expect Helio to create folders and databases.
 export UV_CACHE_DIR=<place on same drive as project>
 git clone https://github.com/beyChill/helio.git
 cd helio
-uv venv .venv
+uv venv .venv --prompt Helio
 source .venv/bin/activate
 uv sync
 uv pip install -e .
