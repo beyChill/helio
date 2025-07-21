@@ -1,9 +1,11 @@
 import asyncio
 from argparse import Namespace
 
+
+from stardust._stardust import parse_streamer_name
+import stardust.utils.heliologger as log
 from cmd2 import CommandSet, categorize, with_argparser
 
-import stardust.utils.heliologger as log
 from stardust.apps.arg_parser import (
     block_reason,
     cap_status,
@@ -36,9 +38,11 @@ class MyFreeCams(CommandSet):
 
         name_ = str(arg.name).lower()
 
-        if not chk_streamer_name(name_):
-            log.error("Use lower case, digits, and _")
-            return
+        try:
+            if not parse_streamer_name(name_):
+                return None
+        except Exception as e:
+            log.error(e)
 
         if self.db.query_process_id(name_, self.slug):
             log.warning(f"Already capturing {name_} [{self.slug}]")
@@ -52,12 +56,23 @@ class MyFreeCams(CommandSet):
             log.warning(f"{name_} not a {self.slug} streamer")
             return
 
+
         self.db.write_seek_capture(name_, self.slug)
+
+        if data[0].result.user.sessions[-1].vidserver_id==0 and data[0].result.user.vs==0:
+            print('huh')
+            log.offline(f"{name_} [{self.slug}]")
+            return None
 
         if (streamer := chk_online_status(data[0], name_, self.slug)) is None:
             return None
 
         session = streamer.result.user.sessions[-1]
+
+        if session.vidserver_id==0 and session.vidserver_id==0:
+            log.offline(f"{name_} [{self.slug}]")
+            return None
+
         streamer_id = streamer.result.user.id
 
         playlist_url = make_playlist(session, streamer_id)
