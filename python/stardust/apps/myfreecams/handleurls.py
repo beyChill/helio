@@ -12,6 +12,7 @@ from stardust.apps.myfreecams.json_models import (
     Tags,
 )
 from stardust.utils.general import filter_not200
+import stardust.utils.heliologger as log
 
 
 class iNetMfc:
@@ -56,16 +57,22 @@ class iNetMfc:
     async def get_all_status(self, names: list[str] | set[str]):
         data = await self.task_group(names, self.get_status)
         new = [Lookup(**x) for x in data]
+
         return new
 
     async def get_status(self, name_: str):
         url = f"https://api-edge.myfreecams.com/usernameLookup/{name_}"
 
-        resp: Response = await self.client.get(url)
-        if resp.status != 200:
-            return not200(name_=name_, site=self.slug, code_=resp.status, reason=None)
+        try:
+            resp: Response = await self.client.get(url)
+            
+            if resp.status != 200:
+                return not200(name_=name_, site=self.slug, code_=resp.status, reason=None)
 
-        return await resp.json()
+            return await resp.json()
+        except Exception as e:
+            print(e)
+            log.error("Connection error, try again later")
 
     async def get_streamer_app_profile(self, streamers: list[tuple[str, int]]):
         results: list[MFCAppModel | not200]
