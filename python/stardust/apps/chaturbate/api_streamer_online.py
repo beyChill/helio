@@ -74,9 +74,10 @@ async def manage_seek_capture():
 
         delay_, time_ = script_delay(249.07, 395.89)
 
-        log.query(f"CB streamers @: {time_}")
+        log.query(f"Status for CB streamers @: {time_}")
 
         await asyncio.sleep(delay_)
+        online_streamers=None
 
 
 def loop_cb_seek_capture():

@@ -33,7 +33,6 @@ def get_videos():
 
 
 def get_video_duration(video_path: list[list[Path]]):
-    log.info("calculating video durations")
     video_duration_seconds = 0
     dir_video_short = get_setting().DIR_VIDEO_SHORT
     video_durations: list[ContactSheetModel] = []

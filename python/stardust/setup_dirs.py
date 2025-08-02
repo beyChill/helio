@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from stardust.config.log_display_setting import log_permissions_init
-from stardust.config.settings import get_setting
+from .config.log_display_setting import log_permissions_init
+from .config.settings import get_setting
 import stardust.utils.heliologger as log
 
 

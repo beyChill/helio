@@ -59,8 +59,12 @@ class MyFreeCams(CommandSet):
 
         self.db.write_seek_capture(name_, self.slug)
 
+        if not data[0].result.user.sessions:
+            log.offline(f"{name_} [{self.slug}]")
+            return None
+
+
         if data[0].result.user.sessions[-1].vidserver_id==0 and data[0].result.user.vs==0:
-            print('huh')
             log.offline(f"{name_} [{self.slug}]")
             return None
 

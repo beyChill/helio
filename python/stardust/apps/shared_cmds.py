@@ -108,7 +108,7 @@ def sort_options(option):
     SORT_OPTIONS: dict[str, str] = {
         "name": "streamer_name",
         "size": "data_total",
-        "date": "seek_capture",
+        "date": "last_capture",
         "site": "slug",
     }
     sort = SORT_OPTIONS.get(option, "name")

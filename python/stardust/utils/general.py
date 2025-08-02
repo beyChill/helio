@@ -20,6 +20,14 @@ IMG_PATH = get_setting().DIR_IMG_PATH
 def chk_streamer_name(name_: str):
     valid_lower = "".join([ascii_lowercase, digits, "_"])
 
+    if len(name_) < 2:
+        print("Streamer's name is too short")
+        return
+
+    if len(name_) > 25:
+        print(f"Streamer's name is too long {len(name_)}")
+        return
+
     return all(chars in valid_lower for chars in name_)
 
 

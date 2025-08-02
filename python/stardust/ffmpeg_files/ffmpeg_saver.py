@@ -5,7 +5,7 @@ from subprocess import DEVNULL, PIPE, STDOUT, Popen
 from threading import Thread
 from time import sleep
 from typing import Any
-
+from multiprocessing import Process
 from stardust.utils.contactsheet import manage_contactsheet
 import stardust.utils.heliologger as log
 from stardust.apps.chaturbate.handleurls import iNetCb
@@ -156,7 +156,7 @@ class CaptureStreamer(Thread):
 
         calc_video_size(self.name_, self.data.file_, self.slug)
         
-        contact_sheet = Thread(target=manage_contactsheet([[self.data.file_]]), daemon=True)
+        contact_sheet = Process(target=manage_contactsheet([[self.data.file_]]), daemon=True)
         contact_sheet.start()
         
         if not self.continue_capture():

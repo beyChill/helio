@@ -148,7 +148,7 @@ class HelioDB:
 
     def query_active_capture(self, value):
         sql = f"""
-            SELECT streamer_name, slug, seek_capture, printf("%.4f", data_total)
+            SELECT streamer_name, slug, last_capture, printf("%.4f", data_total)
             FROM {self.db_name} 
             WHERE process_id IS NOT NULL 
             ORDER BY {value}"""
@@ -158,7 +158,7 @@ class HelioDB:
 
     def query_seek_offline(self, value):
         sql = f"""
-            SELECT streamer_name, slug, last_broadcast, printf("%.4f", data_total) 
+            SELECT streamer_name, slug, SUBSTR(last_capture, 1, INSTR(last_capture,' ') -1) as last_capture, printf("%.4f", data_total) 
             FROM {self.db_name} 
             WHERE process_id IS NULL
             AND seek_capture IS NOT NULL 
@@ -329,7 +329,7 @@ class HelioDB:
     def write_rm_seek_capture(self, name_: str, slug: str):
         sql = f"""
             UPDATE {self.db_name}
-            SET seek_capture = ?,
+            SET seek_capture = ?
             WHERE streamer_name = ?
             AND slug = ?
             """

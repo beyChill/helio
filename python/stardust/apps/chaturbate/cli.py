@@ -7,10 +7,10 @@ from cmd2 import (
     with_argparser,
 )
 
+from stardust import parse_streamer_name
 import stardust.utils.heliologger as log
 from stardust.apps.arg_parser import (
     block_reason,
-    cap_status,
     get_streamer,
     long_inactive,
     stop_streamer,
@@ -18,7 +18,7 @@ from stardust.apps.arg_parser import (
 from stardust.apps.chaturbate.handleurls import iNetCb
 from stardust.apps.manage_app_db import HelioDB
 from stardust.apps.manage_capture import start_capture
-from stardust.apps.shared_cmds import cmd_cap, cmd_long, cmd_off, cmd_stop_process_id
+from stardust.apps.shared_cmds import cmd_long, cmd_stop_process_id
 from stardust.utils.general import chk_streamer_name
 from stardust.utils.handle_m3u8 import HandleM3u8
 
@@ -35,7 +35,7 @@ class Chaturbate(CommandSet):
         self.slug = "CB"
         self.db = HelioDB()
         super().__init__()
-
+        
     @with_argparser(get_streamer())
     def do_get(self, arg: Namespace):
         """
@@ -44,9 +44,11 @@ class Chaturbate(CommandSet):
         """
         name_ = str(arg.name)
 
-        if not chk_streamer_name(name_):
-            log.error("Use lower case letters, digits, or _ in the name")
-            return None
+        try:
+            if not parse_streamer_name(name_):
+                return None
+        except Exception as e:
+            log.error(e)
 
         if self.db.query_process_id(name_, self.slug):
             log.warning(f"Already capturing {name_} [{self.slug}]")

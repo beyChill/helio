@@ -1,3 +1,6 @@
+# Get api data for all online streamers
+# save data to sqlite database
+
 from __future__ import annotations
 
 import asyncio
@@ -97,9 +100,8 @@ async def manage_cb_room_list():
         log.info(f"{len(json_data)} chaturbate steamers online")
         # Delay reduces api queries per timeframe
         delay_, time_ = script_delay(609.07, 1095.89)
-        log.query(f"CB streamers @: {time_}")
+        log.query(f"Data for CB streamers @: {time_}")
         await asyncio.sleep(delay_)
-
 
 def exception_handler(loop, context) -> None:
     log.error(context["exception"])

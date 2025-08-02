@@ -85,6 +85,7 @@ class iNetCb:
 
     async def get_jpg(self, url: str):
         resp: Response = await self.client.get(url)
+        print(resp.status,resp.url)
         if resp.status != 200:
             return (resp, None)
 
