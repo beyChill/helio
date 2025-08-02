@@ -20,7 +20,7 @@ dependencies = [
     "m3u8>=6.0.0",
     "pydantic-settings>=2.10.1",
     "pytest>=8.4.1",
-    "rnet>=2.3.9",
+    "rnet==2.3.9",
     "tabulate>=0.9.0",
 ]
 [project.optional-dependencies]
@@ -42,6 +42,8 @@ repository = "https://github.com/beyChill/helio"
 
 [project.scripts]
 start = "stardust.start:main"
+startcb = "stardust.apps.chaturbate.api_streamer_online:loop_cb_seek_capture"
+startmfc = "stardust.apps.myfreecams.api_streamer_online:loop_mfc_seek_capture"
 
 [tool.setuptools]
 py-modules = ["stardust"]
